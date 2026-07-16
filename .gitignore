@@ -1,0 +1,20 @@
+# Environments
+venv/
+.env
+
+# Python / Django
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+media/
+static/
+
+# Frontend (Node)
+node_modules/
+dist/
+.DS_Store
+
+# Documentation
+PRD.md
