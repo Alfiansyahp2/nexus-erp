@@ -132,3 +132,18 @@ STATIC_URL = 'static/'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+# Custom User Model
+AUTH_USER_MODEL = 'hr_module.User'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+from datetime import timedelta
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+}
