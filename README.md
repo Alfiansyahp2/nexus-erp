@@ -26,11 +26,14 @@ Sistem Enterprise Resource Planning (ERP) berbasis web modern dengan arsitektur 
    # Di macOS/Linux:
    source venv/bin/activate
    ```
-3. Install dependensi (pastikan Anda sudah membuat `requirements.txt` atau menginstall modul secara manual):
+3. Install dependensi dari `requirements.txt`:
    ```bash
-   pip install django djangorestframework djangorestframework-simplejwt psycopg2-binary django-cors-headers
+   pip install -r requirements.txt
    ```
-4. Sesuaikan konfigurasi *Database* PostgreSQL di file `backend/core/settings.py` pada bagian `DATABASES`. Buat database kosong bernama `erp_db`.
+4. Salin file `.env.example` menjadi `.env` lalu sesuaikan konfigurasi *Database* PostgreSQL Anda:
+   ```bash
+   cp .env.example .env
+   ```
 5. Jalankan migrasi *database*:
    ```bash
    python manage.py makemigrations
@@ -61,10 +64,11 @@ Sistem Enterprise Resource Planning (ERP) berbasis web modern dengan arsitektur 
    ```
 4. Buka browser dan akses `http://localhost:5173`. Frontend sudah terintegrasi dan siap mengakses backend API.
 
-## 🔑 Fitur Tersedia (Fase 1A)
-- **Modul HR:** Autentikasi Pengguna dengan JWT.
-- **Data Karyawan:** Model Manajemen User Custom, Departemen, Jabatan, dan Profil Karyawan terpusat.
-- **Layout Frontend:** Tata letak *sidebar* responsif menggunakan Ant Design dengan halaman *Login* modern.
+## 🔑 Fitur Tersedia (Fase 1 Selesai)
+- **Modul HR:** Autentikasi Pengguna dengan JWT, Manajemen User Custom, Departemen, Jabatan, dan Profil Karyawan terpusat.
+- **Employee Self-Service (ESS):** Check-in/Check-out kehadiran harian dan form pengajuan cuti secara *real-time*.
+- **Manajemen Penggajian (Payroll):** Model tunjangan/potongan pajak serta kalkulasi gaji bersih *Take Home Pay*.
+- **Layout Frontend:** Tata letak *sidebar* responsif menggunakan Ant Design dengan halaman modern.
 
 ## 📄 Struktur Direktori
 - `/backend` - Kode utama sistem (Django) dengan arsitektur *modular monolith* (seperti `hr_module`).
