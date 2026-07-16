@@ -8,7 +8,9 @@ import {
     DashboardOutlined,
     LogoutOutlined,
     FormOutlined,
-    DollarOutlined
+    DollarOutlined,
+    AccountBookOutlined,
+    BankOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -66,6 +68,23 @@ const MainLayout = () => {
             key: '/payroll',
             icon: <DollarOutlined />,
             label: 'Payroll',
+        },
+        {
+            key: 'finance',
+            icon: <BankOutlined />,
+            label: 'Finance',
+            children: [
+                {
+                    key: '/finance/accounts',
+                    icon: <AccountBookOutlined />,
+                    label: 'Chart of Accounts',
+                },
+                {
+                    key: '/finance/journals',
+                    icon: <FormOutlined />,
+                    label: 'Journal Entries',
+                }
+            ]
         }
     ];
 
