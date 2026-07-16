@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import EmployeeList from './pages/EmployeeList';
 import Dashboard from './pages/Dashboard';
 import LeaveRequests from './pages/LeaveRequests';
+import Payroll from './pages/Payroll';
 import { ConfigProvider } from 'antd';
 
 const ProtectedRoute = ({ children }) => {
@@ -34,6 +35,7 @@ function App() {
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="employees" element={<EmployeeList />} />
             <Route path="leave-requests" element={<LeaveRequests />} />
+            <Route path="payroll" element={<Payroll />} />
           </Route>
         </Routes>
       </BrowserRouter>

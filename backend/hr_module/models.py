@@ -167,3 +167,47 @@ class LeaveRequest(models.Model):
 
     def __str__(self):
         return f"{self.employee.full_name} - {self.leave_type} ({self.status})"
+
+class SalaryComponent(models.Model):
+    employee = models.OneToOneField(EmployeeProfile, on_delete=models.CASCADE, related_name='salary_components')
+    base_salary = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    transport_allowance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    meal_allowance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    position_allowance = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def get_total_allowance(self):
+        return self.transport_allowance + self.meal_allowance + self.position_allowance
+
+    def __str__(self):
+        return f"Salary Component: {self.employee.full_name}"
+
+class Payroll(models.Model):
+    employee = models.ForeignKey(EmployeeProfile, on_delete=models.CASCADE, related_name='payrolls')
+    period_month = models.IntegerField() # e.g. 1 for January
+    period_year = models.IntegerField()  # e.g. 2026
+    
+    base_salary = models.DecimalField(max_digits=12, decimal_places=2)
+    total_allowance = models.DecimalField(max_digits=12, decimal_places=2)
+    
+    # Deductions
+    tax_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0) # PPh 21
+    bpjs_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    absence_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+
+    net_salary = models.DecimalField(max_digits=12, decimal_places=2)
+    payment_date = models.DateField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices=[
+        ('DRAFT', 'Draft'),
+        ('PAID', 'Terbayar')
+    ], default='DRAFT')
+
+    class Meta:
+        unique_together = ('employee', 'period_month', 'period_year')
+
+    def save(self, *args, **kwargs):
+        total_deduction = self.tax_deduction + self.bpjs_deduction + self.absence_deduction
+        self.net_salary = (self.base_salary + self.total_allowance) - total_deduction
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Payroll {self.employee.full_name} - {self.period_month}/{self.period_year}"

@@ -1,9 +1,13 @@
 from rest_framework import viewsets
-from .models import User, Department, Position, EmployeeProfile, Attendance, LeaveRequest
+from .models import (
+    User, Department, Position, EmployeeProfile, 
+    Attendance, LeaveRequest, SalaryComponent, Payroll
+)
 from .serializers import (
     UserSerializer, DepartmentSerializer, 
     PositionSerializer, EmployeeProfileSerializer,
-    AttendanceSerializer, LeaveRequestSerializer
+    AttendanceSerializer, LeaveRequestSerializer,
+    SalaryComponentSerializer, PayrollSerializer
 )
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -29,3 +33,11 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 class LeaveRequestViewSet(viewsets.ModelViewSet):
     queryset = LeaveRequest.objects.all()
     serializer_class = LeaveRequestSerializer
+
+class SalaryComponentViewSet(viewsets.ModelViewSet):
+    queryset = SalaryComponent.objects.all()
+    serializer_class = SalaryComponentSerializer
+
+class PayrollViewSet(viewsets.ModelViewSet):
+    queryset = Payroll.objects.all()
+    serializer_class = PayrollSerializer
