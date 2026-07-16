@@ -6,7 +6,8 @@ import {
     UserOutlined,
     TeamOutlined,
     DashboardOutlined,
-    LogoutOutlined
+    LogoutOutlined,
+    FormOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -54,6 +55,11 @@ const MainLayout = () => {
             key: '/employees',
             icon: <TeamOutlined />,
             label: 'Employees',
+        },
+        {
+            key: '/leave-requests',
+            icon: <FormOutlined />,
+            label: 'Leave Requests',
         }
     ];
 

@@ -3,6 +3,8 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import Login from './pages/Login';
 import EmployeeList from './pages/EmployeeList';
+import Dashboard from './pages/Dashboard';
+import LeaveRequests from './pages/LeaveRequests';
 import { ConfigProvider } from 'antd';
 
 const ProtectedRoute = ({ children }) => {
@@ -12,8 +14,6 @@ const ProtectedRoute = ({ children }) => {
   }
   return children;
 };
-
-const Dashboard = () => <div><h2>Dashboard</h2><p>Welcome to Modern ERP.</p></div>;
 
 function App() {
   return (
@@ -33,6 +33,7 @@ function App() {
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
             <Route path="employees" element={<EmployeeList />} />
+            <Route path="leave-requests" element={<LeaveRequests />} />
           </Route>
         </Routes>
       </BrowserRouter>
