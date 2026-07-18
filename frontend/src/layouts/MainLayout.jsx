@@ -5,12 +5,14 @@ import {
     MenuUnfoldOutlined,
     UserOutlined,
     TeamOutlined,
-    DashboardOutlined,
-    LogoutOutlined,
     FormOutlined,
     DollarOutlined,
     AccountBookOutlined,
-    BankOutlined
+    BankOutlined,
+    ClusterOutlined,
+    IdcardOutlined,
+    DashboardOutlined,
+    LogoutOutlined
 } from '@ant-design/icons';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 
@@ -55,9 +57,26 @@ const MainLayout = () => {
             label: 'Dashboard',
         },
         {
-            key: '/employees',
+            key: 'hr_master',
             icon: <TeamOutlined />,
-            label: 'Employees',
+            label: 'HR Master',
+            children: [
+                {
+                    key: '/hr/employees',
+                    icon: <UserOutlined />,
+                    label: 'Employees',
+                },
+                {
+                    key: '/hr/departments',
+                    icon: <ClusterOutlined />,
+                    label: 'Departments',
+                },
+                {
+                    key: '/hr/positions',
+                    icon: <IdcardOutlined />,
+                    label: 'Positions',
+                }
+            ]
         },
         {
             key: '/leave-requests',

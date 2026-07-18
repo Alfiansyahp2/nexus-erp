@@ -7,6 +7,7 @@ import axios from 'axios';
 const { Title } = Typography;
 
 const Login = () => {
+    const [messageApi, contextHolder] = message.useMessage();
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
@@ -16,10 +17,10 @@ const Login = () => {
             const response = await axios.post('http://localhost:8000/api/token/', values);
             localStorage.setItem('access_token', response.data.access);
             localStorage.setItem('refresh_token', response.data.refresh);
-            message.success('Login successful');
+            messageApi.success('Login successful');
             navigate('/dashboard');
         } catch (error) {
-            message.error('Invalid username or password');
+            messageApi.error('Invalid username or password');
         } finally {
             setLoading(false);
         }
@@ -27,6 +28,7 @@ const Login = () => {
 
     return (
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' }}>
+            {contextHolder}
             <Card style={{ width: 400, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', borderRadius: 12 }}>
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
                     <Title level={3} style={{ margin: 0 }}>Modern ERP</Title>

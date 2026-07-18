@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Modal, Form, Input, Select, message, Tag, Space } from 'antd';
+import { Table, Button, message, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
-
-const { Option } = Select;
+import AccountModal from '../../components/modals/AccountModal';
 
 const ChartOfAccounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [form] = Form.useForm();
 
   const fetchAccounts = async () => {
     setLoading(true);
@@ -29,18 +27,9 @@ const ChartOfAccounts = () => {
     fetchAccounts();
   }, []);
 
-  const handleAddAccount = async (values) => {
-    try {
-      await axios.post('http://localhost:8000/api/finance/accounts/', values, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
-      });
-      message.success('Akun berhasil ditambahkan');
-      setIsModalVisible(false);
-      form.resetFields();
-      fetchAccounts();
-    } catch (error) {
-      message.error('Gagal menambahkan akun');
-    }
+  const handleModalSuccess = () => {
+    setIsModalVisible(false);
+    fetchAccounts();
   };
 
   const columns = [
@@ -81,39 +70,11 @@ const ChartOfAccounts = () => {
         pagination={{ pageSize: 10 }}
       />
 
-      <Modal
-        title="Tambah Akun Baru"
-        visible={isModalVisible}
-        onCancel={() => { setIsModalVisible(false); form.resetFields(); }}
-        footer={null}
-      >
-        <Form form={form} layout="vertical" onFinish={handleAddAccount}>
-          <Form.Item name="account_code" label="Kode Akun" rules={[{ required: true }]}>
-            <Input placeholder="Contoh: 1100" />
-          </Form.Item>
-          <Form.Item name="name" label="Nama Akun" rules={[{ required: true }]}>
-            <Input placeholder="Contoh: Kas Kecil" />
-          </Form.Item>
-          <Form.Item name="account_type" label="Tipe Akun" rules={[{ required: true }]}>
-            <Select placeholder="Pilih Tipe">
-              <Option value="ASSET">Asset (Aset)</Option>
-              <Option value="LIABILITY">Liability (Kewajiban/Hutang)</Option>
-              <Option value="EQUITY">Equity (Modal)</Option>
-              <Option value="REVENUE">Revenue (Pendapatan)</Option>
-              <Option value="EXPENSE">Expense (Beban/Biaya)</Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="description" label="Deskripsi">
-            <Input.TextArea rows={2} />
-          </Form.Item>
-          <Form.Item>
-            <Space>
-              <Button type="primary" htmlType="submit">Simpan</Button>
-              <Button onClick={() => setIsModalVisible(false)}>Batal</Button>
-            </Space>
-          </Form.Item>
-        </Form>
-      </Modal>
+      <AccountModal 
+        open={isModalVisible}
+        onCancel={() => setIsModalVisible(false)}
+        onSuccess={handleModalSuccess}
+      />
     </div>
   );
 };

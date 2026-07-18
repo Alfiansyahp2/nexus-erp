@@ -2,30 +2,27 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, Typography, message, Space, Popconfirm, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../api/axiosConfig';
-import EmployeeModal from '../components/modals/EmployeeModal';
+import PositionModal from '../components/modals/PositionModal';
 
 const { Title } = Typography;
 const { Option } = Select;
 
-const EmployeeList = () => {
-    const [employees, setEmployees] = useState([]);
-    const [departments, setDepartments] = useState([]);
+const PositionList = () => {
     const [positions, setPositions] = useState([]);
+    const [departments, setDepartments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [editingRecord, setEditingRecord] = useState(null);
+    const [editingData, setEditingData] = useState(null);
 
     const fetchData = async () => {
         setLoading(true);
         try {
-            const [empRes, deptRes, posRes] = await Promise.all([
-                api.get('hr/employees/'),
-                api.get('hr/departments/'),
-                api.get('hr/positions/')
+            const [posRes, deptRes] = await Promise.all([
+                api.get('hr/positions/'),
+                api.get('hr/departments/')
             ]);
-            setEmployees(empRes.data);
-            setDepartments(deptRes.data);
             setPositions(posRes.data);
+            setDepartments(deptRes.data);
         } catch (error) {
             message.error('Failed to fetch data');
         } finally {
@@ -42,33 +39,26 @@ const EmployeeList = () => {
         fetchData();
     };
 
-    const handleDelete = async (record) => {
+    const handleDelete = async (id) => {
         try {
-            // Delete employee profile, the user is generally kept or deleted via cascade
-            // But we will delete the User directly to wipe both if CASCADE is set.
-            await api.delete(`hr/users/${record.user.id}/`);
-            message.success('Employee deleted successfully');
+            await api.delete(`hr/positions/${id}/`);
+            message.success('Position deleted successfully');
             fetchData();
         } catch (error) {
-            message.error('Failed to delete employee');
+            message.error('Failed to delete position');
         }
     };
 
     const openModal = (record = null) => {
-        setEditingRecord(record);
+        setEditingData(record);
         setIsModalVisible(true);
     };
 
     const columns = [
         {
-            title: 'NIP',
-            dataIndex: 'employee_id',
-            key: 'employee_id',
-        },
-        {
-            title: 'Full Name',
-            dataIndex: 'full_name',
-            key: 'full_name',
+            title: 'Name',
+            dataIndex: 'name',
+            key: 'name',
         },
         {
             title: 'Department',
@@ -76,14 +66,9 @@ const EmployeeList = () => {
             key: 'department_name',
         },
         {
-            title: 'Position',
-            dataIndex: 'position_name',
-            key: 'position_name',
-        },
-        {
-            title: 'Status',
-            dataIndex: 'employment_status',
-            key: 'employment_status',
+            title: 'Description',
+            dataIndex: 'description',
+            key: 'description',
         },
         {
             title: 'Action',
@@ -96,43 +81,41 @@ const EmployeeList = () => {
                         onClick={() => openModal(record)} 
                     />
                     <Popconfirm 
-                        title="Are you sure to delete this employee?" 
-                        onConfirm={() => handleDelete(record)}
+                        title="Are you sure to delete this position?" 
+                        onConfirm={() => handleDelete(record.id)}
                     >
                         <Button type="primary" danger icon={<DeleteOutlined />} />
                     </Popconfirm>
                 </Space>
             ),
-        }
+        },
     ];
 
     return (
         <Card>
             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                <Title level={4} style={{ margin: 0 }}>Employee Management</Title>
+                <Title level={4} style={{ margin: 0 }}>Position Master</Title>
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                    Add Employee
+                    Add Position
                 </Button>
             </div>
             <Table
                 columns={columns}
-                dataSource={employees}
+                dataSource={positions}
                 rowKey="id"
                 loading={loading}
                 pagination={{ pageSize: 10 }}
-                scroll={{ x: 'max-content' }}
             />
 
-            <EmployeeModal 
+            <PositionModal 
                 open={isModalVisible}
                 onCancel={() => setIsModalVisible(false)}
                 onSuccess={handleModalSuccess}
-                editingRecord={editingRecord}
+                editingData={editingData}
                 departments={departments}
-                positions={positions}
             />
         </Card>
     );
 };
 
-export default EmployeeList;
+export default PositionList;
