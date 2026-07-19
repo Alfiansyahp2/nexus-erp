@@ -36,6 +36,7 @@ const DepartmentModal = ({ open, onCancel, onSuccess, editingData }) => {
             open={open}
             onCancel={onCancel}
             onOk={() => form.submit()}
+            styles={{ body: { overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' } }}
         >
             <Form form={form} layout="vertical" onFinish={handleAddEdit}>
                 <Form.Item name="name" label="Department Name" rules={[{ required: true }]}>

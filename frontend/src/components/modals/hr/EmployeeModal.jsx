@@ -91,6 +91,8 @@ const EmployeeModal = ({ open, onCancel, onSuccess, editingRecord, departments, 
             onOk={() => form.submit()}
             width={800}
             forceRender
+            style={{ top: 20 }}
+            styles={{ body: { overflowY: 'auto', maxHeight: 'calc(100vh - 200px)' } }}
         >
             <Form form={form} layout="vertical" onFinish={handleAddEdit}>
                 <Title level={5}>1. Account Information (Login)</Title>
