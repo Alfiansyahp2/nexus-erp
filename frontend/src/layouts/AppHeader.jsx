@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Button, Dropdown, Avatar } from 'antd';
+import { Layout, Button, Dropdown, Avatar, message } from 'antd';
 import {
     MenuFoldOutlined,
     MenuUnfoldOutlined,

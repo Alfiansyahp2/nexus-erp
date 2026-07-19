@@ -12,6 +12,7 @@ import ChartOfAccounts from './pages/finance/ChartOfAccounts';
 import JournalEntries from './pages/finance/JournalEntries';
 import { ConfigProvider, Spin } from 'antd';
 import api from './api/axiosConfig';
+import BlankSpace from './components/BlankSpace';
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -79,6 +80,24 @@ function App() {
             <Route path="payroll" element={<Payroll />} />
             <Route path="finance/accounts" element={<ChartOfAccounts />} />
             <Route path="finance/journals" element={<JournalEntries />} />
+            
+            {/* Blank Space / Progressive Empty States */}
+            <Route path="profile" element={
+              <BlankSpace 
+                type="info" 
+                title="Fitur Segera Hadir" 
+                description="Halaman Profil Pengguna sedang dalam tahap pengembangan." 
+              />
+            } />
+            
+            {/* Catch-all untuk halaman tidak ditemukan */}
+            <Route path="*" element={
+              <BlankSpace 
+                type="404" 
+                title="404 - Tidak Ditemukan" 
+                description="Maaf, halaman yang Anda cari tidak ada di sistem." 
+              />
+            } />
           </Route>
         </Routes>
       </BrowserRouter>
