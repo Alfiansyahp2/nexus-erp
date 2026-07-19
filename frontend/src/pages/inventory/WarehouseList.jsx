@@ -72,7 +72,7 @@ const WarehouseList = () => {
                 <Space size="middle">
                     <Button 
                         type="text" 
-                        icon={<EditOutlined style={{ color: '#1677ff' }} />} 
+                        icon={<EditOutlined className="icon-primary" />} 
                         onClick={() => {
                             setEditingData(record);
                             setModalVisible(true);
@@ -93,9 +93,9 @@ const WarehouseList = () => {
     ];
 
     return (
-        <div style={{ background: '#fff', padding: 24, borderRadius: 8, minHeight: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Title level={4} style={{ margin: 0 }}>Data Gudang</Title>
+        <div className="page-container">
+            <div className="page-header">
+                <Title level={4} className="margin-0">Data Gudang</Title>
                 <Button 
                     type="primary" 
                     icon={<PlusOutlined />} 

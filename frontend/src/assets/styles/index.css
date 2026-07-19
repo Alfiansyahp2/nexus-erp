@@ -1,4 +1,5 @@
 /* Custom Global Styles for Ant Design */
+@import './utilities.css';
 
 /* Ensure all modals scroll internally instead of making the entire page scroll */
 .ant-modal-body {

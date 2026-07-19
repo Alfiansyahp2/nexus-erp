@@ -15,13 +15,8 @@ const MainLayout = () => {
             <Layout>
                 <AppHeader collapsed={collapsed} setCollapsed={setCollapsed} />
                 <Content
-                    style={{
-                        margin: '24px 16px',
-                        padding: 24,
-                        minHeight: 280,
-                        background: '#fff',
-                        borderRadius: 8,
-                    }}
+                    className="page-container"
+                    style={{ margin: '24px 16px' }}
                 >
                     <Outlet />
                 </Content>

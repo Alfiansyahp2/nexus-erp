@@ -66,10 +66,10 @@ const StockBalanceList = () => {
     ];
 
     return (
-        <div style={{ background: '#fff', padding: 24, borderRadius: 8, minHeight: '100%' }}>
+        <div className="page-container">
             <div style={{ marginBottom: 16 }}>
-                <Title level={4} style={{ margin: 0 }}>Saldo Stok Barang (Stock Balance)</Title>
-                <p style={{ color: '#888', marginTop: 4 }}>Daftar jumlah saldo barang terkini di seluruh gudang. Data ini dihitung otomatis dari riwayat mutasi.</p>
+                <Title level={4} className="margin-0">Saldo Stok Barang (Stock Balance)</Title>
+                <p className="text-muted">Daftar jumlah saldo barang terkini di seluruh gudang. Data ini dihitung otomatis dari riwayat mutasi.</p>
             </div>
             
             <Table 

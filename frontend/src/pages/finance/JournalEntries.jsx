@@ -77,7 +77,7 @@ const JournalEntries = () => {
         <Space size="middle">
           <Button 
             type="text" 
-            icon={<EyeOutlined style={{ color: '#1677ff' }} />} 
+            icon={<EyeOutlined className="icon-primary" />} 
             onClick={() => {
               setDetailData(record);
               setDetailModalVisible(true);
@@ -89,8 +89,8 @@ const JournalEntries = () => {
   ];
 
   return (
-    <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+    <div className="page-container">
+      <div className="page-header">
         <h2>Journal Entries (Jurnal Umum)</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
           Buat Jurnal Baru

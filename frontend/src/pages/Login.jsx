@@ -27,12 +27,12 @@ const Login = () => {
     };
 
     return (
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f0f2f5' }}>
+        <div className="flex-center" style={{ height: '100vh', background: '#f0f2f5' }}>
             {contextHolder}
             <Card style={{ width: 400, boxShadow: '0 4px 12px rgba(0,0,0,0.05)', borderRadius: 12 }}>
                 <div style={{ textAlign: 'center', marginBottom: 24 }}>
-                    <Title level={3} style={{ margin: 0 }}>Modern ERP</Title>
-                    <p style={{ color: '#8c8c8c' }}>Welcome back! Please login to your account.</p>
+                    <Title level={3} className="margin-0">Modern ERP</Title>
+                    <p className="text-muted margin-0">Welcome back! Please login to your account.</p>
                 </div>
                 <Form
                     name="login_form"

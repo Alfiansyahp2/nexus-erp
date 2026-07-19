@@ -92,7 +92,7 @@ const Dashboard = () => {
                         <Statistic
                             title="Status Kehadiran Hari Ini"
                             value={isCheckedIn ? "Checked In" : "Not Checked In"}
-                            prefix={isCheckedIn ? <CheckCircleOutlined style={{ color: '#52c41a' }} /> : <ClockCircleOutlined style={{ color: '#faad14' }} />}
+                            prefix={isCheckedIn ? <CheckCircleOutlined className="icon-success" /> : <ClockCircleOutlined className="icon-warning" />}
                         />
                         <div style={{ marginTop: 16, display: 'flex', gap: 16 }}>
                             <Button 

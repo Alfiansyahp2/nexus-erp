@@ -82,8 +82,8 @@ const DepartmentList = () => {
 
     return (
         <Card>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                <Title level={4} style={{ margin: 0 }}>Department Master</Title>
+            <div className="page-header">
+                <Title level={4} className="margin-0">Department Master</Title>
                 <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
                     Add Department
                 </Button>

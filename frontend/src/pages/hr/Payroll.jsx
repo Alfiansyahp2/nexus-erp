@@ -88,8 +88,8 @@ const Payroll = () => {
 
     return (
         <Card>
-            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
-                <Title level={4} style={{ margin: 0 }}>Manajemen Penggajian (Payroll)</Title>
+            <div className="page-header">
+                <Title level={4} className="margin-0">Manajemen Penggajian (Payroll)</Title>
                 <Button type="primary" icon={<DollarOutlined />} onClick={handleGenerate}>
                     Generate Payroll Bulanan
                 </Button>

@@ -85,7 +85,7 @@ const StockMovementList = () => {
                 <Space size="middle">
                     <Button 
                         type="text" 
-                        icon={<EyeOutlined style={{ color: '#1677ff' }} />} 
+                        icon={<EyeOutlined className="icon-primary" />} 
                         onClick={() => {
                             setDetailData(record);
                             setDetailModalVisible(true);
@@ -97,11 +97,11 @@ const StockMovementList = () => {
     ];
 
     return (
-        <div style={{ background: '#fff', padding: 24, borderRadius: 8, minHeight: '100%' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+        <div className="page-container">
+            <div className="page-header">
                 <div>
-                    <Title level={4} style={{ margin: 0 }}>Riwayat Mutasi Stok</Title>
-                    <p style={{ color: '#888', marginTop: 4, marginBottom: 0 }}>Catatan pergerakan barang keluar masuk. Data bersifat Read-Only (Audit Trail).</p>
+                    <Title level={4} className="margin-0">Riwayat Mutasi Stok</Title>
+                    <p className="text-muted margin-0">Catatan pergerakan barang keluar masuk. Data bersifat Read-Only (Audit Trail).</p>
                 </div>
                 <Button 
                     type="primary" 

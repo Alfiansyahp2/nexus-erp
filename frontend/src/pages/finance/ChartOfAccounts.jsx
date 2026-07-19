@@ -54,8 +54,8 @@ const ChartOfAccounts = () => {
   ];
 
   return (
-    <div style={{ padding: '24px', background: '#fff', borderRadius: '8px', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 16 }}>
+    <div className="page-container">
+      <div className="page-header">
         <h2>Chart of Accounts (Bagan Akun)</h2>
         <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
           Tambah Akun
