@@ -1,16 +1,39 @@
-# React + Vite
+# Frontend - Modern ERP System
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+This directory contains the frontend (User Interface) code for the ERP system, built using **React.js, Vite, and Ant Design**.
 
-Currently, two official plugins are available:
+## 🚀 Architecture & Folder Structure
+This project prioritizes cleanliness (Clean Code & Separation of Concerns) by grouping files based on their functionality:
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- **`/src/api/`**: Contains the Axios configuration (`axiosConfig.js`). This is where the JWT token from *localStorage* is injected into the *Authorization Header*. It also includes an "Interceptor" system that automatically attempts to refresh the token if your session expires.
+- **`/src/layouts/`**: Contains the foundational layout frameworks of the application:
+  - `MainLayout.jsx`: The main wrapper container for pages.
+  - `Sidebar.jsx`: The left navigation menu.
+  - `AppHeader.jsx`: The top menu (includes the profile/logout button).
+- **`/src/pages/`**: UI pages divided by modules (matching the Backend separation):
+  - `/hr`: HR-related pages (Employees, Leave Requests, Payroll).
+  - `/finance`: Finance-related pages (Accounts, Journals).
+  - *Note: Components in this folder are solely responsible for rendering tables (Data Grids) and trigger buttons. Input forms are placed in separate components.*
+- **`/src/components/modals/`**: A centralized collection of Pop-ups / Modal Forms.
+  - All Create/Update forms (e.g., Add Employee, Add Account) are **not written directly inside the page tables**, but are centralized here (`/hr` and `/finance`) to make them highly readable for AI and highly reusable.
+- **`/src/components/BlankSpace.jsx`**: A dynamic component that renders an interactive illustration when data is empty, a feature is not ready (info state), or a page is not found (404).
 
-## React Compiler
+## 🔐 Session Security (Middleware Concept)
+Inside `App.jsx`, there is a `<ProtectedRoute>` component.
+Unlike a simple React setup that merely checks for the existence of a token string, this ERP performs a direct "Handshake Verification" with the Backend (`/api/token/verify/`) every time the application is refreshed or opened. If the session is invalid or expired, the application automatically clears the dirty cache and redirects the user to `/login`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🛠️ Useful Commands (Development)
 
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+1. **Install Packages (Run once initially or when new libraries are added)**
+   ```bash
+   npm install
+   ```
+2. **Start the Development Server (Vite)**
+   ```bash
+   npm run dev
+   ```
+   The application will be accessible locally at `http://localhost:5173`.
+3. **Build the Application for Production**
+   ```bash
+   npm run build
+   ```
