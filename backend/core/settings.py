@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     # Local apps
     'hr_module',
     'finance_module',
+    'inventory_module',
 ]
 
 MIDDLEWARE = [
