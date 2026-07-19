@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Modal, Form, Input, Select, DatePicker, message, Row, Col, Typography } from 'antd';
 import dayjs from 'dayjs';
-import api from '../../api/axiosConfig';
+import api from '../../../api/axiosConfig';
 
 const { Title } = Typography;
 const { Option } = Select;

@@ -43,7 +43,7 @@ const ProtectedRoute = ({ children }) => {
   if (isAuthenticated === null) {
     return (
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" tip="Memverifikasi sesi..." />
+        <Spin size="large" description="Memverifikasi sesi..." />
       </div>
     );
   }
