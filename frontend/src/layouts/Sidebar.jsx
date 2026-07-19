@@ -117,7 +117,7 @@ const Sidebar = ({ collapsed }) => {
     ];
 
     return (
-        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)' }}>
+        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ overflow: 'auto', boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)' }}>
             <div className="sidebar-logo-container">
                 {collapsed ? 'ERP' : 'Modern ERP'}
             </div>

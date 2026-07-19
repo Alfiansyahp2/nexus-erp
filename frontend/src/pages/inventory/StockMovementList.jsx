@@ -33,27 +33,27 @@ const StockMovementList = () => {
     const columns = [
         {
             title: 'Tanggal',
-            dataIndex: 'date',
+            dataIndex: 'date', sorter: (a, b) => { const vA = a['date'] ?? ''; const vB = b['date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'date',
         },
         {
             title: 'No. Referensi',
-            dataIndex: 'reference_number',
+            dataIndex: 'reference_number', sorter: (a, b) => { const vA = a['reference_number'] ?? ''; const vB = b['reference_number'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'reference_number',
         },
         {
             title: 'Produk',
-            dataIndex: 'product_name',
+            dataIndex: 'product_name', sorter: (a, b) => { const vA = a['product_name'] ?? ''; const vB = b['product_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'product_name',
         },
         {
             title: 'Gudang',
-            dataIndex: 'warehouse_name',
+            dataIndex: 'warehouse_name', sorter: (a, b) => { const vA = a['warehouse_name'] ?? ''; const vB = b['warehouse_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'warehouse_name',
         },
         {
             title: 'Jenis',
-            dataIndex: 'movement_type',
+            dataIndex: 'movement_type', sorter: (a, b) => { const vA = a['movement_type'] ?? ''; const vB = b['movement_type'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'movement_type',
             render: (type) => {
                 const colors = {
@@ -67,14 +67,14 @@ const StockMovementList = () => {
         },
         {
             title: 'Kuantitas',
-            dataIndex: 'quantity',
+            dataIndex: 'quantity', sorter: (a, b) => { const vA = a['quantity'] ?? ''; const vB = b['quantity'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'quantity',
             align: 'right',
             render: (val) => parseFloat(val).toLocaleString('id-ID')
         },
         {
             title: 'Catatan',
-            dataIndex: 'notes',
+            dataIndex: 'notes', sorter: (a, b) => { const vA = a['notes'] ?? ''; const vB = b['notes'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'notes',
             ellipsis: true,
         },

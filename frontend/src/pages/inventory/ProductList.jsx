@@ -41,35 +41,35 @@ const ProductList = () => {
     const columns = [
         {
             title: 'Kode',
-            dataIndex: 'code',
+            dataIndex: 'code', sorter: (a, b) => { const vA = a['code'] ?? ''; const vB = b['code'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'code',
             width: 100,
         },
         {
             title: 'Nama Produk',
-            dataIndex: 'name',
+            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'name',
         },
         {
             title: 'Kategori',
-            dataIndex: 'category_name',
+            dataIndex: 'category_name', sorter: (a, b) => { const vA = a['category_name'] ?? ''; const vB = b['category_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'category_name',
         },
         {
             title: 'Satuan',
-            dataIndex: 'unit_of_measure',
+            dataIndex: 'unit_of_measure', sorter: (a, b) => { const vA = a['unit_of_measure'] ?? ''; const vB = b['unit_of_measure'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'unit_of_measure',
             width: 100,
         },
         {
             title: 'Harga Jual',
-            dataIndex: 'unit_price',
+            dataIndex: 'unit_price', sorter: (a, b) => { const vA = a['unit_price'] ?? ''; const vB = b['unit_price'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'unit_price',
             render: (val) => `Rp ${parseFloat(val).toLocaleString('id-ID')}`
         },
         {
             title: 'Status',
-            dataIndex: 'is_active',
+            dataIndex: 'is_active', sorter: (a, b) => { const vA = a['is_active'] ?? ''; const vB = b['is_active'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'is_active',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>

@@ -62,12 +62,12 @@ const LeaveRequests = () => {
     const columns = [
         {
             title: 'Karyawan',
-            dataIndex: 'employee_name',
+            dataIndex: 'employee_name', sorter: (a, b) => { const vA = a['employee_name'] ?? ''; const vB = b['employee_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'employee_name',
         },
         {
             title: 'Tipe',
-            dataIndex: 'leave_type',
+            dataIndex: 'leave_type', sorter: (a, b) => { const vA = a['leave_type'] ?? ''; const vB = b['leave_type'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'leave_type',
             render: (text) => {
                 const map = {
@@ -80,17 +80,17 @@ const LeaveRequests = () => {
         },
         {
             title: 'Mulai',
-            dataIndex: 'start_date',
+            dataIndex: 'start_date', sorter: (a, b) => { const vA = a['start_date'] ?? ''; const vB = b['start_date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'start_date',
         },
         {
             title: 'Selesai',
-            dataIndex: 'end_date',
+            dataIndex: 'end_date', sorter: (a, b) => { const vA = a['end_date'] ?? ''; const vB = b['end_date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'end_date',
         },
         {
             title: 'Status',
-            dataIndex: 'status',
+            dataIndex: 'status', sorter: (a, b) => { const vA = a['status'] ?? ''; const vB = b['status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'status',
             render: (status) => {
                 let color = status === 'APPROVED' ? 'green' : status === 'REJECTED' ? 'red' : 'orange';

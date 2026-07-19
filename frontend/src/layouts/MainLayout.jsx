@@ -10,15 +10,16 @@ const MainLayout = () => {
     const [collapsed, setCollapsed] = useState(false);
 
     return (
-        <Layout style={{ minHeight: '100vh' }}>
+        <Layout style={{ height: '100vh', overflow: 'hidden' }}>
             <Sidebar collapsed={collapsed} />
-            <Layout>
+            <Layout style={{ display: 'flex', flexDirection: 'column' }}>
                 <AppHeader collapsed={collapsed} setCollapsed={setCollapsed} />
                 <Content
-                    className="page-container"
-                    style={{ margin: '24px 16px' }}
+                    style={{ overflowY: 'auto', padding: '24px 16px', flex: 1 }}
                 >
-                    <Outlet />
+                    <div className="page-container" style={{ minHeight: '100%' }}>
+                        <Outlet />
+                    </div>
                 </Content>
             </Layout>
         </Layout>

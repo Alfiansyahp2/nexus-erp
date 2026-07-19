@@ -40,7 +40,7 @@ const Payroll = () => {
     const columns = [
         {
             title: 'Karyawan',
-            dataIndex: 'employee_name',
+            dataIndex: 'employee_name', sorter: (a, b) => { const vA = a['employee_name'] ?? ''; const vB = b['employee_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'employee_name',
         },
         {
@@ -50,25 +50,25 @@ const Payroll = () => {
         },
         {
             title: 'Gaji Pokok',
-            dataIndex: 'base_salary',
+            dataIndex: 'base_salary', sorter: (a, b) => { const vA = a['base_salary'] ?? ''; const vB = b['base_salary'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'base_salary',
             render: (val) => formatCurrency(val)
         },
         {
             title: 'Tunjangan',
-            dataIndex: 'total_allowance',
+            dataIndex: 'total_allowance', sorter: (a, b) => { const vA = a['total_allowance'] ?? ''; const vB = b['total_allowance'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'total_allowance',
             render: (val) => formatCurrency(val)
         },
         {
             title: 'Take Home Pay',
-            dataIndex: 'net_salary',
+            dataIndex: 'net_salary', sorter: (a, b) => { const vA = a['net_salary'] ?? ''; const vB = b['net_salary'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'net_salary',
             render: (val) => <strong>{formatCurrency(val)}</strong>
         },
         {
             title: 'Status',
-            dataIndex: 'status',
+            dataIndex: 'status', sorter: (a, b) => { const vA = a['status'] ?? ''; const vB = b['status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'status',
             render: (status) => {
                 const color = status === 'PAID' ? 'green' : 'orange';

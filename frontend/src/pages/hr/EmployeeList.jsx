@@ -62,27 +62,27 @@ const EmployeeList = () => {
     const columns = [
         {
             title: 'NIP',
-            dataIndex: 'employee_id',
+            dataIndex: 'employee_id', sorter: (a, b) => { const vA = a['employee_id'] ?? ''; const vB = b['employee_id'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'employee_id',
         },
         {
             title: 'Full Name',
-            dataIndex: 'full_name',
+            dataIndex: 'full_name', sorter: (a, b) => { const vA = a['full_name'] ?? ''; const vB = b['full_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'full_name',
         },
         {
             title: 'Department',
-            dataIndex: 'department_name',
+            dataIndex: 'department_name', sorter: (a, b) => { const vA = a['department_name'] ?? ''; const vB = b['department_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'department_name',
         },
         {
             title: 'Position',
-            dataIndex: 'position_name',
+            dataIndex: 'position_name', sorter: (a, b) => { const vA = a['position_name'] ?? ''; const vB = b['position_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'position_name',
         },
         {
             title: 'Status',
-            dataIndex: 'employment_status',
+            dataIndex: 'employment_status', sorter: (a, b) => { const vA = a['employment_status'] ?? ''; const vB = b['employment_status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'employment_status',
         },
         {

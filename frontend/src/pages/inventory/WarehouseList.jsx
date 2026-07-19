@@ -41,23 +41,23 @@ const WarehouseList = () => {
     const columns = [
         {
             title: 'Kode',
-            dataIndex: 'code',
+            dataIndex: 'code', sorter: (a, b) => { const vA = a['code'] ?? ''; const vB = b['code'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'code',
             width: 100,
         },
         {
             title: 'Nama Gudang',
-            dataIndex: 'name',
+            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'name',
         },
         {
             title: 'Lokasi',
-            dataIndex: 'location',
+            dataIndex: 'location', sorter: (a, b) => { const vA = a['location'] ?? ''; const vB = b['location'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'location',
         },
         {
             title: 'Status',
-            dataIndex: 'is_active',
+            dataIndex: 'is_active', sorter: (a, b) => { const vA = a['is_active'] ?? ''; const vB = b['is_active'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'is_active',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>

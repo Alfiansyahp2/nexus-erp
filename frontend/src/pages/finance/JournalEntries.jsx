@@ -49,11 +49,11 @@ const JournalEntries = () => {
   };
 
   const columns = [
-    { title: 'Tanggal', dataIndex: 'date', key: 'date' },
-    { title: 'No. Referensi', dataIndex: 'reference_number', key: 'reference_number' },
+    { title: 'Tanggal', dataIndex: 'date', sorter: (a, b) => { const vA = a['date'] ?? ''; const vB = b['date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, key: 'date' },
+    { title: 'No. Referensi', dataIndex: 'reference_number', sorter: (a, b) => { const vA = a['reference_number'] ?? ''; const vB = b['reference_number'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, key: 'reference_number' },
     { 
       title: 'Status', 
-      dataIndex: 'status', 
+      dataIndex: 'status', sorter: (a, b) => { const vA = a['status'] ?? ''; const vB = b['status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, 
       key: 'status',
       render: (status) => (
         <Tag color={status === 'POSTED' ? 'green' : 'orange'}>
@@ -61,7 +61,7 @@ const JournalEntries = () => {
         </Tag>
       )
     },
-    { title: 'Deskripsi', dataIndex: 'description', key: 'description' },
+    { title: 'Deskripsi', dataIndex: 'description', sorter: (a, b) => { const vA = a['description'] ?? ''; const vB = b['description'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, key: 'description' },
     { 
       title: 'Total Transaksi', 
       key: 'total',

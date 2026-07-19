@@ -65,18 +65,18 @@ const Dashboard = () => {
     const columns = [
         {
             title: 'Date',
-            dataIndex: 'date',
+            dataIndex: 'date', sorter: (a, b) => { const vA = a['date'] ?? ''; const vB = b['date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'date',
         },
         {
             title: 'Check In',
-            dataIndex: 'check_in',
+            dataIndex: 'check_in', sorter: (a, b) => { const vA = a['check_in'] ?? ''; const vB = b['check_in'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'check_in',
             render: (text) => text ? new Date(text).toLocaleTimeString() : '-',
         },
         {
             title: 'Check Out',
-            dataIndex: 'check_out',
+            dataIndex: 'check_out', sorter: (a, b) => { const vA = a['check_out'] ?? ''; const vB = b['check_out'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'check_out',
             render: (text) => text ? new Date(text).toLocaleTimeString() : '-',
         },

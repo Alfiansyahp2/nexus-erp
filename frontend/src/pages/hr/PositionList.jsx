@@ -57,17 +57,17 @@ const PositionList = () => {
     const columns = [
         {
             title: 'Name',
-            dataIndex: 'name',
+            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'name',
         },
         {
             title: 'Department',
-            dataIndex: 'department_name',
+            dataIndex: 'department_name', sorter: (a, b) => { const vA = a['department_name'] ?? ''; const vB = b['department_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'department_name',
         },
         {
             title: 'Description',
-            dataIndex: 'description',
+            dataIndex: 'description', sorter: (a, b) => { const vA = a['description'] ?? ''; const vB = b['description'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'description',
         },
         {
