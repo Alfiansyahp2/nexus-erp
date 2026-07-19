@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, message, Typography, Tag } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Table, Button, Space, message, Typography, Tag } from 'antd';
+import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import MovementModal from '../../components/modals/inventory/MovementModal';
+import MovementDetailModal from '../../components/modals/inventory/MovementDetailModal';
 
 const { Title } = Typography;
 
@@ -10,6 +11,8 @@ const StockMovementList = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
+    const [detailModalVisible, setDetailModalVisible] = useState(false);
+    const [detailData, setDetailData] = useState(null);
 
     const fetchData = async () => {
         setLoading(true);
@@ -74,6 +77,22 @@ const StockMovementList = () => {
             dataIndex: 'notes',
             key: 'notes',
             ellipsis: true,
+        },
+        {
+            title: 'Aksi',
+            key: 'action',
+            render: (_, record) => (
+                <Space size="middle">
+                    <Button 
+                        type="text" 
+                        icon={<EyeOutlined style={{ color: '#1677ff' }} />} 
+                        onClick={() => {
+                            setDetailData(record);
+                            setDetailModalVisible(true);
+                        }} 
+                    />
+                </Space>
+            ),
         }
     ];
 
@@ -109,6 +128,12 @@ const StockMovementList = () => {
                     message.success('Mutasi berhasil dicatat');
                     fetchData();
                 }}
+            />
+
+            <MovementDetailModal
+                visible={detailModalVisible}
+                onClose={() => setDetailModalVisible(false)}
+                data={detailData}
             />
         </div>
     );

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input, Select, DatePicker, message, Row, Col, Typography } from 'antd';
 import dayjs from 'dayjs';
 import api from '../../../api/axiosConfig';
@@ -8,6 +8,16 @@ const { Option } = Select;
 
 const EmployeeModal = ({ open, onCancel, onSuccess, editingRecord, departments, positions }) => {
     const [form] = Form.useForm();
+
+    const [submittable, setSubmittable] = useState(false);
+    const values = Form.useWatch([], form);
+
+    useEffect(() => {
+        form.validateFields({ validateOnly: true }).then(
+            () => setSubmittable(true),
+            () => setSubmittable(false)
+        );
+    }, [form, values]);
 
     useEffect(() => {
         if (open) {

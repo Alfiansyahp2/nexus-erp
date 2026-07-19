@@ -6,6 +6,16 @@ const { Option } = Select;
 
 const MovementModal = ({ visible, onClose, onSuccess }) => {
     const [form] = Form.useForm();
+
+    const [submittable, setSubmittable] = useState(false);
+    const values = Form.useWatch([], form);
+
+    useEffect(() => {
+        form.validateFields({ validateOnly: true }).then(
+            () => setSubmittable(true),
+            () => setSubmittable(false)
+        );
+    }, [form, values]);
     const [products, setProducts] = useState([]);
     const [warehouses, setWarehouses] = useState([]);
 
@@ -48,6 +58,7 @@ const MovementModal = ({ visible, onClose, onSuccess }) => {
             onOk={handleSubmit}
             onCancel={onClose}
             okText="Simpan"
+            okButtonProps={{ disabled: !submittable }}
             cancelText="Batal"
             width={600}
         >

@@ -16,7 +16,7 @@ class JournalEntrySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = JournalEntry
-        fields = ['id', 'date', 'reference_number', 'description', 'created_at', 'created_by', 'items']
+        fields = ['id', 'date', 'reference_number', 'description', 'status', 'created_at', 'created_by', 'items']
         read_only_fields = ['created_by']
 
     def validate(self, data):

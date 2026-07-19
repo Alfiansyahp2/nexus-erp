@@ -25,6 +25,12 @@ class JournalEntry(models.Model):
     
     # We use a string reference for the User model to avoid circular imports
     created_by = models.ForeignKey('hr_module.User', on_delete=models.SET_NULL, null=True, blank=True)
+    
+    class StatusChoices(models.TextChoices):
+        DRAFT = 'DRAFT', 'Draft'
+        POSTED = 'POSTED', 'Posted'
+        
+    status = models.CharField(max_length=10, choices=StatusChoices.choices, default=StatusChoices.DRAFT)
 
     def __str__(self):
         return f"Journal {self.reference_number} - {self.date}"

@@ -1,0 +1,23 @@
+/* Custom Global Styles for Ant Design */
+
+/* Ensure all modals scroll internally instead of making the entire page scroll */
+.ant-modal-body {
+  max-height: calc(100vh - 200px); /* Leave space for modal header and footer */
+  overflow-y: auto;
+  padding-right: 4px; /* Optional: prevent scrollbar from hugging content too tightly */
+}
+
+/* Optional: Make scrollbar look thinner and more modern */
+.ant-modal-body::-webkit-scrollbar {
+  width: 6px;
+}
+.ant-modal-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ant-modal-body::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 4px;
+}
+.ant-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

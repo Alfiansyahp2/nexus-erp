@@ -1,9 +1,19 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form, Input } from 'antd';
 import api from '../../../api/axiosConfig';
 
 const CategoryModal = ({ visible, onClose, onSuccess, editingData }) => {
     const [form] = Form.useForm();
+
+    const [submittable, setSubmittable] = useState(false);
+    const values = Form.useWatch([], form);
+
+    useEffect(() => {
+        form.validateFields({ validateOnly: true }).then(
+            () => setSubmittable(true),
+            () => setSubmittable(false)
+        );
+    }, [form, values]);
 
     useEffect(() => {
         if (visible) {
@@ -36,6 +46,7 @@ const CategoryModal = ({ visible, onClose, onSuccess, editingData }) => {
             onOk={handleSubmit}
             onCancel={onClose}
             okText="Simpan"
+            okButtonProps={{ disabled: !submittable }}
             cancelText="Batal"
         >
             <Form form={form} layout="vertical">
