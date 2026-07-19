@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, Button, message } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import JournalModal from '../../components/modals/JournalModal';
+import JournalModal from '../../components/modals/finance/JournalModal';
 
 const JournalEntries = () => {
   const [journals, setJournals] = useState([]);

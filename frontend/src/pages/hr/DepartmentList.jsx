@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, Typography, message, Space, Popconfirm } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
-import DepartmentModal from '../../components/modals/DepartmentModal';
+import DepartmentModal from '../../components/modals/hr/DepartmentModal';
 
 const { Title } = Typography;
 

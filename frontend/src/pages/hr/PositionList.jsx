@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, Typography, message, Space, Popconfirm, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
-import PositionModal from '../../components/modals/PositionModal';
+import PositionModal from '../../components/modals/hr/PositionModal';
 
 const { Title } = Typography;
 const { Option } = Select;

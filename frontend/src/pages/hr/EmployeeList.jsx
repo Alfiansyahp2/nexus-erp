@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Button, Card, Typography, message, Space, Popconfirm, Select } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
-import EmployeeModal from '../../components/modals/EmployeeModal';
+import EmployeeModal from '../../components/modals/hr/EmployeeModal';
 
 const { Title } = Typography;
 const { Option } = Select;

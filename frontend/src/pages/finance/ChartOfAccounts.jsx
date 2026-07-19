@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Table, Button, message, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
-import AccountModal from '../../components/modals/AccountModal';
+import AccountModal from '../../components/modals/finance/AccountModal';
 
 const ChartOfAccounts = () => {
   const [accounts, setAccounts] = useState([]);
