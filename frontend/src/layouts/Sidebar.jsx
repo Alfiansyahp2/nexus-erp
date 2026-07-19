@@ -1,0 +1,99 @@
+import React from 'react';
+import { Layout, Menu } from 'antd';
+import {
+    DashboardOutlined,
+    TeamOutlined,
+    UserOutlined,
+    ClusterOutlined,
+    IdcardOutlined,
+    FormOutlined,
+    DollarOutlined,
+    BankOutlined,
+    AccountBookOutlined
+} from '@ant-design/icons';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+const { Sider } = Layout;
+
+const Sidebar = ({ collapsed }) => {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleMenuClick = ({ key }) => {
+        navigate(key);
+    };
+
+    const menuItems = [
+        {
+            key: '/dashboard',
+            icon: <DashboardOutlined />,
+            label: 'Dashboard',
+        },
+        {
+            key: 'hr_master',
+            icon: <TeamOutlined />,
+            label: 'HR Master',
+            children: [
+                {
+                    key: '/hr/employees',
+                    icon: <UserOutlined />,
+                    label: 'Employees',
+                },
+                {
+                    key: '/hr/departments',
+                    icon: <ClusterOutlined />,
+                    label: 'Departments',
+                },
+                {
+                    key: '/hr/positions',
+                    icon: <IdcardOutlined />,
+                    label: 'Positions',
+                }
+            ]
+        },
+        {
+            key: '/leave-requests',
+            icon: <FormOutlined />,
+            label: 'Leave Requests',
+        },
+        {
+            key: '/payroll',
+            icon: <DollarOutlined />,
+            label: 'Payroll',
+        },
+        {
+            key: 'finance',
+            icon: <BankOutlined />,
+            label: 'Finance',
+            children: [
+                {
+                    key: '/finance/accounts',
+                    icon: <AccountBookOutlined />,
+                    label: 'Chart of Accounts',
+                },
+                {
+                    key: '/finance/journals',
+                    icon: <FormOutlined />,
+                    label: 'Journal Entries',
+                }
+            ]
+        }
+    ];
+
+    return (
+        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)' }}>
+            <div style={{ height: 32, margin: 16, background: 'rgba(0, 0, 0, 0.05)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                {collapsed ? 'ERP' : 'Modern ERP'}
+            </div>
+            <Menu
+                theme="light"
+                mode="inline"
+                selectedKeys={[location.pathname]}
+                items={menuItems}
+                onClick={handleMenuClick}
+            />
+        </Sider>
+    );
+};
+
+export default Sidebar;
