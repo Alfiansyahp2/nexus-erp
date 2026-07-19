@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import Login from './pages/Login';
@@ -10,13 +10,48 @@ import LeaveRequests from './pages/hr/LeaveRequests';
 import Payroll from './pages/hr/Payroll';
 import ChartOfAccounts from './pages/finance/ChartOfAccounts';
 import JournalEntries from './pages/finance/JournalEntries';
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, Spin } from 'antd';
+import api from './api/axiosConfig';
 
 const ProtectedRoute = ({ children }) => {
-  const token = localStorage.getItem('access_token');
-  if (!token) {
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
+
+  useEffect(() => {
+    const verifyToken = async () => {
+      const token = localStorage.getItem('access_token');
+      if (!token) {
+        setIsAuthenticated(false);
+        return;
+      }
+      
+      try {
+        await api.post('token/verify/', { token });
+        setIsAuthenticated(true);
+      } catch (error) {
+        // Axios interceptor inside api might try to refresh the token if it's expired.
+        // If it still fails, interceptor removes tokens and redirects.
+        // But for explicit verify, if it fails and doesn't refresh successfully, we mark as unauth.
+        setIsAuthenticated(false);
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('refresh_token');
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  if (isAuthenticated === null) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <Spin size="large" tip="Memverifikasi sesi..." />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
+
   return children;
 };
 
