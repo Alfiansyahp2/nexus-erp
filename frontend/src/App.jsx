@@ -10,6 +10,11 @@ import LeaveRequests from './pages/hr/LeaveRequests';
 import Payroll from './pages/hr/Payroll';
 import ChartOfAccounts from './pages/finance/ChartOfAccounts';
 import JournalEntries from './pages/finance/JournalEntries';
+import ProductCategoryList from './pages/inventory/ProductCategoryList';
+import ProductList from './pages/inventory/ProductList';
+import WarehouseList from './pages/inventory/WarehouseList';
+import StockBalanceList from './pages/inventory/StockBalanceList';
+import StockMovementList from './pages/inventory/StockMovementList';
 import { ConfigProvider, Spin } from 'antd';
 import api from './api/axiosConfig';
 import BlankSpace from './components/BlankSpace';
@@ -73,6 +78,13 @@ function App() {
             <Route path="payroll" element={<Payroll />} />
             <Route path="finance/accounts" element={<ChartOfAccounts />} />
             <Route path="finance/journals" element={<JournalEntries />} />
+            
+            {/* Inventory Routes */}
+            <Route path="inventory/categories" element={<ProductCategoryList />} />
+            <Route path="inventory/products" element={<ProductList />} />
+            <Route path="inventory/warehouses" element={<WarehouseList />} />
+            <Route path="inventory/stock-balances" element={<StockBalanceList />} />
+            <Route path="inventory/stock-movements" element={<StockMovementList />} />
             
             {/* Blank Space / Progressive Empty States */}
             <Route path="profile" element={

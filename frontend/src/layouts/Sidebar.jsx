@@ -9,7 +9,11 @@ import {
     FormOutlined,
     DollarOutlined,
     BankOutlined,
-    AccountBookOutlined
+    AccountBookOutlined,
+    AppstoreOutlined,
+    InboxOutlined,
+    SwapOutlined,
+    ShopOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -75,6 +79,38 @@ const Sidebar = ({ collapsed }) => {
                     key: '/finance/journals',
                     icon: <FormOutlined />,
                     label: 'Journal Entries',
+                }
+            ]
+        },
+        {
+            key: 'inventory',
+            icon: <AppstoreOutlined />,
+            label: 'Inventory',
+            children: [
+                {
+                    key: '/inventory/categories',
+                    icon: <AppstoreOutlined />,
+                    label: 'Product Categories',
+                },
+                {
+                    key: '/inventory/products',
+                    icon: <InboxOutlined />,
+                    label: 'Products',
+                },
+                {
+                    key: '/inventory/warehouses',
+                    icon: <ShopOutlined />,
+                    label: 'Warehouses',
+                },
+                {
+                    key: '/inventory/stock-balances',
+                    icon: <AppstoreOutlined />,
+                    label: 'Stock Balances',
+                },
+                {
+                    key: '/inventory/stock-movements',
+                    icon: <SwapOutlined />,
+                    label: 'Stock Movements',
                 }
             ]
         }
