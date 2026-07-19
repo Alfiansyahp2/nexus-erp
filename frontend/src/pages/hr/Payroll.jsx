@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Card, Typography, Tag, Space, message, Modal } from 'antd';
 import { DollarOutlined, FilePdfOutlined } from '@ant-design/icons';
-import api from '../api/axiosConfig';
+import api from '../../api/axiosConfig';
 
 const { Title } = Typography;
 

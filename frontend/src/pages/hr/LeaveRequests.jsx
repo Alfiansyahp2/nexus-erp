@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button, Card, Typography, Modal, Form, Select, DatePicker, Input, message, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import api from '../api/axiosConfig';
+import api from '../../api/axiosConfig';
 
 const { Title } = Typography;
 const { Option } = Select;
