@@ -13,6 +13,7 @@ import JournalEntries from './pages/finance/JournalEntries';
 import { ConfigProvider, Spin } from 'antd';
 import api from './api/axiosConfig';
 import BlankSpace from './components/BlankSpace';
+import themeConfig from './assets/styles/themeConfig';
 
 const ProtectedRoute = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
@@ -58,15 +59,7 @@ const ProtectedRoute = ({ children }) => {
 
 function App() {
   return (
-    <ConfigProvider
-      theme={{
-        token: {
-          colorPrimary: '#1677ff',
-          borderRadius: 6,
-          fontFamily: "'Inter', sans-serif",
-        },
-      }}
-    >
+    <ConfigProvider theme={themeConfig}>
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
