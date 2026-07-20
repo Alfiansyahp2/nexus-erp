@@ -12,6 +12,7 @@ This means every business domain (HR, Finance, Inventory) is isolated into its o
 - **`/hr_module`**: Human Resources module. Handles Employee Authentication, Departments, Positions, Attendance, and Payroll.
 - **`/finance_module`**: Finance module. Handles Chart of Accounts and Journal Entries.
 - **`/inventory_module`**: Inventory and Warehouse Management module. Handles product master data, warehouse locations, and stock movements.
+- **`/rbac`**: Role-Based Access Control module. Handles dynamic roles, granular permissions (slugs), user-role assignments, and custom JWT payload injection.
 
 ### Inside Each Module
 Every module (e.g., `hr_module`) follows a standard structure:
@@ -27,6 +28,7 @@ This application uses **JWT (JSON Web Token)** via the `rest_framework_simplejwt
 - Verify Endpoint: `/api/token/verify/`
 
 Every request from the frontend must include `Authorization: Bearer <access_token>` in its Header.
+Additionally, endpoints are protected using the `@require_permission('slug')` decorator to enforce strict Role-Based Access Control based on dynamic permissions stored in the database.
 
 ## 🛠️ Useful Commands (Development)
 

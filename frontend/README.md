@@ -17,10 +17,16 @@ This project prioritizes cleanliness (Clean Code & Separation of Concerns) by gr
 - **`/src/components/modals/`**: A centralized collection of Pop-ups / Modal Forms.
   - All Create/Update forms (e.g., Add Employee, Add Account) are **not written directly inside the page tables**, but are centralized here (`/hr` and `/finance`) to make them highly readable for AI and highly reusable.
 - **`/src/components/BlankSpace.jsx`**: A dynamic component that renders an interactive illustration when data is empty, a feature is not ready (info state), or a page is not found (404).
+- **`/src/components/Can.jsx`**: A wrapper component to conditionally render UI elements based on user permissions.
 
-## 🔐 Session Security (Middleware Concept)
+## 🔐 Session Security & RBAC
 Inside `App.jsx`, there is a `<ProtectedRoute>` component.
 Unlike a simple React setup that merely checks for the existence of a token string, this ERP performs a direct "Handshake Verification" with the Backend (`/api/token/verify/`) every time the application is refreshed or opened. If the session is invalid or expired, the application automatically clears the dirty cache and redirects the user to `/login`.
+
+Additionally, the UI implements **Role-Based Access Control (RBAC)**:
+- The JWT token payload is decoded using `jwt-decode` to extract the user's permission list.
+- Action buttons (Add, Edit, Delete) are wrapped in `<Can access="slug">` to hide them from unauthorized users.
+- The `Sidebar.jsx` dynamically filters navigation menus so users only see modules they have access to.
 
 ## 🛠️ Useful Commands (Development)
 

@@ -77,9 +77,16 @@ A modern web-based Enterprise Resource Planning (ERP) system utilizing a *Modula
 - Journal Entries with double-entry accounting (Debit/Credit).
 - Clean and centralized modal forms located in `components/modals/finance/`.
 
-### 📦 Phase 3: Inventory & Warehouse (In Progress)
+### 📦 Phase 3: Inventory & Warehouse (Completed)
 - Modular setup of `inventory_module`.
 - Inventory Master Data: Product Categories, Products, and Warehouses.
+- Live tracking: Stock Balances and Stock Movements (Audit Trail).
+
+### 🛡️ Phase 4: Role-Based Access Control (RBAC) (Completed)
+- Dynamic slug-based permission system (`module.entity.action`).
+- Custom JWT payload injecting user permissions directly to the frontend.
+- Backend API protection via `@require_permission` decorators.
+- Frontend UI protection via `<Can access="slug">` wrapper component and dynamic Sidebar filtering.
 
 ### ✨ Frontend Architecture
 - **Clean Layouts**: Separation of `MainLayout`, `Sidebar`, and `AppHeader`.
