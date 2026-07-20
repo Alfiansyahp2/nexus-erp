@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'hr_module',
     'finance_module',
     'inventory_module',
+    'rbac',
 ]
 
 MIDDLEWARE = [
