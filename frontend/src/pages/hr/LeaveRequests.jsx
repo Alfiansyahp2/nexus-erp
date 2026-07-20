@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Card, Typography, Modal, Form, Select, DatePicker, Input, message, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -103,9 +104,11 @@ const LeaveRequests = () => {
         <Card>
             <div className="page-header">
                 <Title level={4} className="margin-0">Pengajuan Cuti & Izin</Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                    Ajukan Cuti
-                </Button>
+                <Can access="hr.leave.create">
+                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+                        Ajukan Cuti
+                    </Button>
+                </Can>
             </div>
             
             <Table

@@ -3,6 +3,7 @@ import { Table, Button, Space, message, Tag } from 'antd';
 import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import JournalModal from '../../components/modals/finance/JournalModal';
+import Can from '../../components/Can';
 import JournalDetailModal from '../../components/modals/finance/JournalDetailModal';
 
 const JournalEntries = () => {
@@ -92,9 +93,11 @@ const JournalEntries = () => {
     <div className="page-container">
       <div className="page-header">
         <h2>Journal Entries (Jurnal Umum)</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-          Buat Jurnal Baru
-        </Button>
+        <Can access="finance.journal.create">
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
+            Buat Jurnal Baru
+          </Button>
+        </Can>
       </div>
 
       <Table 

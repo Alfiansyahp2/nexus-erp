@@ -3,6 +3,7 @@ import { Table, Button, Card, Typography, message, Space, Popconfirm } from 'ant
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import DepartmentModal from '../../components/modals/hr/DepartmentModal';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 
@@ -64,17 +65,21 @@ const DepartmentList = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button 
-                        type="primary" 
-                        icon={<EditOutlined />} 
-                        onClick={() => openModal(record)} 
-                    />
-                    <Popconfirm 
-                        title="Are you sure to delete this department?" 
-                        onConfirm={() => handleDelete(record.id)}
-                    >
-                        <Button type="primary" danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
+                    <Can access="hr.department.update">
+                        <Button 
+                            type="primary" 
+                            icon={<EditOutlined />} 
+                            onClick={() => openModal(record)} 
+                        />
+                    </Can>
+                    <Can access="hr.department.delete">
+                        <Popconfirm 
+                            title="Are you sure to delete this department?" 
+                            onConfirm={() => handleDelete(record.id)}
+                        >
+                            <Button type="primary" danger icon={<DeleteOutlined />} />
+                        </Popconfirm>
+                    </Can>
                 </Space>
             ),
         },
@@ -84,9 +89,11 @@ const DepartmentList = () => {
         <Card>
             <div className="page-header">
                 <Title level={4} className="margin-0">Department Master</Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                    Add Department
-                </Button>
+                <Can access="hr.department.create">
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                        Add Department
+                    </Button>
+                </Can>
             </div>
             <Table
                 columns={columns}

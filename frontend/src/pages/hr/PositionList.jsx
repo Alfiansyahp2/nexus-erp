@@ -3,6 +3,7 @@ import { Table, Button, Card, Typography, message, Space, Popconfirm, Select } f
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import PositionModal from '../../components/modals/hr/PositionModal';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -75,17 +76,21 @@ const PositionList = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button 
-                        type="primary" 
-                        icon={<EditOutlined />} 
-                        onClick={() => openModal(record)} 
-                    />
-                    <Popconfirm 
-                        title="Are you sure to delete this position?" 
-                        onConfirm={() => handleDelete(record.id)}
-                    >
-                        <Button type="primary" danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
+                    <Can access="hr.position.update">
+                        <Button 
+                            type="primary" 
+                            icon={<EditOutlined />} 
+                            onClick={() => openModal(record)} 
+                        />
+                    </Can>
+                    <Can access="hr.position.delete">
+                        <Popconfirm 
+                            title="Are you sure to delete this position?" 
+                            onConfirm={() => handleDelete(record.id)}
+                        >
+                            <Button type="primary" danger icon={<DeleteOutlined />} />
+                        </Popconfirm>
+                    </Can>
                 </Space>
             ),
         },
@@ -95,9 +100,11 @@ const PositionList = () => {
         <Card>
             <div className="page-header">
                 <Title level={4} className="margin-0">Position Master</Title>
-                <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                    Add Position
-                </Button>
+                <Can access="hr.position.create">
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                        Add Position
+                    </Button>
+                </Can>
             </div>
             <Table
                 columns={columns}

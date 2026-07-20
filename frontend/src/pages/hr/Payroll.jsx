@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Table, Button, Card, Typography, Tag, Space, message, Modal } from 'antd';
 import { DollarOutlined, FilePdfOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 
@@ -90,9 +91,11 @@ const Payroll = () => {
         <Card>
             <div className="page-header">
                 <Title level={4} className="margin-0">Manajemen Penggajian (Payroll)</Title>
-                <Button type="primary" icon={<DollarOutlined />} onClick={handleGenerate}>
-                    Generate Payroll Bulanan
-                </Button>
+                <Can access="hr.payroll.create">
+                    <Button type="primary" icon={<DollarOutlined />} onClick={handleGenerate}>
+                        Generate Payroll Bulanan
+                    </Button>
+                </Can>
             </div>
             
             <Table

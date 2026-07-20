@@ -3,6 +3,7 @@ import { Table, Button, Space, message, Typography, Popconfirm, Tag } from 'antd
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import ProductModal from '../../components/modals/inventory/ProductModal';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 
@@ -82,23 +83,27 @@ const ProductList = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="middle">
-                    <Button 
-                        type="text" 
-                        icon={<EditOutlined className="icon-primary" />} 
-                        onClick={() => {
-                            setEditingData(record);
-                            setModalVisible(true);
-                        }} 
-                    />
-                    <Popconfirm
-                        title="Hapus Produk?"
-                        description="Apakah Anda yakin ingin menghapus data ini?"
-                        onConfirm={() => handleDelete(record.id)}
-                        okText="Ya"
-                        cancelText="Tidak"
-                    >
-                        <Button type="text" danger icon={<DeleteOutlined />} />
-                    </Popconfirm>
+                    <Can access="inventory.product.update">
+                        <Button 
+                            type="text" 
+                            icon={<EditOutlined className="icon-primary" />} 
+                            onClick={() => {
+                                setEditingData(record);
+                                setModalVisible(true);
+                            }} 
+                        />
+                    </Can>
+                    <Can access="inventory.product.delete">
+                        <Popconfirm
+                            title="Hapus Produk?"
+                            description="Apakah Anda yakin ingin menghapus data ini?"
+                            onConfirm={() => handleDelete(record.id)}
+                            okText="Ya"
+                            cancelText="Tidak"
+                        >
+                            <Button type="text" danger icon={<DeleteOutlined />} />
+                        </Popconfirm>
+                    </Can>
                 </Space>
             ),
         },
@@ -108,16 +113,18 @@ const ProductList = () => {
         <div className="page-container">
             <div className="page-header">
                 <Title level={4} className="margin-0">Data Produk</Title>
-                <Button 
-                    type="primary" 
-                    icon={<PlusOutlined />} 
-                    onClick={() => {
-                        setEditingData(null);
-                        setModalVisible(true);
-                    }}
-                >
-                    Tambah
-                </Button>
+                <Can access="inventory.product.create">
+                    <Button 
+                        type="primary" 
+                        icon={<PlusOutlined />} 
+                        onClick={() => {
+                            setEditingData(null);
+                            setModalVisible(true);
+                        }}
+                    >
+                        Tambah
+                    </Button>
+                </Can>
             </div>
             
             <Table 

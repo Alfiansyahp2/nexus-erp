@@ -4,6 +4,7 @@ import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import MovementModal from '../../components/modals/inventory/MovementModal';
 import MovementDetailModal from '../../components/modals/inventory/MovementDetailModal';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 
@@ -103,13 +104,15 @@ const StockMovementList = () => {
                     <Title level={4} className="margin-0">Riwayat Mutasi Stok</Title>
                     <p className="text-muted margin-0">Catatan pergerakan barang keluar masuk. Data bersifat Read-Only (Audit Trail).</p>
                 </div>
-                <Button 
-                    type="primary" 
-                    icon={<PlusOutlined />} 
-                    onClick={() => setModalVisible(true)}
-                >
-                    Catat Mutasi
-                </Button>
+                <Can access="inventory.movement.create">
+                    <Button 
+                        type="primary" 
+                        icon={<PlusOutlined />} 
+                        onClick={() => setModalVisible(true)}
+                    >
+                        Catat Mutasi
+                    </Button>
+                </Can>
             </div>
             
             <Table 

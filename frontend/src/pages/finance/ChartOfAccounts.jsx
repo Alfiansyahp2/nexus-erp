@@ -3,6 +3,7 @@ import { Table, Button, message, Tag } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import AccountModal from '../../components/modals/finance/AccountModal';
+import Can from '../../components/Can';
 
 const ChartOfAccounts = () => {
   const [accounts, setAccounts] = useState([]);
@@ -57,9 +58,11 @@ const ChartOfAccounts = () => {
     <div className="page-container">
       <div className="page-header">
         <h2>Chart of Accounts (Bagan Akun)</h2>
-        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-          Tambah Akun
-        </Button>
+        <Can access="finance.account.create">
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
+            Tambah Akun
+          </Button>
+        </Can>
       </div>
 
       <Table 
