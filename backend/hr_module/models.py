@@ -71,11 +71,27 @@ class EmployeeProfile(models.Model):
     def __str__(self):
         return f"{self.employee_id} - {self.full_name}"
 
+class OfficeLocation(models.Model):
+    name = models.CharField(max_length=100, default="Kantor Pusat")
+    latitude = models.DecimalField(max_digits=10, decimal_places=7)
+    longitude = models.DecimalField(max_digits=10, decimal_places=7)
+    radius_meters = models.IntegerField(default=100)
+
+    def __str__(self):
+        return self.name
+
 class Attendance(models.Model):
     employee = models.ForeignKey(EmployeeProfile, on_delete=models.CASCADE, related_name='attendances')
     date = models.DateField(auto_now_add=True)
     check_in = models.DateTimeField(auto_now_add=True)
+    check_in_lat = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    check_in_long = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    check_in_photo = models.ImageField(upload_to='attendance_photos/check_in/', null=True, blank=True)
+    
     check_out = models.DateTimeField(null=True, blank=True)
+    check_out_lat = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    check_out_long = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
+    check_out_photo = models.ImageField(upload_to='attendance_photos/check_out/', null=True, blank=True)
     
     class Meta:
         unique_together = ('employee', 'date')
