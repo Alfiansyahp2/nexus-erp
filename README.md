@@ -83,12 +83,14 @@ A modern web-based Enterprise Resource Planning (ERP) system utilizing a *Modula
 - Live tracking: Stock Balances and Stock Movements (Audit Trail).
 
 ### 🛡️ Phase 4: Role-Based Access Control (RBAC) (Completed)
-- Dynamic slug-based permission system (`module.entity.action`).
-- Custom JWT payload injecting user permissions directly to the frontend.
+- **Direct User-Level Permissions**: Administrators can configure specific permissions (e.g., `hr.employee.delete`) for each individual user via a centralized checklist UI, overriding rigid roles.
+- **Template Autofill**: Roles (e.g., HR Manager) act as quick-fill templates when assigning permissions to a user.
+- **Dynamic JWT Payload**: Custom JWT payload injecting user-specific permissions directly to the frontend.
 - Backend API protection via `@require_permission` decorators.
 - Frontend UI protection via `<Can access="slug">` wrapper component and dynamic Sidebar filtering.
 
-### ✨ Frontend Architecture
+### ⚙️ Phase 5: System Settings (In Progress)
+- User Management Module: Dedicated UI for Super Admins to view all users and manage their individual permissions via an interactive modal with grouped checkboxes.
 - **Clean Layouts**: Separation of `MainLayout`, `Sidebar`, and `AppHeader`.
 - **Organized Pages**: All pages are grouped by module (e.g., `pages/hr/`, `pages/finance/`).
 - **Progressive Blank Space**: Custom `BlankSpace.jsx` component to handle *404 Not Found* and *Under Construction* pages gracefully.

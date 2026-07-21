@@ -13,6 +13,7 @@ This project prioritizes cleanliness (Clean Code & Separation of Concerns) by gr
 - **`/src/pages/`**: UI pages divided by modules (matching the Backend separation):
   - `/hr`: HR-related pages (Employees, Leave Requests, Payroll).
   - `/finance`: Finance-related pages (Accounts, Journals).
+  - `/settings`: System settings including `UserManagement.jsx` (List of users and their exact permissions).
   - *Note: Components in this folder are solely responsible for rendering tables (Data Grids) and trigger buttons. Input forms are placed in separate components.*
 - **`/src/components/modals/`**: A centralized collection of Pop-ups / Modal Forms.
   - All Create/Update forms (e.g., Add Employee, Add Account) are **not written directly inside the page tables**, but are centralized here (`/hr` and `/finance`) to make them highly readable for AI and highly reusable.
@@ -23,10 +24,12 @@ This project prioritizes cleanliness (Clean Code & Separation of Concerns) by gr
 Inside `App.jsx`, there is a `<ProtectedRoute>` component.
 Unlike a simple React setup that merely checks for the existence of a token string, this ERP performs a direct "Handshake Verification" with the Backend (`/api/token/verify/`) every time the application is refreshed or opened. If the session is invalid or expired, the application automatically clears the dirty cache and redirects the user to `/login`.
 
-Additionally, the UI implements **Role-Based Access Control (RBAC)**:
-- The JWT token payload is decoded using `jwt-decode` to extract the user's permission list.
+Additionally, the UI implements **Direct User-Level Access Control (RBAC)**:
+- Permissions are assigned directly to individual users (bypassing rigid roles).
+- The JWT token payload is decoded using `jwt-decode` to extract the user's specific permission list.
 - Action buttons (Add, Edit, Delete) are wrapped in `<Can access="slug">` to hide them from unauthorized users.
 - The `Sidebar.jsx` dynamically filters navigation menus so users only see modules they have access to.
+- A dedicated **User Management UI** (`/settings/users`) allows Super Admins to easily assign permissions using template dropdowns and granular grouped checkboxes.
 
 ## 🛠️ Useful Commands (Development)
 
