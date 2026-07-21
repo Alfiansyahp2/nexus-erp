@@ -24,3 +24,13 @@ class UserRole(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.role.name if self.role else 'No Role'}"
+
+class UserPermission(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='rbac_user_permissions')
+    permission = models.ForeignKey(Permission, on_delete=models.CASCADE, related_name='user_permissions')
+
+    class Meta:
+        unique_together = ('user', 'permission')
+
+    def __str__(self):
+        return f"{self.user.username} - {self.permission.slug}"
