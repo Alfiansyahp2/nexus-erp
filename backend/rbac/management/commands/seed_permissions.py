@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.contrib.auth import get_user_model
-from rbac.models import Permission, Role, UserRole
+from rbac.models import Permission, Role, UserRole, UserPermission
 
 User = get_user_model()
 
 class Command(BaseCommand):
-    help = 'Seeds the database with default RBAC permissions, roles, and test users'
+    help = 'Seeds the database with default RBAC permissions, roles, and user permissions'
 
     def handle(self, *args, **kwargs):
         slugs = {
@@ -26,6 +26,9 @@ class Command(BaseCommand):
                 'inventory.product.view', 'inventory.product.create', 'inventory.product.update', 'inventory.product.delete',
                 'inventory.warehouse.view', 'inventory.warehouse.create', 'inventory.warehouse.update', 'inventory.warehouse.delete',
                 'inventory.stock.view', 'inventory.movement.view', 'inventory.movement.create',
+            ],
+            'settings': [
+                'settings.view', 'settings.manage_users', 'settings.manage_roles'
             ]
         }
 
@@ -43,7 +46,7 @@ class Command(BaseCommand):
                 
         self.stdout.write(self.style.SUCCESS(f'Successfully seeded {created_count} new permissions.'))
 
-        # 2. Create Roles
+        # 2. Define Templates (Roles as templates)
         roles_config = {
             'Super Admin': all_permissions,
             'HR Manager': [perm_map[s] for s in slugs['hr'] + slugs['dashboard']],
@@ -59,10 +62,8 @@ class Command(BaseCommand):
             )
             role.permissions.set(perms)
             role_objects[role_name] = role
-            action = "created" if created else "updated"
-            self.stdout.write(self.style.SUCCESS(f'Successfully {action} {role_name} role.'))
 
-        # 3. Create Users and Assign Roles
+        # 3. Create Users and Assign UserPermissions
         users_config = {
             'superadmin': 'Super Admin',
             'hrmanager': 'HR Manager',
@@ -88,11 +89,19 @@ class Command(BaseCommand):
                 user.save()
                 self.stdout.write(self.style.SUCCESS(f'Created user: {username} (password: password123)'))
 
-            # Assign Role to User
+            # Assign Role to User (for UI display purposes / legacy)
             role = role_objects[role_name]
-            user_role, ur_created = UserRole.objects.get_or_create(user=user, role=role)
-            if ur_created:
-                self.stdout.write(self.style.SUCCESS(f'Assigned role {role_name} to user {username}'))
+            UserRole.objects.get_or_create(user=user, role=role)
+
+            # Map the exact permissions from the template into UserPermission directly
+            user_perms_to_create = []
+            for p in roles_config[role_name]:
+                if not UserPermission.objects.filter(user=user, permission=p).exists():
+                    user_perms_to_create.append(UserPermission(user=user, permission=p))
+            
+            if user_perms_to_create:
+                UserPermission.objects.bulk_create(user_perms_to_create)
+                self.stdout.write(self.style.SUCCESS(f'Granted {len(user_perms_to_create)} direct permissions to user {username} based on {role_name} template'))
 
         self.stdout.write(self.style.SUCCESS('Database seeding completed successfully!'))
 

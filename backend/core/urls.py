@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/hr/', include('hr_module.urls')),
     path('api/finance/', include('finance_module.urls')),
     path('api/inventory/', include('inventory_module.urls')),
+    path('api/rbac/', include('rbac.urls')),
     path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
