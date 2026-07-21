@@ -37,41 +37,45 @@ const Sidebar = ({ collapsed }) => {
             permission: 'dashboard.view'
         },
         {
-            key: 'hr_master',
+            key: 'human_resources',
             icon: <TeamOutlined />,
-            label: 'HR Master',
+            label: 'Human Resources',
             children: [
                 {
-                    key: '/hr/employees',
+                    key: 'hr_master',
                     icon: <UserOutlined />,
-                    label: 'Employees',
-                    permission: 'hr.employee.view'
+                    label: 'Employee Master',
+                    children: [
+                        {
+                            key: '/hr/employees',
+                            label: 'Employees',
+                            permission: 'hr.employee.view'
+                        },
+                        {
+                            key: '/hr/departments',
+                            label: 'Departments',
+                            permission: 'hr.department.view'
+                        },
+                        {
+                            key: '/hr/positions',
+                            label: 'Positions',
+                            permission: 'hr.position.view'
+                        }
+                    ]
                 },
                 {
-                    key: '/hr/departments',
-                    icon: <ClusterOutlined />,
-                    label: 'Departments',
-                    permission: 'hr.department.view'
+                    key: '/leave-requests',
+                    icon: <FormOutlined />,
+                    label: 'Leave Requests',
+                    permission: 'hr.leave.view'
                 },
                 {
-                    key: '/hr/positions',
-                    icon: <IdcardOutlined />,
-                    label: 'Positions',
-                    permission: 'hr.position.view'
+                    key: '/payroll',
+                    icon: <DollarOutlined />,
+                    label: 'Payroll',
+                    permission: 'hr.payroll.view'
                 }
             ]
-        },
-        {
-            key: '/leave-requests',
-            icon: <FormOutlined />,
-            label: 'Leave Requests',
-            permission: 'hr.leave.view'
-        },
-        {
-            key: '/payroll',
-            icon: <DollarOutlined />,
-            label: 'Payroll',
-            permission: 'hr.payroll.view'
         },
         {
             key: 'finance',
@@ -145,18 +149,20 @@ const Sidebar = ({ collapsed }) => {
         }
     ];
 
-    const menuItems = rawMenuItems.map(item => {
-        if (item.children) {
-            return {
-                ...item,
-                children: item.children.filter(child => !child.permission || hasPermission(child.permission))
-            };
-        }
-        return item;
-    }).filter(item => {
-        if (item.children) return item.children.length > 0;
-        return !item.permission || hasPermission(item.permission);
-    });
+    const filterMenuByPermission = (items) => {
+        return items.map(item => {
+            if (item.children) {
+                const filteredChildren = filterMenuByPermission(item.children);
+                return { ...item, children: filteredChildren };
+            }
+            return item;
+        }).filter(item => {
+            if (item.children) return item.children.length > 0;
+            return !item.permission || hasPermission(item.permission);
+        });
+    };
+
+    const menuItems = filterMenuByPermission(rawMenuItems);
 
     return (
         <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ overflow: 'auto', boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)' }}>

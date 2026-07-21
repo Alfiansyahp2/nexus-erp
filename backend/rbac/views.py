@@ -18,8 +18,10 @@ class PermissionListView(generics.ListAPIView):
     # Can add @require_permission here if needed, but standard IsAuthenticated could be enough.
 
 class UserListView(generics.ListAPIView):
-    queryset = User.objects.all().order_by('username')
     serializer_class = UserSerializer
+
+    def get_queryset(self):
+        return User.objects.exclude(id=self.request.user.id).exclude(is_superuser=True).order_by('username')
 
 class UpdateUserPermissionsView(APIView):
     def put(self, request, user_id):

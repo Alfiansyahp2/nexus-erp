@@ -17,20 +17,28 @@ from .serializers import (
 )
 
 class UserViewSet(viewsets.ModelViewSet):
-    queryset = User.objects.all()
     serializer_class = UserSerializer
 
+    def get_queryset(self):
+        return User.objects.exclude(id=self.request.user.id).exclude(is_superuser=True)
+
 class DepartmentViewSet(viewsets.ModelViewSet):
-    queryset = Department.objects.all()
     serializer_class = DepartmentSerializer
 
+    def get_queryset(self):
+        return Department.objects.exclude(name__iexact='Management')
+
 class PositionViewSet(viewsets.ModelViewSet):
-    queryset = Position.objects.all()
     serializer_class = PositionSerializer
 
+    def get_queryset(self):
+        return Position.objects.exclude(name__iexact='Superadmin')
+
 class EmployeeProfileViewSet(viewsets.ModelViewSet):
-    queryset = EmployeeProfile.objects.all()
     serializer_class = EmployeeProfileSerializer
+
+    def get_queryset(self):
+        return EmployeeProfile.objects.exclude(user=self.request.user).exclude(user__is_superuser=True)
 
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
