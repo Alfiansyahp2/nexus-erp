@@ -51,9 +51,18 @@ const AttendanceCameraModal = ({ visible, onCancel, onConfirm, loading, type }) 
                 });
             },
             (err) => {
-                setLocError('Gagal mendapatkan lokasi. Pastikan Anda telah memberikan izin GPS.');
+                console.error("Geolocation Error:", err);
+                let errorMsg = 'Gagal mendapatkan lokasi.';
+                if (err.code === 1) {
+                    errorMsg = 'Akses lokasi ditolak. Silakan izinkan akses lokasi (GPS) di pengaturan browser Anda (ikon gembok di sebelah URL).';
+                } else if (err.code === 2) {
+                    errorMsg = 'Sinyal lokasi tidak tersedia (Position Unavailable). Pastikan fitur Lokasi (Location) di sistem operasi (Windows/Mac) Anda aktif.';
+                } else if (err.code === 3) {
+                    errorMsg = 'Pencarian lokasi terlalu lama (Timeout). Coba lagi atau gunakan jaringan internet yang berbeda.';
+                }
+                setLocError(errorMsg);
             },
-            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            { enableHighAccuracy: false, timeout: 15000, maximumAge: 0 }
         );
     };
 
