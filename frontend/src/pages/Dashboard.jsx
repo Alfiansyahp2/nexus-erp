@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Button, Typography, Row, Col, Statistic, message, Table, Tag } from 'antd';
-import { CheckCircleOutlined, ClockCircleOutlined, FormOutlined } from '@ant-design/icons';
+import { Card, Button, Typography, Row, Col, Statistic, message, Table, Tag, Space, Modal, Image } from 'antd';
+import { CheckCircleOutlined, ClockCircleOutlined, FormOutlined, EnvironmentOutlined } from '@ant-design/icons';
 import api from '../api/axiosConfig';
+import AttendanceCameraModal from '../components/modals/hr/AttendanceCameraModal';
 
 const { Title, Text } = Typography;
 
@@ -9,11 +10,17 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false);
     const [isCheckedIn, setIsCheckedIn] = useState(false);
     const [recentAttendances, setRecentAttendances] = useState([]);
+    const [cameraModalVisible, setCameraModalVisible] = useState(false);
+    const [attendanceType, setAttendanceType] = useState('in'); // 'in' or 'out'
     
-    // In a real app, this should fetch today's attendance status from the backend
     const fetchStatus = async () => {
-        // Mocking behavior for now since API might not have check-in status endpoint
-        // You would typically call api.get('hr/attendances/today/')
+        try {
+            const res = await api.get('hr/attendances/today_status/');
+            setIsCheckedIn(res.data.status === 'CHECKED_IN');
+            // If CHECKED_OUT, we could also track that to disable the Check In button entirely
+        } catch (error) {
+            console.error('Failed to fetch attendance status');
+        }
     };
 
     const fetchRecentAttendances = async () => {
@@ -30,33 +37,44 @@ const Dashboard = () => {
         fetchRecentAttendances();
     }, []);
 
-    const handleCheckIn = async () => {
-        setLoading(true);
-        try {
-            await api.post('hr/attendances/', {
-                // employee would be implicitly set by backend based on JWT user
-                // or we pass employee ID if required by serializer. For now:
-                // Assuming backend sets it.
-            });
-            message.success('Successfully checked in!');
-            setIsCheckedIn(true);
-            fetchRecentAttendances();
-        } catch (error) {
-            message.error('Failed to check in');
-        } finally {
-            setLoading(false);
-        }
+    const handleCheckInClick = () => {
+        setAttendanceType('in');
+        setCameraModalVisible(true);
     };
 
-    const handleCheckOut = async () => {
+    const handleCheckOutClick = () => {
+        setAttendanceType('out');
+        setCameraModalVisible(true);
+    };
+
+    const handleCameraConfirm = async (lat, lng, photoFile) => {
         setLoading(true);
+        const formData = new FormData();
+        formData.append('latitude', lat);
+        formData.append('longitude', lng);
+        formData.append('photo', photoFile);
+
         try {
-            // Usually a PATCH request to the today's attendance record
-            message.success('Successfully checked out!');
-            setIsCheckedIn(false);
+            if (attendanceType === 'in') {
+                await api.post('hr/attendances/check_in/', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                message.success('Berhasil Check-In!');
+            } else {
+                await api.post('hr/attendances/check_out/', formData, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                });
+                message.success('Berhasil Check-Out!');
+            }
+            setCameraModalVisible(false);
+            fetchStatus();
             fetchRecentAttendances();
         } catch (error) {
-            message.error('Failed to check out');
+            if (error.response && error.response.data && error.response.data.error) {
+                message.error(error.response.data.error);
+            } else {
+                message.error(`Gagal melakukan ${attendanceType === 'in' ? 'Check-In' : 'Check-Out'}`);
+            }
         } finally {
             setLoading(false);
         }
@@ -72,13 +90,41 @@ const Dashboard = () => {
             title: 'Check In',
             dataIndex: 'check_in', sorter: (a, b) => { const vA = a['check_in'] ?? ''; const vB = b['check_in'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'check_in',
-            render: (text) => text ? new Date(text).toLocaleTimeString() : '-',
+            render: (text, record) => (
+                <Space direction="vertical" size="small">
+                    <Text>{text ? new Date(text).toLocaleTimeString() : '-'}</Text>
+                    {record.check_in_lat && (
+                        <Space>
+                            {record.check_in_photo && (
+                                <Image src={`http://localhost:8000${record.check_in_photo}`} width={40} height={40} style={{ objectFit: 'cover', borderRadius: '4px' }} />
+                            )}
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${record.check_in_lat},${record.check_in_long}`} target="_blank" rel="noreferrer">
+                                <EnvironmentOutlined /> Peta
+                            </a>
+                        </Space>
+                    )}
+                </Space>
+            ),
         },
         {
             title: 'Check Out',
             dataIndex: 'check_out', sorter: (a, b) => { const vA = a['check_out'] ?? ''; const vB = b['check_out'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'check_out',
-            render: (text) => text ? new Date(text).toLocaleTimeString() : '-',
+            render: (text, record) => (
+                <Space direction="vertical" size="small">
+                    <Text>{text ? new Date(text).toLocaleTimeString() : '-'}</Text>
+                    {record.check_out_lat && (
+                        <Space>
+                            {record.check_out_photo && (
+                                <Image src={`http://localhost:8000${record.check_out_photo}`} width={40} height={40} style={{ objectFit: 'cover', borderRadius: '4px' }} />
+                            )}
+                            <a href={`https://www.google.com/maps/search/?api=1&query=${record.check_out_lat},${record.check_out_long}`} target="_blank" rel="noreferrer">
+                                <EnvironmentOutlined /> Peta
+                            </a>
+                        </Space>
+                    )}
+                </Space>
+            ),
         },
     ];
 
@@ -99,8 +145,7 @@ const Dashboard = () => {
                                 type="primary" 
                                 size="large" 
                                 disabled={isCheckedIn}
-                                onClick={handleCheckIn}
-                                loading={loading}
+                                onClick={handleCheckInClick}
                             >
                                 Check In
                             </Button>
@@ -108,8 +153,7 @@ const Dashboard = () => {
                                 type="default" 
                                 size="large" 
                                 disabled={!isCheckedIn}
-                                onClick={handleCheckOut}
-                                loading={loading}
+                                onClick={handleCheckOutClick}
                                 danger
                             >
                                 Check Out
@@ -136,6 +180,13 @@ const Dashboard = () => {
                     pagination={{ pageSize: 5 }}
                 />
             </Card>
+            <AttendanceCameraModal 
+                visible={cameraModalVisible}
+                onCancel={() => setCameraModalVisible(false)}
+                onConfirm={handleCameraConfirm}
+                loading={loading}
+                type={attendanceType}
+            />
         </div>
     );
 };
