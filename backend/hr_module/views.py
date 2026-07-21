@@ -147,6 +147,26 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
     queryset = LeaveRequest.objects.all()
     serializer_class = LeaveRequestSerializer
 
+    @action(detail=True, methods=['post'])
+    def approve(self, request, pk=None):
+        leave_request = self.get_object()
+        if leave_request.status != 'PENDING':
+            return Response({'error': 'Hanya pengajuan berstatus PENDING yang dapat disetujui'}, status=status.HTTP_400_BAD_REQUEST)
+        leave_request.status = 'APPROVED'
+        leave_request.approved_by = request.user
+        leave_request.save()
+        return Response({'message': 'Cuti disetujui'})
+
+    @action(detail=True, methods=['post'])
+    def reject(self, request, pk=None):
+        leave_request = self.get_object()
+        if leave_request.status != 'PENDING':
+            return Response({'error': 'Hanya pengajuan berstatus PENDING yang dapat ditolak'}, status=status.HTTP_400_BAD_REQUEST)
+        leave_request.status = 'REJECTED'
+        leave_request.approved_by = request.user
+        leave_request.save()
+        return Response({'message': 'Cuti ditolak'})
+
 class SalaryComponentViewSet(viewsets.ModelViewSet):
     queryset = SalaryComponent.objects.all()
     serializer_class = SalaryComponentSerializer

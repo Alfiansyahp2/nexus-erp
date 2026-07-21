@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Card, Typography, Modal, Form, Select, DatePicker, Input, message, Tag } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { Table, Button, Card, Typography, Modal, Form, Select, DatePicker, Input, message, Tag, Space, Popconfirm, Tooltip } from 'antd';
+import { PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import Can from '../../components/Can';
 
@@ -60,6 +60,26 @@ const LeaveRequests = () => {
         }
     };
 
+    const handleApprove = async (id) => {
+        try {
+            await api.post(`hr/leave-requests/${id}/approve/`);
+            message.success('Cuti disetujui');
+            fetchRequests();
+        } catch (error) {
+            message.error(error.response?.data?.error || 'Gagal menyetujui cuti');
+        }
+    };
+
+    const handleReject = async (id) => {
+        try {
+            await api.post(`hr/leave-requests/${id}/reject/`);
+            message.success('Cuti ditolak');
+            fetchRequests();
+        } catch (error) {
+            message.error(error.response?.data?.error || 'Gagal menolak cuti');
+        }
+    };
+
     const columns = [
         {
             title: 'Karyawan',
@@ -97,6 +117,39 @@ const LeaveRequests = () => {
                 let color = status === 'APPROVED' ? 'green' : status === 'REJECTED' ? 'red' : 'orange';
                 return <Tag color={color}>{status}</Tag>;
             }
+        },
+        {
+            title: 'Aksi',
+            key: 'action',
+            render: (_, record) => (
+                <Space size="small">
+                    {record.status === 'PENDING' && (
+                        <Can access="hr.leave.approve">
+                            <Popconfirm title="Setujui cuti ini?" onConfirm={() => handleApprove(record.id)}>
+                                <Tooltip title="Setujui Cuti">
+                                    <Button 
+                                        type="text" 
+                                        shape="circle" 
+                                        icon={<CheckCircleOutlined style={{ color: '#52c41a', fontSize: '18px' }} />} 
+                                        className="hover-scale"
+                                    />
+                                </Tooltip>
+                            </Popconfirm>
+                            <Popconfirm title="Tolak cuti ini?" onConfirm={() => handleReject(record.id)}>
+                                <Tooltip title="Tolak Cuti">
+                                    <Button 
+                                        type="text" 
+                                        shape="circle" 
+                                        danger
+                                        icon={<CloseCircleOutlined style={{ fontSize: '18px' }} />} 
+                                        className="hover-scale"
+                                    />
+                                </Tooltip>
+                            </Popconfirm>
+                        </Can>
+                    )}
+                </Space>
+            )
         },
     ];
 
