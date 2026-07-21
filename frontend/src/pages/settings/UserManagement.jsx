@@ -3,7 +3,7 @@ import { Table, Button, Card, Typography, Tag, message } from 'antd';
 import { SafetyCertificateOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import Can from '../../components/Can';
-// import UserPermissionModal from '../../components/modals/settings/UserPermissionModal'; // Will be implemented in Phase 4
+import UserPermissionModal from '../../components/modals/settings/UserPermissionModal';
 
 const { Title } = Typography;
 
@@ -107,8 +107,6 @@ const UserManagement = () => {
         />
       </Card>
 
-      {/* Modal will be injected here in Phase 4 */}
-      {/* 
       <UserPermissionModal 
         visible={isModalVisible}
         onCancel={() => {
@@ -122,7 +120,6 @@ const UserManagement = () => {
         }}
         user={selectedUser}
       />
-      */}
     </div>
   );
 };
