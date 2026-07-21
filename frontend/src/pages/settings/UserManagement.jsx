@@ -18,7 +18,7 @@ const UserManagement = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/api/rbac/users/');
+      const response = await api.get('rbac/users/');
       setUsers(response.data);
     } catch (error) {
       console.error('Error fetching users:', error);

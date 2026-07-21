@@ -28,7 +28,7 @@ const UserPermissionModal = ({ visible, onCancel, onSuccess, user }) => {
   const fetchAllPermissions = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/api/rbac/permissions/');
+      const response = await api.get('rbac/permissions/');
       const perms = response.data;
       setAllPermissions(perms);
       
@@ -90,7 +90,7 @@ const UserPermissionModal = ({ visible, onCancel, onSuccess, user }) => {
     if (!user) return;
     setSubmitting(true);
     try {
-      await api.put(`/api/rbac/users/${user.id}/permissions/`, {
+      await api.put(`rbac/users/${user.id}/permissions/`, {
         permissions: checkedPerms
       });
       message.success('Hak akses berhasil diperbarui!');
@@ -109,6 +109,10 @@ const UserPermissionModal = ({ visible, onCancel, onSuccess, user }) => {
       open={visible}
       onCancel={onCancel}
       width={800}
+      centered
+      styles={{
+        body: { maxHeight: 'calc(100vh - 250px)', overflowY: 'auto', paddingRight: '10px' }
+      }}
       footer={[
         <Button key="back" onClick={onCancel}>Batal</Button>,
         <Button key="submit" type="primary" loading={submitting} onClick={handleSubmit}>
@@ -137,7 +141,7 @@ const UserPermissionModal = ({ visible, onCancel, onSuccess, user }) => {
         
         <Divider />
 
-        <div style={{ maxHeight: '500px', overflowY: 'auto', paddingRight: 10 }}>
+        <div style={{ paddingRight: 10 }}>
           {Object.keys(groupedPermissions).map(prefix => {
             const groupSlugs = groupedPermissions[prefix].map(p => p.slug);
             const allChecked = groupSlugs.every(slug => checkedPerms.includes(slug));
