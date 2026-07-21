@@ -14,7 +14,8 @@ import {
     AppstoreOutlined,
     InboxOutlined,
     SwapOutlined,
-    ShopOutlined
+    ShopOutlined,
+    SafetyCertificateOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -125,6 +126,20 @@ const Sidebar = ({ collapsed }) => {
                     icon: <SwapOutlined />,
                     label: 'Stock Movements',
                     permission: 'inventory.movement.view'
+                }
+            ]
+        },
+        {
+            key: 'settings',
+            icon: <SafetyCertificateOutlined />,
+            label: 'System Settings',
+            permission: 'settings.view',
+            children: [
+                {
+                    key: '/settings/users',
+                    icon: <UserOutlined />,
+                    label: 'User Management',
+                    permission: 'settings.manage_users'
                 }
             ]
         }

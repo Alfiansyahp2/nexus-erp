@@ -15,6 +15,7 @@ import ProductList from './pages/inventory/ProductList';
 import WarehouseList from './pages/inventory/WarehouseList';
 import StockBalanceList from './pages/inventory/StockBalanceList';
 import StockMovementList from './pages/inventory/StockMovementList';
+import UserManagement from './pages/settings/UserManagement';
 import { ConfigProvider, Spin } from 'antd';
 import api from './api/axiosConfig';
 import BlankSpace from './components/BlankSpace';
@@ -85,6 +86,9 @@ function App() {
             <Route path="inventory/warehouses" element={<WarehouseList />} />
             <Route path="inventory/stock-balances" element={<StockBalanceList />} />
             <Route path="inventory/stock-movements" element={<StockMovementList />} />
+            
+            {/* Settings Routes */}
+            <Route path="settings/users" element={<UserManagement />} />
             
             {/* Blank Space / Progressive Empty States */}
             <Route path="profile" element={
