@@ -135,6 +135,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+# Media files (Uploads like Photos)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # CORS Configuration
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
