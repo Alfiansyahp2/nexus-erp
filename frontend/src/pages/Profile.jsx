@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Card, Typography, Spin, Alert, Tabs, Descriptions, Avatar, Row, Col, Divider, Tag } from 'antd';
-import { UserOutlined } from '@ant-design/icons';
+import { Card, Typography, Spin, Alert, Tabs, Descriptions, Avatar, Row, Col, Divider, Tag, Button } from 'antd';
+import { UserOutlined, EditOutlined } from '@ant-design/icons';
 import api from '../api/axiosConfig';
+import ProfileEditModal from '../components/modals/ProfileEditModal';
 
 const { Title, Text } = Typography;
 
@@ -9,18 +10,20 @@ const Profile = () => {
     const [profile, setProfile] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    const fetchProfile = async () => {
+        try {
+            const response = await api.get('hr/employees/me/');
+            setProfile(response.data);
+        } catch (err) {
+            setError('Gagal memuat profil atau Anda belum memiliki profil pegawai.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
-        const fetchProfile = async () => {
-            try {
-                const response = await api.get('hr/employees/me/');
-                setProfile(response.data);
-            } catch (err) {
-                setError('Gagal memuat profil atau Anda belum memiliki profil pegawai.');
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchProfile();
     }, []);
 
@@ -52,11 +55,16 @@ const Profile = () => {
                         {profile.place_of_birth}, {profile.date_of_birth}
                     </Descriptions.Item>
                     <Descriptions.Item label="Jenis Kelamin">
-                        {profile.gender === 'M' ? 'Laki-laki' : profile.gender === 'F' ? 'Perempuan' : '-'}
+                        {profile.gender === 'L' ? 'Laki-laki' : profile.gender === 'P' ? 'Perempuan' : '-'}
                     </Descriptions.Item>
                     <Descriptions.Item label="Agama">{profile.religion || '-'}</Descriptions.Item>
                     <Descriptions.Item label="Golongan Darah">{profile.blood_group || '-'}</Descriptions.Item>
-                    <Descriptions.Item label="Status Pernikahan">{profile.marital_status || '-'}</Descriptions.Item>
+                    <Descriptions.Item label="Status Pernikahan">
+                        {profile.marital_status === 'SINGLE' ? 'Belum Kawin' : 
+                         profile.marital_status === 'MARRIED' ? 'Kawin' : 
+                         profile.marital_status === 'WIDOWED' ? 'Cerai Mati' : 
+                         profile.marital_status === 'DIVORCED' ? 'Cerai Hidup' : '-'}
+                    </Descriptions.Item>
                     <Descriptions.Item label="Alamat">{profile.address || '-'}</Descriptions.Item>
                 </Descriptions>
             )
@@ -105,7 +113,16 @@ const Profile = () => {
     return (
         <Row gutter={[16, 16]}>
             <Col xs={24} md={8} lg={6}>
-                <Card style={{ textAlign: 'center' }}>
+                <Card 
+                    style={{ textAlign: 'center' }} 
+                    extra={
+                        <Button 
+                            type="text" 
+                            icon={<EditOutlined style={{ color: '#1890ff', fontSize: '18px' }} />} 
+                            onClick={() => setIsEditModalOpen(true)}
+                        />
+                    }
+                >
                     <Avatar size={100} icon={<UserOutlined />} src={profile.photo || undefined} style={{ marginBottom: '16px' }} />
                     <Title level={4} style={{ marginBottom: 4, fontSize: '18px' }}>{profile.full_name}</Title>
                     <Text type="secondary">{profile.position_name}</Text>
@@ -130,6 +147,13 @@ const Profile = () => {
                     <Tabs defaultActiveKey="1" items={items} />
                 </Card>
             </Col>
+
+            <ProfileEditModal 
+                open={isEditModalOpen} 
+                onCancel={() => setIsEditModalOpen(false)} 
+                profile={profile} 
+                onSuccess={fetchProfile}
+            />
         </Row>
     );
 };

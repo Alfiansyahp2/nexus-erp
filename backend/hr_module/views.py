@@ -40,13 +40,30 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return EmployeeProfile.objects.exclude(user=self.request.user).exclude(user__is_superuser=True)
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get', 'patch', 'put'])
     def me(self, request):
         if not hasattr(request.user, 'employee_profile'):
             return Response({'error': 'Profil tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
         
-        serializer = self.get_serializer(request.user.employee_profile)
-        return Response(serializer.data)
+        profile = request.user.employee_profile
+
+        if request.method == 'GET':
+            serializer = self.get_serializer(profile)
+            return Response(serializer.data)
+        
+        # Handling PATCH / PUT
+        data = request.data.copy()
+        
+        # Keamanan: Buang field kritikal agar tidak bisa diubah user sendiri
+        forbidden_fields = ['employee_id', 'join_date', 'department', 'position', 'employment_status', 'user']
+        for field in forbidden_fields:
+            data.pop(field, None)
+
+        serializer = self.get_serializer(profile, data=data, partial=(request.method == 'PATCH'))
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
