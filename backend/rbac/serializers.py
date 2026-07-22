@@ -16,11 +16,8 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         token['permissions'] = permissions
         token['username'] = user.username
         
-        # We can optionally still return the Role for UI purposes (if UserRole exists)
-        if hasattr(user, 'rbac_role') and user.rbac_role.role:
-            token['role'] = user.rbac_role.role.name
-        else:
-            token['role'] = None
+        # Gunakan field role langsung dari model User (SUPER_ADMIN, HR_ADMIN, EMPLOYEE)
+        token['role'] = getattr(user, 'role', None)
 
         return token
 
@@ -48,6 +45,4 @@ class UserSerializer(serializers.ModelSerializer):
         return list(obj.rbac_user_permissions.values_list('permission__slug', flat=True))
 
     def get_role_name(self, obj):
-        if hasattr(obj, 'rbac_role') and obj.rbac_role.role:
-            return obj.rbac_role.role.name
-        return None
+        return getattr(obj, 'role', None)

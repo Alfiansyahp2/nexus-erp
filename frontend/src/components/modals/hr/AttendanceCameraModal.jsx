@@ -119,7 +119,7 @@ const AttendanceCameraModal = ({ visible, onCancel, onConfirm, loading, type }) 
             open={visible}
             onCancel={() => { stopCamera(); onCancel(); }}
             footer={null}
-            destroyOnClose
+            destroyOnHidden
             centered
         >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>

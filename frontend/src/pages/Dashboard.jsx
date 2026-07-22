@@ -91,7 +91,7 @@ const Dashboard = () => {
             dataIndex: 'check_in', sorter: (a, b) => { const vA = a['check_in'] ?? ''; const vB = b['check_in'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'check_in',
             render: (text, record) => (
-                <Space direction="vertical" size="small">
+                <Space orientation="vertical" size="small">
                     <Text>{text ? new Date(text).toLocaleTimeString() : '-'}</Text>
                     {record.check_in_lat && (
                         <Space>
@@ -111,7 +111,7 @@ const Dashboard = () => {
             dataIndex: 'check_out', sorter: (a, b) => { const vA = a['check_out'] ?? ''; const vB = b['check_out'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
             key: 'check_out',
             render: (text, record) => (
-                <Space direction="vertical" size="small">
+                <Space orientation="vertical" size="small">
                     <Text>{text ? new Date(text).toLocaleTimeString() : '-'}</Text>
                     {record.check_out_lat && (
                         <Space>
