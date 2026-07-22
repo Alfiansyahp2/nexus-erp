@@ -24,6 +24,15 @@ class Position(models.Model):
     def __str__(self):
         return self.name
 
+class Shift(models.Model):
+    name = models.CharField(max_length=100)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    late_tolerance_minutes = models.IntegerField(default=15)
+    
+    def __str__(self):
+        return f"{self.name} ({self.start_time.strftime('%H:%M')} - {self.end_time.strftime('%H:%M')})"
+
 class EmployeeProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='employee_profile')
     
@@ -43,6 +52,7 @@ class EmployeeProfile(models.Model):
     blood_group = models.CharField(max_length=5, blank=True, null=True)
     address = models.TextField()
 
+
     # Data Kepegawaian
     employee_id = models.CharField(max_length=50, unique=True) # NIP
     join_date = models.DateField()
@@ -54,6 +64,7 @@ class EmployeeProfile(models.Model):
         ('PROBATION', 'Probation')
     ])
     manager = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subordinates')
+    shift = models.ForeignKey(Shift, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 
     # Data Finansial & Legal
     npwp = models.CharField(max_length=30, blank=True, null=True)
@@ -106,7 +117,8 @@ class LeaveRequest(models.Model):
         UNPAID = 'UNPAID', 'Izin di Luar Tanggungan'
 
     class Status(models.TextChoices):
-        PENDING = 'PENDING', 'Menunggu Persetujuan'
+        PENDING_MANAGER = 'PENDING_MANAGER', 'Menunggu Persetujuan Atasan'
+        PENDING_HR = 'PENDING_HR', 'Menunggu Verifikasi HR'
         APPROVED = 'APPROVED', 'Disetujui'
         REJECTED = 'REJECTED', 'Ditolak'
 
@@ -116,11 +128,39 @@ class LeaveRequest(models.Model):
     end_date = models.DateField()
     reason = models.TextField()
     attachment = models.FileField(upload_to='leave_attachments/', null=True, blank=True)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING)
-    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_leaves')
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_MANAGER)
+    approved_by_manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='manager_approved_leaves')
+    approved_by_hr = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='hr_approved_leaves')
 
     def __str__(self):
         return f"{self.employee.full_name} - {self.leave_type} ({self.status})"
+
+class LeaveBalance(models.Model):
+    employee = models.ForeignKey(EmployeeProfile, on_delete=models.CASCADE, related_name='leave_balances')
+    year = models.IntegerField()
+    annual_allocation = models.IntegerField(default=12)
+    used = models.IntegerField(default=0)
+    
+    @property
+    def remaining(self):
+        return self.annual_allocation - self.used
+
+    class Meta:
+        unique_together = ('employee', 'year')
+
+    def __str__(self):
+        return f"{self.employee.full_name} ({self.year}) - Sisa: {self.remaining}"
+
+class EmployeeLoan(models.Model):
+    employee = models.ForeignKey(EmployeeProfile, on_delete=models.CASCADE, related_name='loans')
+    amount = models.DecimalField(max_digits=12, decimal_places=2)
+    installment_per_period = models.DecimalField(max_digits=12, decimal_places=2)
+    remaining_amount = models.DecimalField(max_digits=12, decimal_places=2)
+    is_paid_off = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Loan {self.employee.full_name} - Sisa: {self.remaining_amount}"
 
 class SalaryComponent(models.Model):
     employee = models.OneToOneField(EmployeeProfile, on_delete=models.CASCADE, related_name='salary_components')
@@ -147,6 +187,7 @@ class Payroll(models.Model):
     tax_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0) # PPh 21
     bpjs_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0)
     absence_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    loan_deduction = models.DecimalField(max_digits=12, decimal_places=2, default=0)
 
     net_salary = models.DecimalField(max_digits=12, decimal_places=2)
     payment_date = models.DateField(auto_now_add=True)
@@ -159,7 +200,7 @@ class Payroll(models.Model):
         unique_together = ('employee', 'period_month', 'period_year')
 
     def save(self, *args, **kwargs):
-        total_deduction = self.tax_deduction + self.bpjs_deduction + self.absence_deduction
+        total_deduction = self.tax_deduction + self.bpjs_deduction + self.absence_deduction + self.loan_deduction
         self.net_salary = (self.base_salary + self.total_allowance) - total_deduction
         super().save(*args, **kwargs)
 
