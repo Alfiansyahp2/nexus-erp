@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from decimal import Decimal
 
 class User(AbstractUser):
     class Role(models.TextChoices):
@@ -203,9 +204,50 @@ class Payroll(models.Model):
         unique_together = ('employee', 'period_month', 'period_year')
 
     def save(self, *args, **kwargs):
+        is_new = self.pk is None
+        old_status = 'DRAFT'
+        if not is_new:
+            old_payroll = Payroll.objects.get(pk=self.pk)
+            old_status = old_payroll.status
+
+        if self.status == 'DRAFT':
+            # 1. PPh 21 (Simplified 5% flat rate)
+            gross = self.base_salary + self.total_allowance
+            self.tax_deduction = gross * Decimal('0.05')
+            
+            # 2. BPJS (Simplified 3% of base)
+            self.bpjs_deduction = self.base_salary * Decimal('0.03')
+            
+            # 3. Absence Penalty (500 per late minute)
+            from django.db.models import Sum
+            late_agg = self.employee.attendances.filter(
+                date__month=self.period_month, 
+                date__year=self.period_year
+            ).aggregate(Sum('late_minutes'))
+            total_late_minutes = late_agg['late_minutes__sum'] or 0
+            self.absence_deduction = Decimal(str(total_late_minutes * 500))
+
+            # 4. Loan deduction estimation
+            loans = self.employee.loans.filter(is_paid_off=False)
+            total_loan_deduction = Decimal('0')
+            for loan in loans:
+                total_loan_deduction += min(loan.installment_per_period, loan.remaining_amount)
+            self.loan_deduction = total_loan_deduction
+
         total_deduction = self.tax_deduction + self.bpjs_deduction + self.absence_deduction + self.loan_deduction
         self.net_salary = (self.base_salary + self.total_allowance) - total_deduction
         super().save(*args, **kwargs)
+
+        # Process actual loan repayment if paid
+        if old_status == 'DRAFT' and self.status == 'PAID':
+            loans = self.employee.loans.filter(is_paid_off=False)
+            for loan in loans:
+                deduction = min(loan.installment_per_period, loan.remaining_amount)
+                if deduction > 0:
+                    loan.remaining_amount -= deduction
+                    if loan.remaining_amount <= 0:
+                        loan.is_paid_off = True
+                    loan.save()
 
     def __str__(self):
         return f"Payroll {self.employee.full_name} - {self.period_month}/{self.period_year}"
