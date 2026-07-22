@@ -99,6 +99,9 @@ class Attendance(models.Model):
     check_in_long = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     check_in_photo = models.ImageField(upload_to='attendance_photos/check_in/', null=True, blank=True)
     
+    is_late = models.BooleanField(default=False)
+    late_minutes = models.IntegerField(default=0)
+    
     check_out = models.DateTimeField(null=True, blank=True)
     check_out_lat = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)
     check_out_long = models.DecimalField(max_digits=10, decimal_places=7, null=True, blank=True)

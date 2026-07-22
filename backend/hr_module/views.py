@@ -106,11 +106,28 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         if not is_valid:
             return Response({'error': error_msg}, status=status.HTTP_400_BAD_REQUEST)
 
+        is_late = False
+        late_minutes = 0
+        if employee.shift:
+            now_time = timezone.now().time()
+            shift_start = employee.shift.start_time
+            tolerance = employee.shift.late_tolerance_minutes
+            
+            dt_now = datetime.datetime.combine(today, now_time)
+            dt_start = datetime.datetime.combine(today, shift_start)
+            
+            diff = (dt_now - dt_start).total_seconds() / 60
+            if diff > tolerance:
+                is_late = True
+                late_minutes = int(diff)
+
         attendance = Attendance.objects.create(
             employee=employee,
             check_in_lat=lat,
             check_in_long=lon,
-            check_in_photo=photo
+            check_in_photo=photo,
+            is_late=is_late,
+            late_minutes=late_minutes
         )
         serializer = self.get_serializer(attendance)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
