@@ -16,6 +16,7 @@ import WarehouseList from './pages/inventory/WarehouseList';
 import StockBalanceList from './pages/inventory/StockBalanceList';
 import StockMovementList from './pages/inventory/StockMovementList';
 import UserManagement from './pages/settings/UserManagement';
+import Profile from './pages/Profile';
 import { ConfigProvider, Spin } from 'antd';
 import api from './api/axiosConfig';
 import BlankSpace from './components/BlankSpace';
@@ -90,14 +91,7 @@ function App() {
             {/* Settings Routes */}
             <Route path="settings/users" element={<UserManagement />} />
             
-            {/* Blank Space / Progressive Empty States */}
-            <Route path="profile" element={
-              <BlankSpace 
-                type="info" 
-                title="Fitur Segera Hadir" 
-                description="Halaman Profil Pengguna sedang dalam tahap pengembangan." 
-              />
-            } />
+            <Route path="profile" element={<Profile />} />
             
             {/* Catch-all untuk halaman tidak ditemukan */}
             <Route path="*" element={
