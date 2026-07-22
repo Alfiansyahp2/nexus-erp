@@ -51,7 +51,8 @@ class AttendanceSerializer(serializers.ModelSerializer):
 
 class LeaveRequestSerializer(serializers.ModelSerializer):
     employee_name = serializers.ReadOnlyField(source='employee.full_name')
-    approved_by_name = serializers.ReadOnlyField(source='approved_by.username')
+    approved_by_manager_name = serializers.ReadOnlyField(source='approved_by_manager.username')
+    approved_by_hr_name = serializers.ReadOnlyField(source='approved_by_hr.username')
 
     class Meta:
         model = LeaveRequest

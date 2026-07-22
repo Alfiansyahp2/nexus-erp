@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.parsers import MultiPartParser, FormParser
 from .models import (
     User, Department, Position, EmployeeProfile, 
-    Attendance, LeaveRequest, SalaryComponent, Payroll, OfficeLocation
+    Attendance, LeaveRequest, LeaveBalance, SalaryComponent, Payroll, OfficeLocation
 )
 from .utils import haversine
 from .serializers import (
@@ -172,23 +172,83 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
     queryset = LeaveRequest.objects.all()
     serializer_class = LeaveRequestSerializer
 
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        if not hasattr(user, 'employee_profile'):
+            return Response({'error': 'Profil tidak ditemukan'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        employee = user.employee_profile
+        data = request.data.copy()
+        data['employee'] = employee.id
+
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+        leave_type = data.get('leave_type')
+        
+        if not (start_date and end_date and leave_type):
+            return Response({'error': 'Data tidak lengkap'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            start = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+            end = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+        except ValueError:
+            return Response({'error': 'Format tanggal salah (Y-M-D)'}, status=status.HTTP_400_BAD_REQUEST)
+
+        duration = (end - start).days + 1
+
+        if duration <= 0:
+            return Response({'error': 'Tanggal selesai harus setelah tanggal mulai'}, status=status.HTTP_400_BAD_REQUEST)
+
+        if leave_type == 'ANNUAL':
+            year = start.year
+            balance = LeaveBalance.objects.filter(employee=employee, year=year).first()
+            if not balance:
+                return Response({'error': f'Saldo cuti tahun {year} belum diatur'}, status=status.HTTP_400_BAD_REQUEST)
+            if balance.remaining < duration:
+                return Response({'error': f'Saldo cuti tidak mencukupi. Sisa: {balance.remaining}, Diajukan: {duration}'}, status=status.HTTP_400_BAD_REQUEST)
+
+        serializer = self.get_serializer(data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     @action(detail=True, methods=['post'])
-    def approve(self, request, pk=None):
+    def approve_manager(self, request, pk=None):
         leave_request = self.get_object()
-        if leave_request.status != 'PENDING':
-            return Response({'error': 'Hanya pengajuan berstatus PENDING yang dapat disetujui'}, status=status.HTTP_400_BAD_REQUEST)
-        leave_request.status = 'APPROVED'
-        leave_request.approved_by = request.user
+        if leave_request.status != 'PENDING_MANAGER':
+            return Response({'error': 'Status tidak valid untuk persetujuan atasan'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        leave_request.status = 'PENDING_HR'
+        leave_request.approved_by_manager = request.user
         leave_request.save()
-        return Response({'message': 'Cuti disetujui'})
+        return Response({'message': 'Disetujui oleh Atasan, menunggu HR'})
+
+    @action(detail=True, methods=['post'])
+    def approve_hr(self, request, pk=None):
+        leave_request = self.get_object()
+        if leave_request.status != 'PENDING_HR':
+            return Response({'error': 'Status tidak valid untuk persetujuan HR'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        if leave_request.leave_type == 'ANNUAL':
+            duration = (leave_request.end_date - leave_request.start_date).days + 1
+            year = leave_request.start_date.year
+            balance = LeaveBalance.objects.filter(employee=leave_request.employee, year=year).first()
+            if balance:
+                balance.used += duration
+                balance.save()
+
+        leave_request.status = 'APPROVED'
+        leave_request.approved_by_hr = request.user
+        leave_request.save()
+        return Response({'message': 'Disetujui oleh HR, cuti aktif'})
 
     @action(detail=True, methods=['post'])
     def reject(self, request, pk=None):
         leave_request = self.get_object()
-        if leave_request.status != 'PENDING':
-            return Response({'error': 'Hanya pengajuan berstatus PENDING yang dapat ditolak'}, status=status.HTTP_400_BAD_REQUEST)
+        if leave_request.status in ['APPROVED', 'REJECTED']:
+            return Response({'error': 'Cuti sudah diproses'}, status=status.HTTP_400_BAD_REQUEST)
         leave_request.status = 'REJECTED'
-        leave_request.approved_by = request.user
         leave_request.save()
         return Response({'message': 'Cuti ditolak'})
 
