@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'hr_module',
     'finance_module',
     'inventory_module',
+    'purchasing_module',
+    'sales_module',
     'rbac',
 ]
 
