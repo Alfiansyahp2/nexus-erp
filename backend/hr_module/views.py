@@ -40,6 +40,14 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         return EmployeeProfile.objects.exclude(user=self.request.user).exclude(user__is_superuser=True)
 
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        if not hasattr(request.user, 'employee_profile'):
+            return Response({'error': 'Profil tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
+        
+        serializer = self.get_serializer(request.user.employee_profile)
+        return Response(serializer.data)
+
 class AttendanceViewSet(viewsets.ModelViewSet):
     queryset = Attendance.objects.all()
     serializer_class = AttendanceSerializer
