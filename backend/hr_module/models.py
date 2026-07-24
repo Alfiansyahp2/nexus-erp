@@ -65,6 +65,7 @@ class EmployeeProfile(models.Model):
         ('PROBATION', 'Probation')
     ])
     manager = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='subordinates')
+    supervisor = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True, related_name='supervised_employees')
     shift = models.ForeignKey(Shift, on_delete=models.SET_NULL, null=True, blank=True, related_name='employees')
 
     # Data Finansial & Legal
@@ -121,7 +122,8 @@ class LeaveRequest(models.Model):
         UNPAID = 'UNPAID', 'Izin di Luar Tanggungan'
 
     class Status(models.TextChoices):
-        PENDING_MANAGER = 'PENDING_MANAGER', 'Menunggu Persetujuan Atasan'
+        PENDING_SPV = 'PENDING_SPV', 'Menunggu Persetujuan Supervisor'
+        PENDING_MANAGER = 'PENDING_MANAGER', 'Menunggu Persetujuan Manager'
         PENDING_HR = 'PENDING_HR', 'Menunggu Verifikasi HR'
         APPROVED = 'APPROVED', 'Disetujui'
         REJECTED = 'REJECTED', 'Ditolak'
@@ -132,7 +134,8 @@ class LeaveRequest(models.Model):
     end_date = models.DateField()
     reason = models.TextField()
     attachment = models.FileField(upload_to='leave_attachments/', null=True, blank=True)
-    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_MANAGER)
+    status = models.CharField(max_length=20, choices=Status.choices, default=Status.PENDING_SPV)
+    approved_by_spv = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='spv_approved_leaves')
     approved_by_manager = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='manager_approved_leaves')
     approved_by_hr = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='hr_approved_leaves')
 
@@ -165,6 +168,26 @@ class EmployeeLoan(models.Model):
 
     def __str__(self):
         return f"Loan {self.employee.full_name} - Sisa: {self.remaining_amount}"
+
+class TaxBracket(models.Model):
+    min_income = models.DecimalField(max_digits=15, decimal_places=2, default=0)
+    max_income = models.DecimalField(max_digits=15, decimal_places=2, null=True, blank=True)
+    tax_rate = models.DecimalField(max_digits=5, decimal_places=2)
+
+    class Meta:
+        ordering = ['min_income']
+
+    def __str__(self):
+        return f"Tax {self.tax_rate}% (Min: {self.min_income} - Max: {self.max_income})"
+
+class CompanySettings(models.Model):
+    bpjs_kesehatan_rate = models.DecimalField(max_digits=5, decimal_places=2, default=1.0)
+    bpjs_ketenagakerjaan_rate = models.DecimalField(max_digits=5, decimal_places=2, default=2.0)
+
+    def save(self, *args, **kwargs):
+        if not self.pk and CompanySettings.objects.exists():
+            raise Exception('There can be only one CompanySettings instance')
+        return super(CompanySettings, self).save(*args, **kwargs)
 
 class SalaryComponent(models.Model):
     employee = models.OneToOneField(EmployeeProfile, on_delete=models.CASCADE, related_name='salary_components')
@@ -211,12 +234,33 @@ class Payroll(models.Model):
             old_status = old_payroll.status
 
         if self.status == 'DRAFT':
-            # 1. PPh 21 (Simplified 5% flat rate)
-            gross = self.base_salary + self.total_allowance
-            self.tax_deduction = gross * Decimal('0.05')
+            gross_monthly = self.base_salary + self.total_allowance
+            gross_annual = gross_monthly * 12
             
-            # 2. BPJS (Simplified 3% of base)
-            self.bpjs_deduction = self.base_salary * Decimal('0.03')
+            # 1. Progressive PPh 21
+            tax_brackets = TaxBracket.objects.all().order_by('min_income')
+            annual_tax = Decimal('0')
+            remaining_income = gross_annual
+            
+            for bracket in tax_brackets:
+                if remaining_income > bracket.min_income:
+                    taxable_amount = remaining_income - bracket.min_income
+                    if bracket.max_income:
+                        bracket_range = bracket.max_income - bracket.min_income
+                        taxable_amount = min(taxable_amount, bracket_range)
+                    
+                    annual_tax += taxable_amount * (bracket.tax_rate / Decimal('100.0'))
+            
+            self.tax_deduction = annual_tax / Decimal('12.0')
+
+            # 2. BPJS from CompanySettings
+            settings = CompanySettings.objects.first()
+            if settings:
+                bpjs_kes_rate = settings.bpjs_kesehatan_rate / Decimal('100.0')
+                bpjs_tk_rate = settings.bpjs_ketenagakerjaan_rate / Decimal('100.0')
+                self.bpjs_deduction = self.base_salary * (bpjs_kes_rate + bpjs_tk_rate)
+            else:
+                self.bpjs_deduction = self.base_salary * Decimal('0.03') # Fallback
             
             # 3. Absence Penalty (500 per late minute)
             from django.db.models import Sum

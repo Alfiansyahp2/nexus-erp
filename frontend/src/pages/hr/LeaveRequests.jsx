@@ -60,9 +60,9 @@ const LeaveRequests = () => {
         }
     };
 
-    const handleApprove = async (id) => {
+    const handleApprove = async (id, stage) => {
         try {
-            await api.post(`hr/leave-requests/${id}/approve/`);
+            await api.post(`hr/leave-requests/${id}/approve_${stage}/`);
             message.success('Cuti disetujui');
             fetchRequests();
         } catch (error) {
@@ -123,27 +123,44 @@ const LeaveRequests = () => {
             key: 'action',
             render: (_, record) => (
                 <Space size="small">
-                    {record.status === 'PENDING' && (
+                    {record.status === 'PENDING_SPV' && (
                         <Can access="hr.leave.approve">
-                            <Popconfirm title="Setujui cuti ini?" onConfirm={() => handleApprove(record.id)}>
-                                <Tooltip title="Setujui Cuti">
-                                    <Button 
-                                        type="text" 
-                                        shape="circle" 
-                                        icon={<CheckCircleOutlined style={{ color: '#52c41a', fontSize: '18px' }} />} 
-                                        className="hover-scale"
-                                    />
+                            <Popconfirm title="Setujui sebagai SPV?" onConfirm={() => handleApprove(record.id, 'spv')}>
+                                <Tooltip title="Setujui (SPV)">
+                                    <Button type="text" shape="circle" icon={<CheckCircleOutlined style={{ color: '#52c41a', fontSize: '18px' }} />} className="hover-scale" />
                                 </Tooltip>
                             </Popconfirm>
                             <Popconfirm title="Tolak cuti ini?" onConfirm={() => handleReject(record.id)}>
                                 <Tooltip title="Tolak Cuti">
-                                    <Button 
-                                        type="text" 
-                                        shape="circle" 
-                                        danger
-                                        icon={<CloseCircleOutlined style={{ fontSize: '18px' }} />} 
-                                        className="hover-scale"
-                                    />
+                                    <Button type="text" shape="circle" danger icon={<CloseCircleOutlined style={{ fontSize: '18px' }} />} className="hover-scale" />
+                                </Tooltip>
+                            </Popconfirm>
+                        </Can>
+                    )}
+                    {record.status === 'PENDING_MANAGER' && (
+                        <Can access="hr.leave.approve">
+                            <Popconfirm title="Setujui sebagai Atasan?" onConfirm={() => handleApprove(record.id, 'manager')}>
+                                <Tooltip title="Setujui (Manager)">
+                                    <Button type="text" shape="circle" icon={<CheckCircleOutlined style={{ color: '#52c41a', fontSize: '18px' }} />} className="hover-scale" />
+                                </Tooltip>
+                            </Popconfirm>
+                            <Popconfirm title="Tolak cuti ini?" onConfirm={() => handleReject(record.id)}>
+                                <Tooltip title="Tolak Cuti">
+                                    <Button type="text" shape="circle" danger icon={<CloseCircleOutlined style={{ fontSize: '18px' }} />} className="hover-scale" />
+                                </Tooltip>
+                            </Popconfirm>
+                        </Can>
+                    )}
+                    {record.status === 'PENDING_HR' && (
+                        <Can access="hr.leave.approve">
+                            <Popconfirm title="Setujui sebagai HR?" onConfirm={() => handleApprove(record.id, 'hr')}>
+                                <Tooltip title="Setujui (HR)">
+                                    <Button type="text" shape="circle" icon={<CheckCircleOutlined style={{ color: '#52c41a', fontSize: '18px' }} />} className="hover-scale" />
+                                </Tooltip>
+                            </Popconfirm>
+                            <Popconfirm title="Tolak cuti ini?" onConfirm={() => handleReject(record.id)}>
+                                <Tooltip title="Tolak Cuti">
+                                    <Button type="text" shape="circle" danger icon={<CloseCircleOutlined style={{ fontSize: '18px' }} />} className="hover-scale" />
                                 </Tooltip>
                             </Popconfirm>
                         </Can>

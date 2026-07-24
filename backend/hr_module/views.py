@@ -231,6 +231,17 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     @action(detail=True, methods=['post'])
+    def approve_spv(self, request, pk=None):
+        leave_request = self.get_object()
+        if leave_request.status != 'PENDING_SPV':
+            return Response({'error': 'Status tidak valid untuk persetujuan supervisor'}, status=status.HTTP_400_BAD_REQUEST)
+        
+        leave_request.status = 'PENDING_MANAGER'
+        leave_request.approved_by_spv = request.user
+        leave_request.save()
+        return Response({'message': 'Disetujui oleh Supervisor, menunggu Manager'})
+
+    @action(detail=True, methods=['post'])
     def approve_manager(self, request, pk=None):
         leave_request = self.get_object()
         if leave_request.status != 'PENDING_MANAGER':
