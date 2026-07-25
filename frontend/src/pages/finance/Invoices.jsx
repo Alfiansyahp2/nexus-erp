@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Typography, Tag, Button, Space, message } from 'antd';
-import { SyncOutlined, FileTextOutlined } from '@ant-design/icons';
+import { SyncOutlined, PlusOutlined, FileTextOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
+import InvoiceModal from '../../components/modals/finance/InvoiceModal';
 
 const { Title } = Typography;
 
 const Invoices = () => {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchInvoices = async () => {
         setLoading(true);
@@ -85,7 +87,7 @@ const Invoices = () => {
                     <Button icon={<SyncOutlined />} onClick={fetchInvoices} loading={loading}>
                         Refresh
                     </Button>
-                    <Button type="primary" onClick={() => message.info('Fitur penambahan tagihan manual belum diimplementasikan di UI ini.')}>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
                         Tambah Tagihan Baru
                     </Button>
                 </Space>
@@ -100,6 +102,15 @@ const Invoices = () => {
                     pagination={{ pageSize: 10 }}
                 />
             </Card>
+
+            <InvoiceModal 
+                visible={isModalVisible} 
+                onClose={() => setIsModalVisible(false)}
+                onSuccess={() => {
+                    setIsModalVisible(false);
+                    fetchInvoices();
+                }}
+            />
         </div>
     );
 };

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Typography, Space, Button, message } from 'antd';
-import { SyncOutlined, ToolOutlined } from '@ant-design/icons';
+import { SyncOutlined, ToolOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
+import FixedAssetModal from '../../components/modals/finance/FixedAssetModal';
 
 const { Title } = Typography;
 
 const FixedAssets = () => {
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchAssets = async () => {
         setLoading(true);
@@ -41,12 +43,21 @@ const FixedAssets = () => {
                 </Title>
                 <Space>
                     <Button icon={<SyncOutlined />} onClick={fetchAssets} loading={loading}>Refresh</Button>
-                    <Button type="primary">Registrasi Aset Baru</Button>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>Registrasi Aset Baru</Button>
                 </Space>
             </div>
             <Card className="card-custom">
                 <Table columns={columns} dataSource={assets} rowKey="id" loading={loading} />
             </Card>
+
+            <FixedAssetModal 
+                visible={isModalVisible} 
+                onClose={() => setIsModalVisible(false)}
+                onSuccess={() => {
+                    setIsModalVisible(false);
+                    fetchAssets();
+                }}
+            />
         </div>
     );
 };

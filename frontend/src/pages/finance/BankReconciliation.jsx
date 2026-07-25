@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Typography, Space, Button, message } from 'antd';
-import { SyncOutlined, AuditOutlined, UploadOutlined } from '@ant-design/icons';
+import { SyncOutlined, AuditOutlined, UploadOutlined, FileSearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
+import BankStatementModal from '../../components/modals/finance/BankStatementModal';
 
 const { Title, Paragraph } = Typography;
 
 const BankReconciliation = () => {
     const [statements, setStatements] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchStatements = async () => {
         setLoading(true);
@@ -41,7 +43,7 @@ const BankReconciliation = () => {
                 </Title>
                 <Space>
                     <Button icon={<SyncOutlined />} onClick={fetchStatements} loading={loading}>Refresh</Button>
-                    <Button type="primary" icon={<UploadOutlined />}>Import Rekening Koran</Button>
+                    <Button type="primary" icon={<DownloadOutlined />} onClick={() => setIsModalVisible(true)}>Import Rekening Koran</Button>
                 </Space>
             </div>
             
@@ -52,6 +54,15 @@ const BankReconciliation = () => {
             <Card className="card-custom">
                 <Table columns={columns} dataSource={statements} rowKey="id" loading={loading} />
             </Card>
+
+            <BankStatementModal 
+                visible={isModalVisible} 
+                onClose={() => setIsModalVisible(false)}
+                onSuccess={() => {
+                    setIsModalVisible(false);
+                    fetchStatements();
+                }}
+            />
         </div>
     );
 };

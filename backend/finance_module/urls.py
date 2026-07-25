@@ -8,7 +8,7 @@ from .views import (
 
 router = DefaultRouter()
 router.register(r'accounts', AccountViewSet)
-router.register(r'journal-entries', JournalEntryViewSet)
+router.register(r'journals', JournalEntryViewSet)
 router.register(r'accounting-periods', AccountingPeriodViewSet)
 router.register(r'partners', BusinessPartnerViewSet)
 router.register(r'invoices', InvoiceViewSet)

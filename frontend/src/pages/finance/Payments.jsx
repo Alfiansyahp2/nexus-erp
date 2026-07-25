@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Card, Typography, Tag, Button, Space, message } from 'antd';
-import { SyncOutlined, WalletOutlined } from '@ant-design/icons';
+import { SyncOutlined, WalletOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
+import PaymentModal from '../../components/modals/finance/PaymentModal';
 
 const { Title } = Typography;
 
 const Payments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
 
     const fetchPayments = async () => {
         setLoading(true);
@@ -81,7 +83,7 @@ const Payments = () => {
                     <Button icon={<SyncOutlined />} onClick={fetchPayments} loading={loading}>
                         Refresh
                     </Button>
-                    <Button type="primary" onClick={() => message.info('Fitur pembayaran manual di UI belum diimplementasikan.')}>
+                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
                         Catat Pembayaran
                     </Button>
                 </Space>
@@ -96,6 +98,15 @@ const Payments = () => {
                     pagination={{ pageSize: 10 }}
                 />
             </Card>
+            
+            <PaymentModal 
+                visible={isModalVisible} 
+                onClose={() => setIsModalVisible(false)}
+                onSuccess={() => {
+                    setIsModalVisible(false);
+                    fetchPayments();
+                }}
+            />
         </div>
     );
 };

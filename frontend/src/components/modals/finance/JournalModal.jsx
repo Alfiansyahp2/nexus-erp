@@ -55,6 +55,8 @@ const JournalModal = ({ open, onCancel, onSuccess, accounts }) => {
             cancelText="Batal"
             okButtonProps={{ disabled: !isBalanced || totalDebit === 0 }}
             width={1000}
+            centered
+            styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' } }}
         >
             <Form form={form} layout="vertical" onFinish={handleAddJournal}>
                 <div style={{ display: 'flex', gap: '16px' }}>
