@@ -10,6 +10,10 @@ import LeaveRequests from './pages/hr/LeaveRequests';
 import Payroll from './pages/hr/Payroll';
 import ChartOfAccounts from './pages/finance/ChartOfAccounts';
 import JournalEntries from './pages/finance/JournalEntries';
+import Invoices from './pages/finance/Invoices';
+import Payments from './pages/finance/Payments';
+import FixedAssets from './pages/finance/FixedAssets';
+import BankReconciliation from './pages/finance/BankReconciliation';
 import ProductCategoryList from './pages/inventory/ProductCategoryList';
 import ProductList from './pages/inventory/ProductList';
 import WarehouseList from './pages/inventory/WarehouseList';
@@ -80,6 +84,10 @@ function App() {
             <Route path="payroll" element={<Payroll />} />
             <Route path="finance/accounts" element={<ChartOfAccounts />} />
             <Route path="finance/journals" element={<JournalEntries />} />
+            <Route path="finance/invoices" element={<Invoices />} />
+            <Route path="finance/payments" element={<Payments />} />
+            <Route path="finance/fixed-assets" element={<FixedAssets />} />
+            <Route path="finance/bank-reconciliation" element={<BankReconciliation />} />
             
             {/* Inventory Routes */}
             <Route path="inventory/categories" element={<ProductCategoryList />} />
@@ -107,5 +115,5 @@ function App() {
     </ConfigProvider>
   );
 }
-
+// Trigger HMR
 export default App;

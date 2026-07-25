@@ -1,5 +1,9 @@
 from rest_framework import serializers
-from .models import Account, JournalEntry, JournalItem
+from .models import (
+    Account, JournalEntry, JournalItem, AccountingPeriod,
+    BusinessPartner, Invoice, InvoiceLine, Payment,
+    FixedAsset, DepreciationBoard, BankStatement, BankStatementLine
+)
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -7,45 +11,66 @@ class AccountSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class JournalItemSerializer(serializers.ModelSerializer):
+    account_name = serializers.CharField(source='account.name', read_only=True)
     class Meta:
         model = JournalItem
-        fields = ['id', 'account', 'description', 'debit', 'credit']
+        fields = ['id', 'account', 'account_name', 'description', 'debit', 'credit']
 
 class JournalEntrySerializer(serializers.ModelSerializer):
-    items = JournalItemSerializer(many=True)
-
+    items = JournalItemSerializer(many=True, read_only=True)
     class Meta:
         model = JournalEntry
-        fields = ['id', 'date', 'reference_number', 'description', 'status', 'created_at', 'created_by', 'items']
-        read_only_fields = ['created_by']
+        fields = ['id', 'date', 'reference_number', 'description', 'status', 'period', 'created_at', 'items']
 
-    def validate(self, data):
-        items = data.get('items', [])
-        if not items:
-            raise serializers.ValidationError("Journal entry must have at least one item.")
-        
-        total_debit = sum(item.get('debit', 0) for item in items)
-        total_credit = sum(item.get('credit', 0) for item in items)
+class AccountingPeriodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AccountingPeriod
+        fields = '__all__'
 
-        if total_debit != total_credit:
-            raise serializers.ValidationError(
-                f"Total Debit ({total_debit}) must equal Total Credit ({total_credit})."
-            )
-        
-        return data
+class BusinessPartnerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BusinessPartner
+        fields = '__all__'
 
-    def create(self, validated_data):
-        items_data = validated_data.pop('items')
-        
-        # Optionally assign created_by from request.user
-        request = self.context.get('request')
-        if request and request.user.is_authenticated:
-            validated_data['created_by'] = request.user
-            
-        journal_entry = JournalEntry.objects.create(**validated_data)
-        
-        for item_data in items_data:
-            JournalItem.objects.create(journal_entry=journal_entry, **item_data)
-            
-        return journal_entry
+class InvoiceLineSerializer(serializers.ModelSerializer):
+    account_name = serializers.CharField(source='account.name', read_only=True)
+    class Meta:
+        model = InvoiceLine
+        fields = ['id', 'description', 'account', 'account_name', 'quantity', 'unit_price', 'subtotal']
 
+class InvoiceSerializer(serializers.ModelSerializer):
+    partner_name = serializers.CharField(source='partner.name', read_only=True)
+    lines = InvoiceLineSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Invoice
+        fields = ['id', 'invoice_type', 'document_number', 'partner', 'partner_name', 'date', 'due_date', 'status', 'total_amount', 'amount_due', 'journal_entry', 'lines']
+
+class PaymentSerializer(serializers.ModelSerializer):
+    partner_name = serializers.CharField(source='partner.name', read_only=True)
+    payment_method_name = serializers.CharField(source='payment_method.name', read_only=True)
+    invoice_number = serializers.CharField(source='invoice.document_number', read_only=True)
+    class Meta:
+        model = Payment
+        fields = ['id', 'payment_number', 'payment_type', 'partner', 'partner_name', 'date', 'amount', 'payment_method', 'payment_method_name', 'invoice', 'invoice_number', 'journal_entry']
+
+class FixedAssetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FixedAsset
+        fields = '__all__'
+
+class DepreciationBoardSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DepreciationBoard
+        fields = '__all__'
+
+class BankStatementLineSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BankStatementLine
+        fields = '__all__'
+
+class BankStatementSerializer(serializers.ModelSerializer):
+    lines = BankStatementLineSerializer(many=True, read_only=True)
+    class Meta:
+        model = BankStatement
+        fields = '__all__'

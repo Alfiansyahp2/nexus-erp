@@ -15,7 +15,11 @@ import {
     InboxOutlined,
     SwapOutlined,
     ShopOutlined,
-    SafetyCertificateOutlined
+    SafetyCertificateOutlined,
+    FileTextOutlined,
+    WalletOutlined,
+    ToolOutlined,
+    AuditOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -93,6 +97,30 @@ const Sidebar = ({ collapsed }) => {
                     icon: <FormOutlined />,
                     label: 'Journal Entries',
                     permission: 'finance.journal.view'
+                },
+                {
+                    key: '/finance/invoices',
+                    icon: <FileTextOutlined />,
+                    label: 'Invoices (AP/AR)',
+                    permission: 'finance.invoice.view'
+                },
+                {
+                    key: '/finance/payments',
+                    icon: <WalletOutlined />,
+                    label: 'Payments',
+                    permission: 'finance.payment.view'
+                },
+                {
+                    key: '/finance/fixed-assets',
+                    icon: <ToolOutlined />,
+                    label: 'Fixed Assets',
+                    permission: 'finance.asset.view'
+                },
+                {
+                    key: '/finance/bank-reconciliation',
+                    icon: <AuditOutlined />,
+                    label: 'Bank Reconciliation',
+                    permission: 'finance.bank.view'
                 }
             ]
         },
