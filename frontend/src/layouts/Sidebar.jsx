@@ -160,20 +160,6 @@ const Sidebar = ({ collapsed }) => {
                     permission: 'inventory.movement.view'
                 }
             ]
-        },
-        {
-            key: 'settings',
-            icon: <SafetyCertificateOutlined />,
-            label: 'System Settings',
-            permission: 'settings.view',
-            children: [
-                {
-                    key: '/settings/users',
-                    icon: <UserOutlined />,
-                    label: 'User Management',
-                    permission: 'settings.manage_users'
-                }
-            ]
         }
     ];
 
