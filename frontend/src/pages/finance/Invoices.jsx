@@ -4,6 +4,7 @@ import { SyncOutlined, PlusOutlined, FileTextOutlined } from '@ant-design/icons'
 import api from '../../api/axiosConfig';
 import InvoiceModal from '../../components/modals/finance/InvoiceModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
@@ -11,6 +12,9 @@ const Invoices = () => {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredInvoices = filterTableData(invoices, searchText);
 
     const fetchInvoices = async () => {
         setLoading(true);
@@ -79,12 +83,12 @@ const Invoices = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="table-toolbar">
                 <Title level={3} style={{ margin: 0 }}>
                     <FileTextOutlined style={{ marginRight: 8 }} />
                     Invoices (Hutang & Piutang)
                 </Title>
-                <Space>
+                <div className="table-toolbar-actions">
                     <Button icon={<SyncOutlined />} onClick={fetchInvoices} loading={loading}>
                         Refresh
                     </Button>
@@ -93,13 +97,16 @@ const Invoices = () => {
                             Tambah Tagihan Baru
                         </Button>
                     </Can>
-                </Space>
+                </div>
             </div>
 
             <Card className="card-custom">
+                <div className="table-search-row">
+                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari invoice, partner..." />
+                </div>
                 <Table 
                     columns={columns} 
-                    dataSource={invoices} 
+                    dataSource={filteredInvoices} 
                     rowKey="id" 
                     loading={loading}
                     pagination={{ pageSize: 10 }}

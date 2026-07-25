@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import CategoryModal from '../../components/modals/inventory/CategoryModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
@@ -12,6 +13,9 @@ const ProductCategoryList = () => {
     const [loading, setLoading] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -89,25 +93,31 @@ const ProductCategoryList = () => {
 
     return (
         <div className="page-container">
-            <div className="page-header">
+            <div className="table-toolbar">
                 <Title level={4} className="margin-0">Kategori Produk</Title>
-                <Can access="inventory.category.create">
-                    <Button 
-                        type="primary" 
-                        icon={<PlusOutlined />} 
-                        onClick={() => {
-                            setEditingData(null);
-                            setModalVisible(true);
-                        }}
-                    >
-                        Tambah
-                    </Button>
-                </Can>
+                <div className="table-toolbar-actions">
+                    <Can access="inventory.category.create">
+                        <Button 
+                            type="primary" 
+                            icon={<PlusOutlined />} 
+                            onClick={() => {
+                                setEditingData(null);
+                                setModalVisible(true);
+                            }}
+                        >
+                            Tambah
+                        </Button>
+                    </Can>
+                </div>
             </div>
             
+            <div className="table-search-row">
+                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama kategori, deskripsi..." />
+            </div>
+
             <Table 
                 columns={columns} 
-                dataSource={data} 
+                dataSource={filteredData} 
                 rowKey="id" 
                 loading={loading}
                 pagination={{ defaultPageSize: 10 }}

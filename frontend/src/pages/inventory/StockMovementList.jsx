@@ -5,6 +5,7 @@ import api from '../../api/axiosConfig';
 import MovementModal from '../../components/modals/inventory/MovementModal';
 import MovementDetailModal from '../../components/modals/inventory/MovementDetailModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
@@ -14,6 +15,9 @@ const StockMovementList = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [detailData, setDetailData] = useState(null);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -99,25 +103,31 @@ const StockMovementList = () => {
 
     return (
         <div className="page-container">
-            <div className="page-header">
+            <div className="table-toolbar">
                 <div>
                     <Title level={4} className="margin-0">Riwayat Mutasi Stok</Title>
                     <p className="text-muted margin-0">Catatan pergerakan barang keluar masuk. Data bersifat Read-Only (Audit Trail).</p>
                 </div>
-                <Can access="inventory.movement.create">
-                    <Button 
-                        type="primary" 
-                        icon={<PlusOutlined />} 
-                        onClick={() => setModalVisible(true)}
-                    >
-                        Catat Mutasi
-                    </Button>
-                </Can>
+                <div className="table-toolbar-actions">
+                    <Can access="inventory.movement.create">
+                        <Button 
+                            type="primary" 
+                            icon={<PlusOutlined />} 
+                            onClick={() => setModalVisible(true)}
+                        >
+                            Catat Mutasi
+                        </Button>
+                    </Can>
+                </div>
             </div>
             
+            <div className="table-search-row">
+                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari referensi, produk, gudang asal/tujuan..." />
+            </div>
+
             <Table 
                 columns={columns} 
-                dataSource={data} 
+                dataSource={filteredData} 
                 rowKey="id" 
                 loading={loading}
                 pagination={{ defaultPageSize: 10 }}

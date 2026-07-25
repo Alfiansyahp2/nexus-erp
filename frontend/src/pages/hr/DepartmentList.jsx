@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import DepartmentModal from '../../components/modals/hr/DepartmentModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
@@ -12,6 +13,9 @@ const DepartmentList = () => {
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredDepartments = filterTableData(departments, searchText);
 
     const fetchDepartments = async () => {
         setLoading(true);
@@ -87,17 +91,22 @@ const DepartmentList = () => {
 
     return (
         <Card>
-            <div className="page-header">
+            <div className="table-toolbar">
                 <Title level={4} className="margin-0">Department Master</Title>
-                <Can access="hr.department.create">
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                        Add Department
-                    </Button>
-                </Can>
+                <div className="table-toolbar-actions">
+                    <Can access="hr.department.create">
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                            Add Department
+                        </Button>
+                    </Can>
+                </div>
+            </div>
+            <div className="table-search-row">
+                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama departemen, deskripsi..." />
             </div>
             <Table
                 columns={columns}
-                dataSource={departments}
+                dataSource={filteredDepartments}
                 rowKey="id"
                 loading={loading}
                 pagination={{ pageSize: 10 }}

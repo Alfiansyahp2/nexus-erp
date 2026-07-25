@@ -4,6 +4,7 @@ import { SyncOutlined, WalletOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import PaymentModal from '../../components/modals/finance/PaymentModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
@@ -11,6 +12,9 @@ const Payments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredPayments = filterTableData(payments, searchText);
 
     const fetchPayments = async () => {
         setLoading(true);
@@ -75,12 +79,12 @@ const Payments = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="table-toolbar">
                 <Title level={3} style={{ margin: 0 }}>
                     <WalletOutlined style={{ marginRight: 8 }} />
                     Payments (Kas & Bank)
                 </Title>
-                <Space>
+                <div className="table-toolbar-actions">
                     <Button icon={<SyncOutlined />} onClick={fetchPayments} loading={loading}>
                         Refresh
                     </Button>
@@ -89,13 +93,16 @@ const Payments = () => {
                             Catat Pembayaran
                         </Button>
                     </Can>
-                </Space>
+                </div>
             </div>
 
             <Card className="card-custom">
+                <div className="table-search-row">
+                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nomor pembayaran, mitra..." />
+                </div>
                 <Table 
                     columns={columns} 
-                    dataSource={payments} 
+                    dataSource={filteredPayments} 
                     rowKey="id" 
                     loading={loading}
                     pagination={{ pageSize: 10 }}

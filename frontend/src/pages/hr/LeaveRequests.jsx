@@ -3,6 +3,7 @@ import { Table, Button, Card, Typography, Modal, Form, Select, DatePicker, Input
 import { PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -13,6 +14,9 @@ const LeaveRequests = () => {
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
+    const [searchText, setSearchText] = useState("");
+
+    const filteredRequests = filterTableData(requests, searchText);
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -172,18 +176,24 @@ const LeaveRequests = () => {
 
     return (
         <Card>
-            <div className="page-header">
+            <div className="table-toolbar">
                 <Title level={4} className="margin-0">Pengajuan Cuti & Izin</Title>
-                <Can access="hr.leave.create">
-                    <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                        Ajukan Cuti
-                    </Button>
-                </Can>
+                <div className="table-toolbar-actions">
+                    <Can access="hr.leave.create">
+                        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
+                            Ajukan Cuti
+                        </Button>
+                    </Can>
+                </div>
             </div>
             
+            <div className="table-search-row">
+                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama karyawan, tipe cuti, alasan..." />
+            </div>
+
             <Table
                 columns={columns}
-                dataSource={requests}
+                dataSource={filteredRequests}
                 rowKey="id"
                 loading={loading}
                 pagination={{ pageSize: 10 }}

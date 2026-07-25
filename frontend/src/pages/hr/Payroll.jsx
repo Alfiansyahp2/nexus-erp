@@ -11,12 +11,16 @@ import {
 } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title, Text } = Typography;
 
 const Payroll = () => {
     const [payrolls, setPayrolls] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredPayrolls = filterTableData(payrolls, searchText);
 
     const fetchPayrolls = async () => {
         setLoading(true);
@@ -259,9 +263,12 @@ const Payroll = () => {
             </Row>
 
             <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                <div className="table-search-row">
+                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama karyawan, periode payroll..." />
+                </div>
                 <Table
                     columns={columns}
-                    dataSource={payrolls}
+                    dataSource={filteredPayrolls}
                     rowKey="id"
                     loading={loading}
                     pagination={{ pageSize: 10 }}

@@ -4,6 +4,7 @@ import { SyncOutlined, ToolOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import FixedAssetModal from '../../components/modals/finance/FixedAssetModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
@@ -11,6 +12,9 @@ const FixedAssets = () => {
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredAssets = filterTableData(assets, searchText);
 
     const fetchAssets = async () => {
         setLoading(true);
@@ -37,20 +41,23 @@ const FixedAssets = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="table-toolbar">
                 <Title level={3} style={{ margin: 0 }}>
                     <ToolOutlined style={{ marginRight: 8 }} />
                     Fixed Assets (Aset Tetap)
                 </Title>
-                <Space>
+                <div className="table-toolbar-actions">
                     <Button icon={<SyncOutlined />} onClick={fetchAssets} loading={loading}>Refresh</Button>
                     <Can access="finance.fixed_asset.create">
                         <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>Registrasi Aset Baru</Button>
                     </Can>
-                </Space>
+                </div>
             </div>
             <Card className="card-custom">
-                <Table columns={columns} dataSource={assets} rowKey="id" loading={loading} />
+                <div className="table-search-row">
+                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari kode atau nama aset..." />
+                </div>
+                <Table columns={columns} dataSource={filteredAssets} rowKey="id" loading={loading} />
             </Card>
 
             <FixedAssetModal 

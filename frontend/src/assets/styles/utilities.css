@@ -83,3 +83,72 @@
     display: flex;
     gap: 16px;
 }
+
+/* 
+  ========================================
+  Table Toolbar & Search Styling (100% Responsive)
+  ========================================
+*/
+.table-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.table-toolbar-actions {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.table-search-input {
+    width: 320px;
+    max-width: 100%;
+    transition: all 0.3s cubic-bezier(0.64, 0.09, 0.08, 1);
+}
+
+.table-search-input:hover,
+.table-search-input:focus-within {
+    width: 380px;
+    box-shadow: 0 2px 8px rgba(22, 119, 255, 0.15);
+}
+
+/* Row specifically for search bar above table / below header buttons */
+.table-search-row {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+/* Mobile & Tablet Responsive Rules */
+@media (max-width: 768px) {
+    .table-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+    }
+    
+    .table-toolbar-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .table-search-row {
+        justify-content: stretch;
+    }
+
+    .table-search-input,
+    .table-search-input:hover,
+    .table-search-input:focus-within {
+        width: 100% !important;
+        flex: 1 1 100%;
+    }
+}
+
+
+

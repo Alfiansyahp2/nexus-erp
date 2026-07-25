@@ -4,6 +4,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import PositionModal from '../../components/modals/hr/PositionModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -14,6 +15,9 @@ const PositionList = () => {
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredPositions = filterTableData(positions, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -98,17 +102,22 @@ const PositionList = () => {
 
     return (
         <Card>
-            <div className="page-header">
+            <div className="table-toolbar">
                 <Title level={4} className="margin-0">Position Master</Title>
-                <Can access="hr.position.create">
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                        Add Position
-                    </Button>
-                </Can>
+                <div className="table-toolbar-actions">
+                    <Can access="hr.position.create">
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
+                            Add Position
+                        </Button>
+                    </Can>
+                </div>
+            </div>
+            <div className="table-search-row">
+                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari posisi, departemen..." />
             </div>
             <Table
                 columns={columns}
-                dataSource={positions}
+                dataSource={filteredPositions}
                 rowKey="id"
                 loading={loading}
                 pagination={{ pageSize: 10 }}

@@ -4,12 +4,16 @@ import { SafetyCertificateOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import Can from '../../components/Can';
 import UserPermissionModal from '../../components/modals/settings/UserPermissionModal';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  const filteredUsers = filterTableData(users, searchText);
   
   // States for Phase 4 Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -98,9 +102,12 @@ const UserManagement = () => {
       </div>
 
       <Card>
+        <div className="table-search-row">
+          <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama pengguna, email, role..." />
+        </div>
         <Table 
           columns={columns} 
-          dataSource={users} 
+          dataSource={filteredUsers} 
           rowKey="id" 
           loading={loading}
           pagination={{ pageSize: 10 }}

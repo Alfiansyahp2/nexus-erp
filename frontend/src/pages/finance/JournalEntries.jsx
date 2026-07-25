@@ -5,6 +5,7 @@ import axios from 'axios';
 import JournalModal from '../../components/modals/finance/JournalModal';
 import Can from '../../components/Can';
 import JournalDetailModal from '../../components/modals/finance/JournalDetailModal';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const JournalEntries = () => {
   const [journals, setJournals] = useState([]);
@@ -13,6 +14,9 @@ const JournalEntries = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailData, setDetailData] = useState(null);
+  const [searchText, setSearchText] = useState("");
+
+  const filteredJournals = filterTableData(journals, searchText);
 
   const fetchJournals = async () => {
     setLoading(true);
@@ -91,18 +95,24 @@ const JournalEntries = () => {
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h2>Journal Entries (Jurnal Umum)</h2>
-        <Can access="finance.journal.create">
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-            Buat Jurnal Baru
-          </Button>
-        </Can>
+      <div className="table-toolbar">
+        <h2 style={{ margin: 0 }}>Journal Entries (Jurnal Umum)</h2>
+        <div className="table-toolbar-actions">
+          <Can access="finance.journal.create">
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
+              Buat Jurnal Baru
+            </Button>
+          </Can>
+        </div>
+      </div>
+
+      <div className="table-search-row">
+        <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari referensi, deskripsi..." />
       </div>
 
       <Table 
         columns={columns} 
-        dataSource={journals} 
+        dataSource={filteredJournals} 
         rowKey="id" 
         loading={loading}
         pagination={{ pageSize: 10 }}

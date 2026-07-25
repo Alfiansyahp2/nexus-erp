@@ -4,6 +4,7 @@ import { SyncOutlined, AuditOutlined, UploadOutlined, FileSearchOutlined, Downlo
 import api from '../../api/axiosConfig';
 import BankStatementModal from '../../components/modals/finance/BankStatementModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title, Paragraph } = Typography;
 
@@ -11,6 +12,9 @@ const BankReconciliation = () => {
     const [statements, setStatements] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredStatements = filterTableData(statements, searchText);
 
     const fetchStatements = async () => {
         setLoading(true);
@@ -37,17 +41,17 @@ const BankReconciliation = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <div className="table-toolbar">
                 <Title level={3} style={{ margin: 0 }}>
                     <AuditOutlined style={{ marginRight: 8 }} />
                     Bank Reconciliation
                 </Title>
-                <Space>
+                <div className="table-toolbar-actions">
                     <Button icon={<SyncOutlined />} onClick={fetchStatements} loading={loading}>Refresh</Button>
                     <Can access="finance.bank_statement.create">
                         <Button type="primary" icon={<DownloadOutlined />} onClick={() => setIsModalVisible(true)}>Import Rekening Koran</Button>
                     </Can>
-                </Space>
+                </div>
             </div>
             
             <Paragraph style={{color: 'gray'}}>
@@ -55,7 +59,10 @@ const BankReconciliation = () => {
             </Paragraph>
 
             <Card className="card-custom">
-                <Table columns={columns} dataSource={statements} rowKey="id" loading={loading} />
+                <div className="table-search-row">
+                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nomor statement atau saldo..." />
+                </div>
+                <Table columns={columns} dataSource={filteredStatements} rowKey="id" loading={loading} />
             </Card>
 
             <BankStatementModal 

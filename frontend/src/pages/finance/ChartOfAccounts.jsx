@@ -4,11 +4,15 @@ import { PlusOutlined } from '@ant-design/icons';
 import axios from 'axios';
 import AccountModal from '../../components/modals/finance/AccountModal';
 import Can from '../../components/Can';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const ChartOfAccounts = () => {
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [searchText, setSearchText] = useState("");
+
+  const filteredAccounts = filterTableData(accounts, searchText);
 
   const fetchAccounts = async () => {
     setLoading(true);
@@ -56,18 +60,24 @@ const ChartOfAccounts = () => {
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <h2>Chart of Accounts (Bagan Akun)</h2>
-        <Can access="finance.account.create">
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-            Tambah Akun
-          </Button>
-        </Can>
+      <div className="table-toolbar">
+        <h2 style={{ margin: 0 }}>Chart of Accounts (Bagan Akun)</h2>
+        <div className="table-toolbar-actions">
+          <Can access="finance.account.create">
+            <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
+              Tambah Akun
+            </Button>
+          </Can>
+        </div>
+      </div>
+
+      <div className="table-search-row">
+        <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari kode atau nama akun..." />
       </div>
 
       <Table 
         columns={columns} 
-        dataSource={accounts} 
+        dataSource={filteredAccounts} 
         rowKey="id" 
         loading={loading}
         pagination={{ pageSize: 10 }}

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Table, message, Typography, Tag } from 'antd';
 import api from '../../api/axiosConfig';
+import TableSearch, { filterTableData } from '../../components/TableSearch';
 
 const { Title } = Typography;
 
 const StockBalanceList = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [searchText, setSearchText] = useState("");
+
+    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -72,9 +76,13 @@ const StockBalanceList = () => {
                 <p className="text-muted">Daftar jumlah saldo barang terkini di seluruh gudang. Data ini dihitung otomatis dari riwayat mutasi.</p>
             </div>
             
+            <div className="table-search-row">
+                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari produk, SKU, gudang..." />
+            </div>
+
             <Table 
                 columns={columns} 
-                dataSource={data} 
+                dataSource={filteredData} 
                 rowKey="id" 
                 loading={loading}
                 pagination={{ defaultPageSize: 10 }}
