@@ -19,6 +19,10 @@ import ProductList from './pages/inventory/ProductList';
 import WarehouseList from './pages/inventory/WarehouseList';
 import StockBalanceList from './pages/inventory/StockBalanceList';
 import StockMovementList from './pages/inventory/StockMovementList';
+import VendorList from './pages/purchasing/VendorList';
+import PurchaseRequestList from './pages/purchasing/PurchaseRequestList';
+import PurchaseOrderList from './pages/purchasing/PurchaseOrderList';
+import GoodsReceiptList from './pages/purchasing/GoodsReceiptList';
 import UserManagement from './pages/settings/UserManagement';
 import Profile from './pages/Profile';
 import { ConfigProvider, Spin } from 'antd';
@@ -55,17 +59,13 @@ const ProtectedRoute = ({ children }) => {
 
   if (isAuthenticated === null) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-        <Spin size="large" description="Memverifikasi sesi..." />
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', background: '#f5f5f5' }}>
+        <Spin size="large" description="Memuat Sesi..." />
       </div>
     );
   }
 
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
 };
 
 function App() {
@@ -95,6 +95,12 @@ function App() {
             <Route path="inventory/warehouses" element={<WarehouseList />} />
             <Route path="inventory/stock-balances" element={<StockBalanceList />} />
             <Route path="inventory/stock-movements" element={<StockMovementList />} />
+            
+            {/* Purchasing Routes */}
+            <Route path="purchasing/vendors" element={<VendorList />} />
+            <Route path="purchasing/requests" element={<PurchaseRequestList />} />
+            <Route path="purchasing/orders" element={<PurchaseOrderList />} />
+            <Route path="purchasing/receipts" element={<GoodsReceiptList />} />
             
             {/* Settings Routes */}
             <Route path="settings/users" element={<UserManagement />} />

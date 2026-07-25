@@ -19,7 +19,11 @@ import {
     FileTextOutlined,
     WalletOutlined,
     ToolOutlined,
-    AuditOutlined
+    AuditOutlined,
+    ShoppingCartOutlined,
+    ContactsOutlined,
+    FileDoneOutlined,
+    SendOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -158,6 +162,37 @@ const Sidebar = ({ collapsed }) => {
                     icon: <SwapOutlined />,
                     label: 'Stock Movements',
                     permission: 'inventory.movement.view'
+                }
+            ]
+        },
+        {
+            key: 'purchasing',
+            icon: <ShoppingCartOutlined />,
+            label: 'Purchasing (Pengadaan)',
+            children: [
+                {
+                    key: '/purchasing/vendors',
+                    icon: <ContactsOutlined />,
+                    label: 'Vendors / Suppliers',
+                    permission: 'purchasing.vendor.view'
+                },
+                {
+                    key: '/purchasing/requests',
+                    icon: <FileDoneOutlined />,
+                    label: 'Purchase Requests (PR)',
+                    permission: 'purchasing.pr.view'
+                },
+                {
+                    key: '/purchasing/orders',
+                    icon: <SendOutlined />,
+                    label: 'Purchase Orders (PO)',
+                    permission: 'purchasing.po.view'
+                },
+                {
+                    key: '/purchasing/receipts',
+                    icon: <InboxOutlined />,
+                    label: 'Goods Receipts (GRN)',
+                    permission: 'purchasing.gr.view'
                 }
             ]
         }

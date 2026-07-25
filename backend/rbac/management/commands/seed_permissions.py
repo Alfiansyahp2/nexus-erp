@@ -35,6 +35,12 @@ class Command(BaseCommand):
                 'inventory.warehouse.view', 'inventory.warehouse.create', 'inventory.warehouse.update', 'inventory.warehouse.delete',
                 'inventory.stock.view', 'inventory.movement.view', 'inventory.movement.create',
             ],
+            'purchasing': [
+                'purchasing.vendor.view', 'purchasing.vendor.create', 'purchasing.vendor.update', 'purchasing.vendor.delete',
+                'purchasing.pr.view', 'purchasing.pr.create', 'purchasing.pr.update', 'purchasing.pr.approve',
+                'purchasing.po.view', 'purchasing.po.create', 'purchasing.po.update', 'purchasing.po.confirm',
+                'purchasing.gr.view', 'purchasing.gr.create', 'purchasing.gr.confirm',
+            ],
             'settings': [
                 'settings.view', 'settings.manage_users', 'settings.manage_roles'
             ]
@@ -60,6 +66,7 @@ class Command(BaseCommand):
             'HR Manager': [perm_map[s] for s in slugs['hr'] + slugs['dashboard']],
             'Finance Admin': [perm_map[s] for s in slugs['finance'] + slugs['dashboard']],
             'Inventory Admin': [perm_map[s] for s in slugs['inventory'] + slugs['dashboard']],
+            'Purchasing Admin': [perm_map[s] for s in slugs['purchasing'] + slugs['inventory'] + slugs['dashboard']],
         }
 
         role_objects = {}
@@ -76,7 +83,8 @@ class Command(BaseCommand):
             'superadmin': 'Super Admin',
             'hrmanager': 'HR Manager',
             'financeadmin': 'Finance Admin',
-            'inventoryadmin': 'Inventory Admin'
+            'inventoryadmin': 'Inventory Admin',
+            'purchasingadmin': 'Purchasing Admin'
         }
 
         for username, role_name in users_config.items():
