@@ -3,6 +3,7 @@ import { Table, Card, Typography, Tag, Button, Space, message } from 'antd';
 import { SyncOutlined, PlusOutlined, FileTextOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import InvoiceModal from '../../components/modals/finance/InvoiceModal';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 
@@ -87,9 +88,11 @@ const Invoices = () => {
                     <Button icon={<SyncOutlined />} onClick={fetchInvoices} loading={loading}>
                         Refresh
                     </Button>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-                        Tambah Tagihan Baru
-                    </Button>
+                    <Can access="finance.invoice.create">
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
+                            Tambah Tagihan Baru
+                        </Button>
+                    </Can>
                 </Space>
             </div>
 

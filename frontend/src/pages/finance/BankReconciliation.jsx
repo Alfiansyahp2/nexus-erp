@@ -3,6 +3,7 @@ import { Table, Card, Typography, Space, Button, message } from 'antd';
 import { SyncOutlined, AuditOutlined, UploadOutlined, FileSearchOutlined, DownloadOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import BankStatementModal from '../../components/modals/finance/BankStatementModal';
+import Can from '../../components/Can';
 
 const { Title, Paragraph } = Typography;
 
@@ -43,7 +44,9 @@ const BankReconciliation = () => {
                 </Title>
                 <Space>
                     <Button icon={<SyncOutlined />} onClick={fetchStatements} loading={loading}>Refresh</Button>
-                    <Button type="primary" icon={<DownloadOutlined />} onClick={() => setIsModalVisible(true)}>Import Rekening Koran</Button>
+                    <Can access="finance.bank_statement.create">
+                        <Button type="primary" icon={<DownloadOutlined />} onClick={() => setIsModalVisible(true)}>Import Rekening Koran</Button>
+                    </Can>
                 </Space>
             </div>
             

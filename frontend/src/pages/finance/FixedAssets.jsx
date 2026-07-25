@@ -3,6 +3,7 @@ import { Table, Card, Typography, Space, Button, message } from 'antd';
 import { SyncOutlined, ToolOutlined, PlusOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import FixedAssetModal from '../../components/modals/finance/FixedAssetModal';
+import Can from '../../components/Can';
 
 const { Title } = Typography;
 
@@ -43,7 +44,9 @@ const FixedAssets = () => {
                 </Title>
                 <Space>
                     <Button icon={<SyncOutlined />} onClick={fetchAssets} loading={loading}>Refresh</Button>
-                    <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>Registrasi Aset Baru</Button>
+                    <Can access="finance.fixed_asset.create">
+                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>Registrasi Aset Baru</Button>
+                    </Can>
                 </Space>
             </div>
             <Card className="card-custom">
