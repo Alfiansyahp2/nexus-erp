@@ -16,6 +16,32 @@ from .serializers import (
     SalaryComponentSerializer, PayrollSerializer
 )
 
+def get_or_create_employee_profile(user):
+    if hasattr(user, 'employee_profile'):
+        return user.employee_profile
+    
+    dept = Department.objects.filter(name__icontains='Management').first() or Department.objects.first()
+    pos = Position.objects.filter(name__icontains='Superadmin').first() or Position.objects.filter(name__icontains='Admin').first() or Position.objects.first()
+    
+    uid = user.id or 1
+    profile = EmployeeProfile.objects.create(
+        user=user,
+        full_name=user.get_full_name() or user.username or "Administrator",
+        nik_ktp=f"3171000000{uid:06d}",
+        place_of_birth="Jakarta",
+        date_of_birth=datetime.date(1990, 1, 1),
+        gender="L",
+        religion="Islam",
+        marital_status="SINGLE",
+        address="Kantor Pusat ERP",
+        employee_id=f"ADM-{uid:04d}",
+        join_date=timezone.now().date(),
+        employment_status="PERMANENT",
+        department=dept,
+        position=pos
+    )
+    return profile
+
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
 
@@ -42,10 +68,7 @@ class EmployeeProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get', 'patch', 'put'])
     def me(self, request):
-        if not hasattr(request.user, 'employee_profile'):
-            return Response({'error': 'Profil tidak ditemukan'}, status=status.HTTP_404_NOT_FOUND)
-        
-        profile = request.user.employee_profile
+        profile = get_or_create_employee_profile(request.user)
 
         if request.method == 'GET':
             serializer = self.get_serializer(profile)
@@ -85,11 +108,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def check_in(self, request):
-        user = request.user
-        if not hasattr(user, 'employee_profile'):
-            return Response({'error': 'Pengguna tidak memiliki profil pegawai'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        employee = user.employee_profile
+        employee = get_or_create_employee_profile(request.user)
         today = timezone.now().date()
         
         if Attendance.objects.filter(employee=employee, date=today).exists():
@@ -134,11 +153,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def check_out(self, request):
-        user = request.user
-        if not hasattr(user, 'employee_profile'):
-            return Response({'error': 'Pengguna tidak memiliki profil pegawai'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        employee = user.employee_profile
+        employee = get_or_create_employee_profile(request.user)
         today = timezone.now().date()
         
         attendance = Attendance.objects.filter(employee=employee, date=today).first()
@@ -170,11 +185,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def today_status(self, request):
-        user = request.user
-        if not hasattr(user, 'employee_profile'):
-            return Response({'status': 'NO_PROFILE'})
-        
-        employee = user.employee_profile
+        employee = get_or_create_employee_profile(request.user)
         today = timezone.now().date()
         attendance = Attendance.objects.filter(employee=employee, date=today).first()
         
@@ -190,11 +201,7 @@ class LeaveRequestViewSet(viewsets.ModelViewSet):
     serializer_class = LeaveRequestSerializer
 
     def create(self, request, *args, **kwargs):
-        user = request.user
-        if not hasattr(user, 'employee_profile'):
-            return Response({'error': 'Profil tidak ditemukan'}, status=status.HTTP_400_BAD_REQUEST)
-        
-        employee = user.employee_profile
+        employee = get_or_create_employee_profile(request.user)
         data = request.data.copy()
         data['employee'] = employee.id
 

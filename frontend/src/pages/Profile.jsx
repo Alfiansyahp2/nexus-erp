@@ -30,7 +30,7 @@ const Profile = () => {
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', marginTop: '100px' }}>
-                <Spin size="large" tip="Memuat Profil..." />
+                <Spin size="large" description="Memuat Profil..." />
             </div>
         );
     }
