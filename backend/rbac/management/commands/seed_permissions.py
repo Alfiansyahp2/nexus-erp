@@ -16,10 +16,18 @@ class Command(BaseCommand):
                 'hr.employee.view', 'hr.employee.create', 'hr.employee.update', 'hr.employee.delete',
                 'hr.leave.view', 'hr.leave.create', 'hr.leave.approve',
                 'hr.payroll.view', 'hr.payroll.create', 'hr.payroll.update', 'hr.payroll.delete', 'hr.payroll.publish',
+                'hr.attendance.view', 'hr.attendance.create', 'hr.attendance.update', 'hr.attendance.delete',
+                'hr.shift.view', 'hr.shift.create', 'hr.shift.update', 'hr.shift.delete',
+                'hr.loan.view', 'hr.loan.create', 'hr.loan.update', 'hr.loan.delete',
+                'hr.salary_component.view', 'hr.salary_component.create', 'hr.salary_component.update',
             ],
             'finance': [
                 'finance.account.view', 'finance.account.create', 'finance.account.update', 'finance.account.delete',
                 'finance.journal.view', 'finance.journal.create', 'finance.journal.update', 'finance.journal.delete', 'finance.journal.post',
+                'finance.invoice.view', 'finance.invoice.create', 'finance.invoice.update', 'finance.invoice.delete',
+                'finance.payment.view', 'finance.payment.create', 'finance.payment.update', 'finance.payment.delete',
+                'finance.fixed_asset.view', 'finance.fixed_asset.create', 'finance.fixed_asset.update', 'finance.fixed_asset.delete',
+                'finance.bank_statement.view', 'finance.bank_statement.create', 'finance.bank_statement.update', 'finance.bank_statement.delete',
             ],
             'inventory': [
                 'inventory.category.view', 'inventory.category.create', 'inventory.category.update', 'inventory.category.delete',
