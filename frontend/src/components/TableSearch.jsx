@@ -11,20 +11,24 @@ import { SearchOutlined } from '@ant-design/icons';
  * @param {function} onSearch - Callback when search button/enter is clicked
  * @param {string} placeholder - Custom placeholder text
  * @param {boolean} allowClear - Whether to show clear (x) button (default: true)
- * @param {object} style - Optional custom inline styles
  */
 const TableSearch = ({ 
     value, 
     onChange, 
     onSearch, 
-    placeholder = "Cari semua data di tabel ini...", 
+    placeholder = "Pencarian...", 
     allowClear = true,
     style = {},
     ...props 
 }) => {
+    // Normalize verbose/long search placeholders across all legacy pages to simply "Pencarian..."
+    const displayPlaceholder = (placeholder && placeholder.length > 15 && placeholder.toLowerCase().startsWith('cari')) 
+        ? "Pencarian..." 
+        : placeholder;
+
     return (
         <Input.Search
-            placeholder={placeholder}
+            placeholder={displayPlaceholder}
             allowClear={allowClear}
             enterButton
             size="middle"

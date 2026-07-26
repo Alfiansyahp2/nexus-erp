@@ -122,7 +122,6 @@ const VendorList = () => {
                 loading={loading}
                 searchText={searchText}
                 setSearchText={setSearchText}
-                searchPlaceholder="Cari kode vendor, nama, email, no telp, NPWP..."
             />
 
             <VendorModal

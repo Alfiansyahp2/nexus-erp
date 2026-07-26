@@ -32,7 +32,7 @@ const DataTable = ({
     loading = false,
     searchText = "",
     setSearchText,
-    searchPlaceholder = "Cari data di tabel ini...",
+    searchPlaceholder = "Pencarian...",
     showSearch,
     showIndex = false,
     pagination = {},

@@ -193,7 +193,6 @@ const PurchaseRequestList = () => {
                 loading={loading}
                 searchText={searchText}
                 setSearchText={setSearchText}
-                searchPlaceholder="Cari nomor dokumen PR, departemen, pemohon..."
                 expandable={{
                     expandedRowRender: (record) => (
                         <div style={{ padding: '8px 16px', background: '#fbfbfb', borderRadius: 6, border: '1px solid #eee' }}>

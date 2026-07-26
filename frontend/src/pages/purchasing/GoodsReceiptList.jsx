@@ -159,7 +159,6 @@ const GoodsReceiptList = () => {
                 loading={loading}
                 searchText={searchText}
                 setSearchText={setSearchText}
-                searchPlaceholder="Cari nomor GRN, PO, vendor, surat jalan supplier, gudang..."
                 expandable={{
                     expandedRowRender: (record) => (
                         <div style={{ padding: '8px 16px', background: '#fbfbfb', borderRadius: 6, border: '1px solid #eee' }}>
