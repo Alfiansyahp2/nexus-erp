@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { message, Tag } from 'antd';
 import api from '../../api/axiosConfig';
 import VendorModal from '../../components/modals/purchasing/VendorModal';
-import { DataTable, StatusTag, TableActions, PageHeader } from '../../components/common';
+import { DataTable, StatusTag, TableActions } from '../../components/common';
 
 const VendorList = () => {
     const [data, setData] = useState([]);
@@ -43,14 +43,12 @@ const VendorList = () => {
             dataIndex: 'code',
             key: 'code',
             width: 110,
-            sorter: (a, b) => String(a.code || '').localeCompare(String(b.code || '')),
             render: (text) => <Tag color="blue">{text}</Tag>
         },
         {
             title: 'Nama Vendor / Perusahaan',
             dataIndex: 'name',
             key: 'name',
-            sorter: (a, b) => String(a.name || '').localeCompare(String(b.name || '')),
             render: (val, record) => (
                 <div>
                     <div style={{ fontWeight: 600 }}>{val}</div>
@@ -60,6 +58,7 @@ const VendorList = () => {
         },
         {
             title: 'Kontak',
+            dataIndex: 'phone',
             key: 'contact',
             render: (_, record) => (
                 <div style={{ fontSize: 13 }}>
@@ -109,7 +108,7 @@ const VendorList = () => {
 
     return (
         <div>
-            <PageHeader
+            <DataTable
                 title="Daftar Vendor / Supplier"
                 description="Manajemen data mitra pengadaan barang dan sinkronisasi otomatis AP Keuangan."
                 onAdd={() => {
@@ -118,9 +117,6 @@ const VendorList = () => {
                 }}
                 addText="Tambah Vendor Baru"
                 addPermission="purchasing.vendor.create"
-            />
-
-            <DataTable
                 columns={columns}
                 dataSource={data}
                 loading={loading}

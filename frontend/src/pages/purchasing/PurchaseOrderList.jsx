@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, message, Typography, Popconfirm, Tag, Tooltip, Badge } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CheckOutlined, SendOutlined, InboxOutlined } from '@ant-design/icons';
+import { Button, Space, message, Popconfirm, Tag, Tooltip } from 'antd';
+import { SendOutlined, CheckOutlined, InboxOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import PurchaseOrderModal from '../../components/modals/purchasing/PurchaseOrderModal';
 import GoodsReceiptModal from '../../components/modals/purchasing/GoodsReceiptModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
+import { DataTable, StatusTag, TableActions, Can } from '../../components/common';
 
 const PurchaseOrderList = () => {
     const [data, setData] = useState([]);
@@ -17,8 +14,6 @@ const PurchaseOrderList = () => {
     const [grModalVisible, setGrModalVisible] = useState(false);
     const [selectedPoForGr, setSelectedPoForGr] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -56,30 +51,12 @@ const PurchaseOrderList = () => {
         }
     };
 
-    const getStatusTag = (status) => {
-        switch (status) {
-            case 'DRAFT':
-                return <Tag color="default">Draft</Tag>;
-            case 'SENT':
-                return <Tag color="processing">Sent to Vendor</Tag>;
-            case 'CONFIRMED':
-                return <Tag color="cyan">Confirmed (Waiting GRN)</Tag>;
-            case 'COMPLETED':
-                return <Tag color="success">Completed (Received)</Tag>;
-            case 'CANCELLED':
-                return <Tag color="error">Cancelled</Tag>;
-            default:
-                return <Tag>{status}</Tag>;
-        }
-    };
-
     const columns = [
         {
             title: 'No. Dokumen PO',
             dataIndex: 'document_number',
             key: 'doc',
             width: 170,
-            sorter: (a, b) => String(a.document_number || '').localeCompare(String(b.document_number || '')),
             render: (text, record) => (
                 <div>
                     <Tag color="purple">{text}</Tag>
@@ -89,8 +66,8 @@ const PurchaseOrderList = () => {
         },
         {
             title: 'Vendor / Supplier',
+            dataIndex: 'vendor_name',
             key: 'vendor',
-            sorter: (a, b) => String(a.vendor_name || '').localeCompare(String(b.vendor_name || '')),
             render: (_, record) => (
                 <div>
                     <div style={{ fontWeight: 600 }}>{record.vendor_name || '-'}</div>
@@ -100,6 +77,7 @@ const PurchaseOrderList = () => {
         },
         {
             title: 'Tanggal Order',
+            dataIndex: 'order_date',
             key: 'dates',
             width: 160,
             render: (_, record) => (
@@ -120,8 +98,8 @@ const PurchaseOrderList = () => {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 180,
-            render: (val) => getStatusTag(val)
+            width: 200,
+            render: (val) => <StatusTag status={val} />
         },
         {
             title: 'Aksi',
@@ -131,7 +109,7 @@ const PurchaseOrderList = () => {
                 <Space size="small" wrap>
                     {record.status === 'DRAFT' && (
                         <>
-                            <Can perform="purchasing.po.update">
+                            <Can access="purchasing.po.update">
                                 <Tooltip title="Kirim ke Vendor (Sent)">
                                     <Button
                                         type="primary"
@@ -142,32 +120,22 @@ const PurchaseOrderList = () => {
                                         Kirim
                                     </Button>
                                 </Tooltip>
-                                <Button
-                                    type="primary"
-                                    ghost
-                                    icon={<EditOutlined />}
-                                    size="small"
-                                    onClick={() => {
-                                        setEditingData(record);
-                                        setModalVisible(true);
-                                    }}
-                                />
                             </Can>
-                            <Can perform="purchasing.po.delete">
-                                <Popconfirm
-                                    title="Hapus PO Ini?"
-                                    onConfirm={() => handleDelete(record.id)}
-                                    okText="Ya"
-                                    cancelText="Batal"
-                                >
-                                    <Button type="primary" danger icon={<DeleteOutlined />} size="small" />
-                                </Popconfirm>
-                            </Can>
+                            <TableActions
+                                onEdit={() => {
+                                    setEditingData(record);
+                                    setModalVisible(true);
+                                }}
+                                onDelete={() => handleDelete(record.id)}
+                                editPermission="purchasing.po.update"
+                                deletePermission="purchasing.po.delete"
+                                deleteTitle="Hapus PO Ini?"
+                            />
                         </>
                     )}
 
                     {(record.status === 'DRAFT' || record.status === 'SENT') && (
-                        <Can perform="purchasing.po.confirm">
+                        <Can access="purchasing.po.confirm">
                             <Tooltip title="Konfirmasi PO (Vendor Setuju)">
                                 <Button
                                     type="primary"
@@ -183,7 +151,7 @@ const PurchaseOrderList = () => {
                     )}
 
                     {record.status === 'CONFIRMED' && (
-                        <Can perform="purchasing.gr.create">
+                        <Can access="purchasing.gr.create">
                             <Button
                                 type="primary"
                                 style={{ backgroundColor: '#52c41a', borderColor: '#52c41a' }}
@@ -205,33 +173,21 @@ const PurchaseOrderList = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                    <Title level={3} style={{ margin: 0 }}>Purchase Orders (PO)</Title>
-                    <Typography.Text type="secondary">Surat pesanan resmi kepada supplier dan manajemen progres penerimaan barang.</Typography.Text>
-                </div>
-                <Can perform="purchasing.po.create">
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                            setEditingData(null);
-                            setModalVisible(true);
-                        }}
-                    >
-                        Buat PO Baru
-                    </Button>
-                </Can>
-            </div>
-
-            <TableSearch searchText={searchText} setSearchText={setSearchText} placeholder="Cari nomor dokumen PO, vendor, nomor PR, catatan..." />
-
-            <Table
+            <DataTable
+                title="Purchase Orders (PO)"
+                description="Surat pesanan resmi kepada supplier dan manajemen progres penerimaan barang."
+                onAdd={() => {
+                    setEditingData(null);
+                    setModalVisible(true);
+                }}
+                addText="Buat PO Baru"
+                addPermission="purchasing.po.create"
                 columns={columns}
-                dataSource={filteredData}
-                rowKey="id"
+                dataSource={data}
                 loading={loading}
-                pagination={{ pageSize: 10, showSizeChanger: true }}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nomor dokumen PO, vendor, nomor PR, catatan..."
                 expandable={{
                     expandedRowRender: (record) => (
                         <div style={{ padding: '8px 16px', background: '#fbfbfb', borderRadius: 6, border: '1px solid #eee' }}>

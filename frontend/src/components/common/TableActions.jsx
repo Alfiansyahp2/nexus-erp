@@ -10,7 +10,7 @@ import Can from '../Can';
 
 /**
  * Reusable TableActions component to standardize table action buttons (Edit, Delete, View, Confirm)
- * with integrated RBAC permission checking (<Can perform="...">) and deletion/confirmation safety prompts.
+ * with integrated RBAC permission checking (<Can access="...">) and deletion/confirmation safety prompts.
  * 
  * @param {function} onEdit - Callback when edit button is clicked
  * @param {function} onDelete - Callback when delete button is confirmed
@@ -55,7 +55,7 @@ const TableActions = ({
             {/* View Details Button */}
             {onView && (
                 viewPermission ? (
-                    <Can perform={viewPermission}>
+                    <Can access={viewPermission}>
                         <Tooltip title="Lihat Detail">
                             <Button
                                 type="default"
@@ -80,7 +80,7 @@ const TableActions = ({
             {/* Edit Button */}
             {onEdit && (
                 editPermission ? (
-                    <Can perform={editPermission}>
+                    <Can access={editPermission}>
                         <Tooltip title="Ubah Data">
                             <Button
                                 type="primary"
@@ -107,7 +107,7 @@ const TableActions = ({
             {/* Confirm / Primary Action Button */}
             {onConfirm && (
                 confirmPermission ? (
-                    <Can perform={confirmPermission}>
+                    <Can access={confirmPermission}>
                         <Popconfirm
                             title={confirmTitle}
                             description={confirmDescription}
@@ -151,7 +151,7 @@ const TableActions = ({
             {/* Delete Button */}
             {onDelete && (
                 deletePermission ? (
-                    <Can perform={deletePermission}>
+                    <Can access={deletePermission}>
                         <Popconfirm
                             title={deleteTitle}
                             description={deleteDescription}

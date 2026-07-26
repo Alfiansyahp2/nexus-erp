@@ -1,12 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, message, Typography, Popconfirm, Tag, Tooltip, Badge } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CheckCircleOutlined } from '@ant-design/icons';
+import { Button, Space, message, Popconfirm, Tag } from 'antd';
+import { CheckCircleOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import GoodsReceiptModal from '../../components/modals/purchasing/GoodsReceiptModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
+import { DataTable, StatusTag, TableActions, Can } from '../../components/common';
 
 const GoodsReceiptList = () => {
     const [data, setData] = useState([]);
@@ -14,8 +11,6 @@ const GoodsReceiptList = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -53,26 +48,12 @@ const GoodsReceiptList = () => {
         }
     };
 
-    const getStatusTag = (status) => {
-        switch (status) {
-            case 'DRAFT':
-                return <Tag color="default">Draft (Belum Divalidasi)</Tag>;
-            case 'DONE':
-                return <Tag color="success">Done (Stok Masuk & AP Tercatat)</Tag>;
-            case 'CANCELLED':
-                return <Tag color="error">Cancelled</Tag>;
-            default:
-                return <Tag>{status}</Tag>;
-        }
-    };
-
     const columns = [
         {
             title: 'No. Dokumen GRN',
             dataIndex: 'document_number',
             key: 'doc',
             width: 170,
-            sorter: (a, b) => String(a.document_number || '').localeCompare(String(b.document_number || '')),
             render: (text, record) => (
                 <div>
                     <Tag color="cyan">{text}</Tag>
@@ -84,11 +65,11 @@ const GoodsReceiptList = () => {
             title: 'Vendor / Supplier',
             dataIndex: 'vendor_name',
             key: 'vendor',
-            sorter: (a, b) => String(a.vendor_name || '').localeCompare(String(b.vendor_name || '')),
             render: (val) => <div style={{ fontWeight: 600 }}>{val || '-'}</div>
         },
         {
             title: 'Gudang Tujuan & Tgl',
+            dataIndex: 'receipt_date',
             key: 'wh_date',
             width: 180,
             render: (_, record) => (
@@ -116,18 +97,18 @@ const GoodsReceiptList = () => {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 200,
-            render: (val) => getStatusTag(val)
+            width: 210,
+            render: (val) => <StatusTag status={val} />
         },
         {
             title: 'Aksi',
             key: 'action',
-            width: 210,
+            width: 220,
             render: (_, record) => (
                 <Space size="small" wrap>
                     {record.status === 'DRAFT' && (
                         <>
-                            <Can perform="purchasing.gr.confirm">
+                            <Can access="purchasing.gr.confirm">
                                 <Popconfirm
                                     title="Konfirmasi Terima Barang?"
                                     description="Stok gudang akan otomatis bertambah dan tagihan vendor (AP) akan diterbitkan di Keuangan."
@@ -145,28 +126,16 @@ const GoodsReceiptList = () => {
                                     </Button>
                                 </Popconfirm>
                             </Can>
-                            <Can perform="purchasing.gr.update">
-                                <Button
-                                    type="primary"
-                                    ghost
-                                    icon={<EditOutlined />}
-                                    size="small"
-                                    onClick={() => {
-                                        setEditingData(record);
-                                        setModalVisible(true);
-                                    }}
-                                />
-                            </Can>
-                            <Can perform="purchasing.gr.delete">
-                                <Popconfirm
-                                    title="Hapus GRN Ini?"
-                                    onConfirm={() => handleDelete(record.id)}
-                                    okText="Ya"
-                                    cancelText="Batal"
-                                >
-                                    <Button type="primary" danger icon={<DeleteOutlined />} size="small" />
-                                </Popconfirm>
-                            </Can>
+                            <TableActions
+                                onEdit={() => {
+                                    setEditingData(record);
+                                    setModalVisible(true);
+                                }}
+                                onDelete={() => handleDelete(record.id)}
+                                editPermission="purchasing.gr.update"
+                                deletePermission="purchasing.gr.delete"
+                                deleteTitle="Hapus GRN Ini?"
+                            />
                         </>
                     )}
                 </Space>
@@ -176,33 +145,21 @@ const GoodsReceiptList = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                    <Title level={3} style={{ margin: 0 }}>Goods Receipts (GRN) - Bukti Terima Barang</Title>
-                    <Typography.Text type="secondary">Pencatatan barang masuk dari vendor, verifikasi fisik gudang, dan integrasi otomatis ke Inventory & AP Finance.</Typography.Text>
-                </div>
-                <Can perform="purchasing.gr.create">
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                            setEditingData(null);
-                            setModalVisible(true);
-                        }}
-                    >
-                        Buat GRN Baru
-                    </Button>
-                </Can>
-            </div>
-
-            <TableSearch searchText={searchText} setSearchText={setSearchText} placeholder="Cari nomor GRN, PO, vendor, surat jalan supplier, gudang..." />
-
-            <Table
+            <DataTable
+                title="Goods Receipts (GRN) - Bukti Terima Barang"
+                description="Pencatatan barang masuk dari vendor, verifikasi fisik gudang, dan integrasi otomatis ke Inventory & AP Finance."
+                onAdd={() => {
+                    setEditingData(null);
+                    setModalVisible(true);
+                }}
+                addText="Buat GRN Baru"
+                addPermission="purchasing.gr.create"
                 columns={columns}
-                dataSource={filteredData}
-                rowKey="id"
+                dataSource={data}
                 loading={loading}
-                pagination={{ pageSize: 10, showSizeChanger: true }}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nomor GRN, PO, vendor, surat jalan supplier, gudang..."
                 expandable={{
                     expandedRowRender: (record) => (
                         <div style={{ padding: '8px 16px', background: '#fbfbfb', borderRadius: 6, border: '1px solid #eee' }}>

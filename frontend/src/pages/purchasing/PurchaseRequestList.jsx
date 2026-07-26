@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Space, message, Typography, Popconfirm, Tag, Tooltip, Badge } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined, CheckOutlined, CloseOutlined, SendOutlined, ShoppingCartOutlined } from '@ant-design/icons';
+import { Button, Space, message, Popconfirm, Tag, Tooltip, Badge } from 'antd';
+import { SendOutlined, CheckOutlined, CloseOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import PurchaseRequestModal from '../../components/modals/purchasing/PurchaseRequestModal';
 import PurchaseOrderModal from '../../components/modals/purchasing/PurchaseOrderModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
+import { DataTable, StatusTag, TableActions, Can } from '../../components/common';
 
 const PurchaseRequestList = () => {
     const [data, setData] = useState([]);
@@ -17,8 +14,6 @@ const PurchaseRequestList = () => {
     const [poModalVisible, setPoModalVisible] = useState(false);
     const [selectedPrForPo, setSelectedPrForPo] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -56,34 +51,17 @@ const PurchaseRequestList = () => {
         }
     };
 
-    const getStatusTag = (status) => {
-        switch (status) {
-            case 'DRAFT':
-                return <Tag color="default">Draft</Tag>;
-            case 'SUBMITTED':
-                return <Tag color="processing">Submitted (Waiting Approval)</Tag>;
-            case 'APPROVED':
-                return <Tag color="success">Approved</Tag>;
-            case 'REJECTED':
-                return <Tag color="error">Rejected</Tag>;
-            case 'PO_CREATED':
-                return <Tag color="purple">PO Created</Tag>;
-            default:
-                return <Tag>{status}</Tag>;
-        }
-    };
-
     const columns = [
         {
             title: 'No. Dokumen PR',
             dataIndex: 'document_number',
             key: 'doc',
             width: 170,
-            sorter: (a, b) => String(a.document_number || '').localeCompare(String(b.document_number || '')),
             render: (text) => <Tag color="blue">{text}</Tag>
         },
         {
             title: 'Tanggal & Est. Kirim',
+            dataIndex: 'request_date',
             key: 'dates',
             width: 170,
             render: (_, record) => (
@@ -95,6 +73,7 @@ const PurchaseRequestList = () => {
         },
         {
             title: 'Departemen & Pemohon',
+            dataIndex: 'department_name',
             key: 'dept_user',
             render: (_, record) => (
                 <div>
@@ -107,14 +86,15 @@ const PurchaseRequestList = () => {
             title: 'Jumlah Item',
             key: 'items',
             width: 120,
+            sorter: (a, b) => (a.lines || []).length - (b.lines || []).length,
             render: (_, record) => <Badge count={(record.lines || []).length} showZero style={{ backgroundColor: '#1890ff' }} />
         },
         {
             title: 'Status',
             dataIndex: 'status',
             key: 'status',
-            width: 180,
-            render: (val) => getStatusTag(val)
+            width: 190,
+            render: (val) => <StatusTag status={val} />
         },
         {
             title: 'Aksi',
@@ -124,7 +104,7 @@ const PurchaseRequestList = () => {
                 <Space size="small" wrap>
                     {record.status === 'DRAFT' && (
                         <>
-                            <Can perform="purchasing.pr.update">
+                            <Can access="purchasing.pr.update">
                                 <Tooltip title="Ajukan untuk Disetujui (Submit)">
                                     <Button
                                         type="primary"
@@ -135,32 +115,22 @@ const PurchaseRequestList = () => {
                                         Ajukan
                                     </Button>
                                 </Tooltip>
-                                <Button
-                                    type="primary"
-                                    ghost
-                                    icon={<EditOutlined />}
-                                    size="small"
-                                    onClick={() => {
-                                        setEditingData(record);
-                                        setModalVisible(true);
-                                    }}
-                                />
                             </Can>
-                            <Can perform="purchasing.pr.delete">
-                                <Popconfirm
-                                    title="Hapus PR Ini?"
-                                    onConfirm={() => handleDelete(record.id)}
-                                    okText="Ya"
-                                    cancelText="Batal"
-                                >
-                                    <Button type="primary" danger icon={<DeleteOutlined />} size="small" />
-                                </Popconfirm>
-                            </Can>
+                            <TableActions
+                                onEdit={() => {
+                                    setEditingData(record);
+                                    setModalVisible(true);
+                                }}
+                                onDelete={() => handleDelete(record.id)}
+                                editPermission="purchasing.pr.update"
+                                deletePermission="purchasing.pr.delete"
+                                deleteTitle="Hapus PR Ini?"
+                            />
                         </>
                     )}
 
                     {record.status === 'SUBMITTED' && (
-                        <Can perform="purchasing.pr.approve">
+                        <Can access="purchasing.pr.approve">
                             <Tooltip title="Setujui PR">
                                 <Button
                                     type="primary"
@@ -187,7 +157,7 @@ const PurchaseRequestList = () => {
                     )}
 
                     {record.status === 'APPROVED' && (
-                        <Can perform="purchasing.po.create">
+                        <Can access="purchasing.po.create">
                             <Button
                                 type="primary"
                                 style={{ backgroundColor: '#722ed1', borderColor: '#722ed1' }}
@@ -209,33 +179,21 @@ const PurchaseRequestList = () => {
 
     return (
         <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div>
-                    <Title level={3} style={{ margin: 0 }}>Purchase Requests (PR)</Title>
-                    <Typography.Text type="secondary">Permintaan pengadaan barang dari departemen internal dengan alur persetujuan.</Typography.Text>
-                </div>
-                <Can perform="purchasing.pr.create">
-                    <Button
-                        type="primary"
-                        icon={<PlusOutlined />}
-                        onClick={() => {
-                            setEditingData(null);
-                            setModalVisible(true);
-                        }}
-                    >
-                        Buat PR Baru
-                    </Button>
-                </Can>
-            </div>
-
-            <TableSearch searchText={searchText} setSearchText={setSearchText} placeholder="Cari nomor dokumen PR, departemen, pemohon..." />
-
-            <Table
+            <DataTable
+                title="Purchase Requests (PR)"
+                description="Permintaan pengadaan barang dari departemen internal dengan alur persetujuan."
+                onAdd={() => {
+                    setEditingData(null);
+                    setModalVisible(true);
+                }}
+                addText="Buat PR Baru"
+                addPermission="purchasing.pr.create"
                 columns={columns}
-                dataSource={filteredData}
-                rowKey="id"
+                dataSource={data}
                 loading={loading}
-                pagination={{ pageSize: 10, showSizeChanger: true }}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nomor dokumen PR, departemen, pemohon..."
                 expandable={{
                     expandedRowRender: (record) => (
                         <div style={{ padding: '8px 16px', background: '#fbfbfb', borderRadius: 6, border: '1px solid #eee' }}>
