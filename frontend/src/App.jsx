@@ -23,6 +23,9 @@ import VendorList from './pages/purchasing/VendorList';
 import PurchaseRequestList from './pages/purchasing/PurchaseRequestList';
 import PurchaseOrderList from './pages/purchasing/PurchaseOrderList';
 import GoodsReceiptList from './pages/purchasing/GoodsReceiptList';
+import CustomerList from './pages/sales/CustomerList';
+import SalesOrderList from './pages/sales/SalesOrderList';
+import DeliveryOrderList from './pages/sales/DeliveryOrderList';
 import UserManagement from './pages/settings/UserManagement';
 import Profile from './pages/Profile';
 import { ConfigProvider, Spin } from 'antd';
@@ -102,6 +105,11 @@ function App() {
             <Route path="purchasing/orders" element={<PurchaseOrderList />} />
             <Route path="purchasing/receipts" element={<GoodsReceiptList />} />
             
+            {/* Sales Routes */}
+            <Route path="sales/customers" element={<CustomerList />} />
+            <Route path="sales/orders" element={<SalesOrderList />} />
+            <Route path="sales/deliveries" element={<DeliveryOrderList />} />
+
             {/* Settings Routes */}
             <Route path="settings/users" element={<UserManagement />} />
             

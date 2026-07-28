@@ -23,7 +23,9 @@ import {
     ShoppingCartOutlined,
     ContactsOutlined,
     FileDoneOutlined,
-    SendOutlined
+    SendOutlined,
+    ShoppingOutlined,
+    CarOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -193,6 +195,31 @@ const Sidebar = ({ collapsed }) => {
                     icon: <InboxOutlined />,
                     label: 'Goods Receipts (GRN)',
                     permission: 'purchasing.gr.view'
+                }
+            ]
+        },
+        {
+            key: 'sales',
+            icon: <ShoppingOutlined />,
+            label: 'Sales (Penjualan)',
+            children: [
+                {
+                    key: '/sales/customers',
+                    icon: <ContactsOutlined />,
+                    label: 'Customers',
+                    permission: 'sales.customer.view'
+                },
+                {
+                    key: '/sales/orders',
+                    icon: <ShoppingCartOutlined />,
+                    label: 'Sales Orders (SO)',
+                    permission: 'sales.order.view'
+                },
+                {
+                    key: '/sales/deliveries',
+                    icon: <CarOutlined />,
+                    label: 'Delivery Orders (DO)',
+                    permission: 'sales.delivery.view'
                 }
             ]
         }
