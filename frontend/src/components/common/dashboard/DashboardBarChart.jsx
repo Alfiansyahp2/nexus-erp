@@ -7,7 +7,7 @@ const { Title } = Typography;
 const DashboardBarChart = ({ title, data, dataKeyX, dataBars, height = 300, loading = false }) => {
     return (
         <Card 
-            bordered={false} 
+            variant="borderless" 
             loading={loading}
             style={{ boxShadow: '0 1px 2px rgba(0,0,0,0.03)' }}
         >
