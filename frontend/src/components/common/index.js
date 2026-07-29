@@ -17,7 +17,7 @@
 export { default as DataTable } from './tables/DataTable';
 export { default as StatusTag } from './tables/StatusTag';
 export { default as TableActions } from './tables/TableActions';
-export { default as PageHeader } from './layouts/PageHeader';
+export { default as PageHeader } from './PageHeader';
 export { default as FormModal } from './modals/FormModal';
 
 // Re-export existing core utilities for convenience

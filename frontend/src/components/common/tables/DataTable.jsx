@@ -1,7 +1,7 @@
 import React from 'react';
 import { Table, Card } from 'antd';
 import TableSearch, { filterTableData } from '../../TableSearch';
-import PageHeader from '../layouts/PageHeader';
+import PageHeader from '../PageHeader';
 
 /**
  * Reusable DataTable component formatted to match LeaveRequests.jsx style.
