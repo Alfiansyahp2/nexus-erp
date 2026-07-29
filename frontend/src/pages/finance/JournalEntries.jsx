@@ -1,11 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Table, Button, Space, message, Tag } from 'antd';
-import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
+import { message, Tag } from 'antd';
 import axios from 'axios';
 import JournalModal from '../../components/modals/finance/JournalModal';
-import Can from '../../components/Can';
 import JournalDetailModal from '../../components/modals/finance/JournalDetailModal';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
 const JournalEntries = () => {
   const [journals, setJournals] = useState([]);
@@ -15,8 +13,6 @@ const JournalEntries = () => {
   const [detailModalVisible, setDetailModalVisible] = useState(false);
   const [detailData, setDetailData] = useState(null);
   const [searchText, setSearchText] = useState("");
-
-  const filteredJournals = filterTableData(journals, searchText);
 
   const fetchJournals = async () => {
     setLoading(true);
@@ -54,11 +50,11 @@ const JournalEntries = () => {
   };
 
   const columns = [
-    { title: 'Tanggal', dataIndex: 'date', sorter: (a, b) => { const vA = a['date'] ?? ''; const vB = b['date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, key: 'date' },
-    { title: 'No. Referensi', dataIndex: 'reference_number', sorter: (a, b) => { const vA = a['reference_number'] ?? ''; const vB = b['reference_number'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, key: 'reference_number' },
+    { title: 'Tanggal', dataIndex: 'date', key: 'date' },
+    { title: 'No. Referensi', dataIndex: 'reference_number', key: 'reference_number' },
     { 
       title: 'Status', 
-      dataIndex: 'status', sorter: (a, b) => { const vA = a['status'] ?? ''; const vB = b['status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, 
+      dataIndex: 'status', 
       key: 'status',
       render: (status) => (
         <Tag color={status === 'POSTED' ? 'green' : 'orange'}>
@@ -66,7 +62,7 @@ const JournalEntries = () => {
         </Tag>
       )
     },
-    { title: 'Deskripsi', dataIndex: 'description', sorter: (a, b) => { const vA = a['description'] ?? ''; const vB = b['description'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); }, key: 'description' },
+    { title: 'Deskripsi', dataIndex: 'description', key: 'description' },
     { 
       title: 'Total Transaksi', 
       key: 'total',
@@ -79,43 +75,30 @@ const JournalEntries = () => {
       title: 'Aksi',
       key: 'action',
       render: (_, record) => (
-        <Space size="middle">
-          <Button 
-            type="text" 
-            icon={<EyeOutlined className="icon-primary" />} 
-            onClick={() => {
-              setDetailData(record);
-              setDetailModalVisible(true);
-            }} 
-          />
-        </Space>
+        <TableActions 
+          onView={() => {
+            setDetailData(record);
+            setDetailModalVisible(true);
+          }}
+        />
       ),
     }
   ];
 
   return (
     <div className="page-container">
-      <div className="table-toolbar">
-        <h2 style={{ margin: 0 }}>Journal Entries (Jurnal Umum)</h2>
-        <div className="table-toolbar-actions">
-          <Can access="finance.journal.create">
-            <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-              Buat Jurnal Baru
-            </Button>
-          </Can>
-        </div>
-      </div>
-
-      <div className="table-search-row">
-        <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari referensi, deskripsi..." />
-      </div>
-
-      <Table 
-        columns={columns} 
-        dataSource={filteredJournals} 
-        rowKey="id" 
+      <DataTable
+        title="Journal Entries (Jurnal Umum)"
+        addText="Buat Jurnal Baru"
+        onAdd={() => setIsModalVisible(true)}
+        addPermission="finance.journal.create"
+        searchText={searchText}
+        setSearchText={setSearchText}
+        searchPlaceholder="Cari referensi, deskripsi..."
+        columns={columns}
+        dataSource={journals}
         loading={loading}
-        pagination={{ pageSize: 10 }}
+        scroll={{ x: 'max-content' }}
       />
 
       <JournalModal 

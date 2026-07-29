@@ -3,10 +3,9 @@ import { Table, Button, Space, message, Typography, Popconfirm, Tag } from 'antd
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import WarehouseModal from '../../components/modals/inventory/WarehouseModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
+
 
 const WarehouseList = () => {
     const [data, setData] = useState([]);
@@ -14,8 +13,6 @@ const WarehouseList = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -46,23 +43,23 @@ const WarehouseList = () => {
     const columns = [
         {
             title: 'Kode',
-            dataIndex: 'code', sorter: (a, b) => { const vA = a['code'] ?? ''; const vB = b['code'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'code',
             key: 'code',
             width: 100,
         },
         {
             title: 'Nama Gudang',
-            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'name',
             key: 'name',
         },
         {
             title: 'Lokasi',
-            dataIndex: 'location', sorter: (a, b) => { const vA = a['location'] ?? ''; const vB = b['location'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'location',
             key: 'location',
         },
         {
             title: 'Status',
-            dataIndex: 'is_active', sorter: (a, b) => { const vA = a['is_active'] ?? ''; const vB = b['is_active'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'is_active',
             key: 'is_active',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>
@@ -74,63 +71,35 @@ const WarehouseList = () => {
             title: 'Aksi',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Can access="inventory.warehouse.update">
-                        <Button 
-                            type="text" 
-                            icon={<EditOutlined className="icon-primary" />} 
-                            onClick={() => {
-                                setEditingData(record);
-                                setModalVisible(true);
-                            }} 
-                        />
-                    </Can>
-                    <Can access="inventory.warehouse.delete">
-                        <Popconfirm
-                            title="Hapus Gudang?"
-                            description="Apakah Anda yakin ingin menghapus data ini?"
-                            onConfirm={() => handleDelete(record.id)}
-                            okText="Ya"
-                            cancelText="Tidak"
-                        >
-                            <Button type="text" danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </Can>
-                </Space>
+                <TableActions 
+                    onEdit={() => {
+                        setEditingData(record);
+                        setModalVisible(true);
+                    }}
+                    editPermission="inventory.warehouse.update"
+                    onDelete={() => handleDelete(record.id)}
+                    deletePermission="inventory.warehouse.delete"
+                />
             ),
         },
     ];
 
     return (
         <div className="page-container">
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Data Gudang</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="inventory.warehouse.create">
-                        <Button 
-                            type="primary" 
-                            icon={<PlusOutlined />} 
-                            onClick={() => {
-                                setEditingData(null);
-                                setModalVisible(true);
-                            }}
-                        >
-                            Tambah
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama gudang, kode, lokasi..." />
-            </div>
-
-            <Table 
-                columns={columns} 
-                dataSource={filteredData} 
-                rowKey="id" 
+            <DataTable
+                title="Data Gudang"
+                addText="Tambah"
+                onAdd={() => {
+                    setEditingData(null);
+                    setModalVisible(true);
+                }}
+                addPermission="inventory.warehouse.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama gudang, kode, lokasi..."
+                columns={columns}
+                dataSource={data}
                 loading={loading}
-                pagination={{ defaultPageSize: 10 }}
             />
 
             <WarehouseModal

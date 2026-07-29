@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Typography, Space, Button, message } from 'antd';
-import { SyncOutlined, ToolOutlined, PlusOutlined } from '@ant-design/icons';
+import { message } from 'antd';
 import api from '../../api/axiosConfig';
 import FixedAssetModal from '../../components/modals/finance/FixedAssetModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
+import { DataTable, TableActions } from '../../components/common';
 
 const FixedAssets = () => {
     const [assets, setAssets] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
-
-    const filteredAssets = filterTableData(assets, searchText);
 
     const fetchAssets = async () => {
         setLoading(true);
@@ -40,25 +34,20 @@ const FixedAssets = () => {
     ];
 
     return (
-        <div>
-            <div className="table-toolbar">
-                <Title level={3} style={{ margin: 0 }}>
-                    <ToolOutlined style={{ marginRight: 8 }} />
-                    Fixed Assets (Aset Tetap)
-                </Title>
-                <div className="table-toolbar-actions">
-                    <Button icon={<SyncOutlined />} onClick={fetchAssets} loading={loading}>Refresh</Button>
-                    <Can access="finance.fixed_asset.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>Registrasi Aset Baru</Button>
-                    </Can>
-                </div>
-            </div>
-            <Card className="card-custom">
-                <div className="table-search-row">
-                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari kode atau nama aset..." />
-                </div>
-                <Table columns={columns} dataSource={filteredAssets} rowKey="id" loading={loading} />
-            </Card>
+        <>
+            <DataTable
+                title="Fixed Assets (Aset Tetap)"
+                addText="Registrasi Aset Baru"
+                onAdd={() => setIsModalVisible(true)}
+                addPermission="finance.fixed_asset.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari kode atau nama aset..."
+                columns={columns}
+                dataSource={assets}
+                loading={loading}
+                scroll={{ x: 'max-content' }}
+            />
 
             <FixedAssetModal 
                 visible={isModalVisible} 
@@ -68,7 +57,7 @@ const FixedAssets = () => {
                     fetchAssets();
                 }}
             />
-        </div>
+        </>
     );
 };
 

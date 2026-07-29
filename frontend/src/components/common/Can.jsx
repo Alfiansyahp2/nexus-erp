@@ -1,5 +1,5 @@
 import React from 'react';
-import { hasPermission } from '../utils/rbac';
+import { hasPermission } from '../../utils/rbac';
 
 /**
  * A wrapper component that conditionally renders its children

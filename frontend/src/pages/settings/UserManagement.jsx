@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Card, Typography, Tag, message } from 'antd';
-import { SafetyCertificateOutlined } from '@ant-design/icons';
+import { Typography, Tag, message } from 'antd';
 import api from '../../api/axiosConfig';
-import Can from '../../components/Can';
 import UserPermissionModal from '../../components/modals/settings/UserPermissionModal';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
+
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [searchText, setSearchText] = useState("");
-
-  const filteredUsers = filterTableData(users, searchText);
   
   // States for Phase 4 Modal
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -46,13 +42,11 @@ const UserManagement = () => {
       title: 'Username',
       dataIndex: 'username',
       key: 'username',
-      sorter: (a, b) => a.username.localeCompare(b.username),
     },
     {
       title: 'Nama Lengkap',
       key: 'full_name',
       render: (_, record) => `${record.first_name} ${record.last_name}`,
-      sorter: (a, b) => `${a.first_name} ${a.last_name}`.localeCompare(`${b.first_name} ${b.last_name}`),
     },
     {
       title: 'Email',
@@ -68,7 +62,6 @@ const UserManagement = () => {
           {role || 'Custom / No Role'}
         </Tag>
       ),
-      sorter: (a, b) => (a.role_name || '').localeCompare(b.role_name || ''),
     },
     {
       title: 'Total Izin',
@@ -81,38 +74,27 @@ const UserManagement = () => {
       title: 'Aksi',
       key: 'action',
       render: (_, record) => (
-        <Can access="settings.manage_users">
-          <Button 
-            type="primary" 
-            icon={<SafetyCertificateOutlined />} 
-            onClick={() => handleEditPermissions(record)}
-          >
-            Edit Akses
-          </Button>
-        </Can>
+        <TableActions 
+          onEdit={() => handleEditPermissions(record)}
+          editPermission="settings.manage_users"
+        />
       ),
     },
   ];
 
   return (
     <div className="page-container">
-      <div className="page-header">
-        <Title level={2}>Manajemen Pengguna & Hak Akses</Title>
-        <p>Atur izin spesifik (User-Level Permissions) untuk masing-masing pengguna di sistem.</p>
-      </div>
-
-      <Card>
-        <div className="table-search-row">
-          <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama pengguna, email, role..." />
-        </div>
-        <Table 
-          columns={columns} 
-          dataSource={filteredUsers} 
-          rowKey="id" 
-          loading={loading}
-          pagination={{ pageSize: 10 }}
-        />
-      </Card>
+      <DataTable
+        title="Manajemen Pengguna & Hak Akses"
+        description="Atur izin spesifik (User-Level Permissions) untuk masing-masing pengguna di sistem."
+        searchText={searchText}
+        setSearchText={setSearchText}
+        searchPlaceholder="Cari nama pengguna, email, role..."
+        columns={columns}
+        dataSource={users}
+        rowKey="id"
+        loading={loading}
+      />
 
       <UserPermissionModal 
         visible={isModalVisible}

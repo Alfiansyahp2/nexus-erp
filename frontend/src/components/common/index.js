@@ -21,5 +21,6 @@ export { default as PageHeader } from './PageHeader';
 export { default as FormModal } from './modals/FormModal';
 
 // Re-export existing core utilities for convenience
-export { default as Can } from '../Can';
-export { default as TableSearch, filterTableData } from '../TableSearch';
+export { default as Can } from './Can';
+export { default as TableSearch, filterTableData } from './TableSearch';
+export { default as BlankSpace } from './BlankSpace';

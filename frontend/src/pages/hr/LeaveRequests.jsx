@@ -1,13 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button, Card, Typography, Modal, Form, Select, DatePicker, Input, message, Tag, Space, Popconfirm, Tooltip } from 'antd';
-import { PlusOutlined, CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
+import { Button, Modal, Form, Select, DatePicker, Input, message, Tag, Space, Popconfirm, Tooltip } from 'antd';
+import { CheckCircleOutlined, CloseCircleOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, Can } from '../../components/common';
 
-const { Title } = Typography;
-const { Option } = Select;
 const { RangePicker } = DatePicker;
+const { Option } = Select;
 
 const LeaveRequests = () => {
     const [requests, setRequests] = useState([]);
@@ -15,8 +13,6 @@ const LeaveRequests = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [form] = Form.useForm();
     const [searchText, setSearchText] = useState("");
-
-    const filteredRequests = filterTableData(requests, searchText);
 
     const fetchRequests = async () => {
         setLoading(true);
@@ -87,12 +83,12 @@ const LeaveRequests = () => {
     const columns = [
         {
             title: 'Karyawan',
-            dataIndex: 'employee_name', sorter: (a, b) => { const vA = a['employee_name'] ?? ''; const vB = b['employee_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'employee_name',
             key: 'employee_name',
         },
         {
             title: 'Tipe',
-            dataIndex: 'leave_type', sorter: (a, b) => { const vA = a['leave_type'] ?? ''; const vB = b['leave_type'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'leave_type',
             key: 'leave_type',
             render: (text) => {
                 const map = {
@@ -105,17 +101,17 @@ const LeaveRequests = () => {
         },
         {
             title: 'Mulai',
-            dataIndex: 'start_date', sorter: (a, b) => { const vA = a['start_date'] ?? ''; const vB = b['start_date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'start_date',
             key: 'start_date',
         },
         {
             title: 'Selesai',
-            dataIndex: 'end_date', sorter: (a, b) => { const vA = a['end_date'] ?? ''; const vB = b['end_date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'end_date',
             key: 'end_date',
         },
         {
             title: 'Status',
-            dataIndex: 'status', sorter: (a, b) => { const vA = a['status'] ?? ''; const vB = b['status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'status',
             key: 'status',
             render: (status) => {
                 let color = status === 'APPROVED' ? 'green' : status === 'REJECTED' ? 'red' : 'orange';
@@ -175,28 +171,19 @@ const LeaveRequests = () => {
     ];
 
     return (
-        <Card>
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Pengajuan Cuti & Izin</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="hr.leave.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
-                            Ajukan Cuti
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama karyawan, tipe cuti, alasan..." />
-            </div>
-
-            <Table
+        <>
+            <DataTable
+                title="Pengajuan Cuti & Izin"
+                addText="Ajukan Cuti"
+                onAdd={handleAdd}
+                addPermission="hr.leave.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama karyawan, tipe cuti, alasan..."
                 columns={columns}
-                dataSource={filteredRequests}
+                dataSource={requests}
                 rowKey="id"
                 loading={loading}
-                pagination={{ pageSize: 10 }}
             />
 
             <Modal title="Form Pengajuan Cuti" open={isModalVisible} onCancel={handleCancel} footer={null}>
@@ -219,7 +206,7 @@ const LeaveRequests = () => {
                     </Form.Item>
                 </Form>
             </Modal>
-        </Card>
+        </>
     );
 };
 

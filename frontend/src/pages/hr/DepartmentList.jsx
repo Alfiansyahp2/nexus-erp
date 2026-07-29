@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Typography, message, Space, Popconfirm } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { message } from 'antd';
 import api from '../../api/axiosConfig';
 import DepartmentModal from '../../components/modals/hr/DepartmentModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
+
 
 const DepartmentList = () => {
     const [departments, setDepartments] = useState([]);
@@ -14,8 +12,6 @@ const DepartmentList = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredDepartments = filterTableData(departments, searchText);
 
     const fetchDepartments = async () => {
         setLoading(true);
@@ -56,60 +52,42 @@ const DepartmentList = () => {
     const columns = [
         {
             title: 'Name',
-            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'name',
             key: 'name',
         },
         {
             title: 'Description',
-            dataIndex: 'description', sorter: (a, b) => { const vA = a['description'] ?? ''; const vB = b['description'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'description',
             key: 'description',
         },
         {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Can access="hr.department.update">
-                        <Button 
-                            type="primary" 
-                            icon={<EditOutlined />} 
-                            onClick={() => openModal(record)} 
-                        />
-                    </Can>
-                    <Can access="hr.department.delete">
-                        <Popconfirm 
-                            title="Are you sure to delete this department?" 
-                            onConfirm={() => handleDelete(record.id)}
-                        >
-                            <Button type="primary" danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </Can>
-                </Space>
+                <TableActions 
+                    onEdit={() => openModal(record)}
+                    editPermission="hr.department.update"
+                    onDelete={() => handleDelete(record.id)}
+                    deletePermission="hr.department.delete"
+                />
             ),
         },
     ];
 
     return (
-        <Card>
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Department Master</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="hr.department.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                            Add Department
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama departemen, deskripsi..." />
-            </div>
-            <Table
+        <>
+            <DataTable
+                title="Department Master"
+                addText="Add Department"
+                onAdd={() => openModal()}
+                addPermission="hr.department.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama departemen, deskripsi..."
                 columns={columns}
-                dataSource={filteredDepartments}
+                dataSource={departments}
                 rowKey="id"
                 loading={loading}
-                pagination={{ pageSize: 10 }}
             />
 
             <DepartmentModal 
@@ -118,7 +96,7 @@ const DepartmentList = () => {
                 onSuccess={handleModalSuccess}
                 editingData={editingData}
             />
-        </Card>
+        </>
     );
 };
 

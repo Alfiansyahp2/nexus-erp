@@ -30,7 +30,7 @@ import UserManagement from './pages/settings/UserManagement';
 import Profile from './pages/Profile';
 import { ConfigProvider, Spin } from 'antd';
 import api from './api/axiosConfig';
-import BlankSpace from './components/BlankSpace';
+import { BlankSpace } from "./components/common";
 import themeConfig from './assets/styles/themeConfig';
 
 const ProtectedRoute = ({ children }) => {

@@ -4,10 +4,9 @@ import { PlusOutlined, EyeOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import MovementModal from '../../components/modals/inventory/MovementModal';
 import MovementDetailModal from '../../components/modals/inventory/MovementDetailModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
+
 
 const StockMovementList = () => {
     const [data, setData] = useState([]);
@@ -16,8 +15,6 @@ const StockMovementList = () => {
     const [detailModalVisible, setDetailModalVisible] = useState(false);
     const [detailData, setDetailData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -38,27 +35,27 @@ const StockMovementList = () => {
     const columns = [
         {
             title: 'Tanggal',
-            dataIndex: 'date', sorter: (a, b) => { const vA = a['date'] ?? ''; const vB = b['date'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'date',
             key: 'date',
         },
         {
             title: 'No. Referensi',
-            dataIndex: 'reference_number', sorter: (a, b) => { const vA = a['reference_number'] ?? ''; const vB = b['reference_number'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'reference_number',
             key: 'reference_number',
         },
         {
             title: 'Produk',
-            dataIndex: 'product_name', sorter: (a, b) => { const vA = a['product_name'] ?? ''; const vB = b['product_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'product_name',
             key: 'product_name',
         },
         {
             title: 'Gudang',
-            dataIndex: 'warehouse_name', sorter: (a, b) => { const vA = a['warehouse_name'] ?? ''; const vB = b['warehouse_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'warehouse_name',
             key: 'warehouse_name',
         },
         {
             title: 'Jenis',
-            dataIndex: 'movement_type', sorter: (a, b) => { const vA = a['movement_type'] ?? ''; const vB = b['movement_type'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'movement_type',
             key: 'movement_type',
             render: (type) => {
                 const colors = {
@@ -72,14 +69,14 @@ const StockMovementList = () => {
         },
         {
             title: 'Kuantitas',
-            dataIndex: 'quantity', sorter: (a, b) => { const vA = a['quantity'] ?? ''; const vB = b['quantity'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'quantity',
             key: 'quantity',
             align: 'right',
             render: (val) => parseFloat(val).toLocaleString('id-ID')
         },
         {
             title: 'Catatan',
-            dataIndex: 'notes', sorter: (a, b) => { const vA = a['notes'] ?? ''; const vB = b['notes'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'notes',
             key: 'notes',
             ellipsis: true,
         },
@@ -87,50 +84,30 @@ const StockMovementList = () => {
             title: 'Aksi',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Button 
-                        type="text" 
-                        icon={<EyeOutlined className="icon-primary" />} 
-                        onClick={() => {
-                            setDetailData(record);
-                            setDetailModalVisible(true);
-                        }} 
-                    />
-                </Space>
+                <TableActions 
+                    onView={() => {
+                        setDetailData(record);
+                        setDetailModalVisible(true);
+                    }}
+                />
             ),
         }
     ];
 
     return (
         <div className="page-container">
-            <div className="table-toolbar">
-                <div>
-                    <Title level={4} className="margin-0">Riwayat Mutasi Stok</Title>
-                    <p className="text-muted margin-0">Catatan pergerakan barang keluar masuk. Data bersifat Read-Only (Audit Trail).</p>
-                </div>
-                <div className="table-toolbar-actions">
-                    <Can access="inventory.movement.create">
-                        <Button 
-                            type="primary" 
-                            icon={<PlusOutlined />} 
-                            onClick={() => setModalVisible(true)}
-                        >
-                            Catat Mutasi
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari referensi, produk, gudang asal/tujuan..." />
-            </div>
-
-            <Table 
-                columns={columns} 
-                dataSource={filteredData} 
-                rowKey="id" 
+            <p className="text-muted margin-0" style={{ marginBottom: 16 }}>Catatan pergerakan barang keluar masuk. Data bersifat Read-Only (Audit Trail).</p>
+            <DataTable
+                title="Riwayat Mutasi Stok"
+                addText="Catat Mutasi"
+                onAdd={() => setModalVisible(true)}
+                addPermission="inventory.movement.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari referensi, produk, gudang asal/tujuan..."
+                columns={columns}
+                dataSource={data}
                 loading={loading}
-                pagination={{ defaultPageSize: 10 }}
             />
 
             <MovementModal

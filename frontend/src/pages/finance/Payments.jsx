@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Typography, Tag, Button, Space, message } from 'antd';
-import { SyncOutlined, WalletOutlined, PlusOutlined } from '@ant-design/icons';
+import { Tag, message } from 'antd';
 import api from '../../api/axiosConfig';
 import PaymentModal from '../../components/modals/finance/PaymentModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
+import { DataTable, TableActions } from '../../components/common';
 
 const Payments = () => {
     const [payments, setPayments] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
-
-    const filteredPayments = filterTableData(payments, searchText);
 
     const fetchPayments = async () => {
         setLoading(true);
@@ -78,36 +72,20 @@ const Payments = () => {
     ];
 
     return (
-        <div>
-            <div className="table-toolbar">
-                <Title level={3} style={{ margin: 0 }}>
-                    <WalletOutlined style={{ marginRight: 8 }} />
-                    Payments (Kas & Bank)
-                </Title>
-                <div className="table-toolbar-actions">
-                    <Button icon={<SyncOutlined />} onClick={fetchPayments} loading={loading}>
-                        Refresh
-                    </Button>
-                    <Can access="finance.payment.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-                            Catat Pembayaran
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-
-            <Card className="card-custom">
-                <div className="table-search-row">
-                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nomor pembayaran, mitra..." />
-                </div>
-                <Table 
-                    columns={columns} 
-                    dataSource={filteredPayments} 
-                    rowKey="id" 
-                    loading={loading}
-                    pagination={{ pageSize: 10 }}
-                />
-            </Card>
+        <>
+            <DataTable
+                title="Payments (Kas & Bank)"
+                addText="Catat Pembayaran"
+                onAdd={() => setIsModalVisible(true)}
+                addPermission="finance.payment.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nomor pembayaran, mitra..."
+                columns={columns}
+                dataSource={payments}
+                loading={loading}
+                scroll={{ x: 'max-content' }}
+            />
             
             <PaymentModal 
                 visible={isModalVisible} 
@@ -117,7 +95,7 @@ const Payments = () => {
                     fetchPayments();
                 }}
             />
-        </div>
+        </>
     );
 };
 

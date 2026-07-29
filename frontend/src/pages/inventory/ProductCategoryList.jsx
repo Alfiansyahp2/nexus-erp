@@ -3,10 +3,9 @@ import { Table, Button, Space, message, Typography, Popconfirm } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import CategoryModal from '../../components/modals/inventory/CategoryModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
+
 
 const ProductCategoryList = () => {
     const [data, setData] = useState([]);
@@ -14,8 +13,6 @@ const ProductCategoryList = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -46,81 +43,53 @@ const ProductCategoryList = () => {
     const columns = [
         {
             title: 'ID',
-            dataIndex: 'id', sorter: (a, b) => { const vA = a['id'] ?? ''; const vB = b['id'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'id',
             key: 'id',
             width: 80,
         },
         {
             title: 'Nama Kategori',
-            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'name',
             key: 'name',
         },
         {
             title: 'Deskripsi',
-            dataIndex: 'description', sorter: (a, b) => { const vA = a['description'] ?? ''; const vB = b['description'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'description',
             key: 'description',
         },
         {
             title: 'Aksi',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Can access="inventory.category.update">
-                        <Button 
-                            type="text" 
-                            icon={<EditOutlined className="icon-primary" />} 
-                            onClick={() => {
-                                setEditingData(record);
-                                setModalVisible(true);
-                            }} 
-                        />
-                    </Can>
-                    <Can access="inventory.category.delete">
-                        <Popconfirm
-                            title="Hapus Kategori?"
-                            description="Apakah Anda yakin ingin menghapus data ini?"
-                            onConfirm={() => handleDelete(record.id)}
-                            okText="Ya"
-                            cancelText="Tidak"
-                        >
-                            <Button type="text" danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </Can>
-                </Space>
+                <TableActions 
+                    onEdit={() => {
+                        setEditingData(record);
+                        setModalVisible(true);
+                    }}
+                    editPermission="inventory.category.update"
+                    onDelete={() => handleDelete(record.id)}
+                    deletePermission="inventory.category.delete"
+                />
             ),
         },
     ];
 
     return (
         <div className="page-container">
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Kategori Produk</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="inventory.category.create">
-                        <Button 
-                            type="primary" 
-                            icon={<PlusOutlined />} 
-                            onClick={() => {
-                                setEditingData(null);
-                                setModalVisible(true);
-                            }}
-                        >
-                            Tambah
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama kategori, deskripsi..." />
-            </div>
-
-            <Table 
-                columns={columns} 
-                dataSource={filteredData} 
-                rowKey="id" 
+            <DataTable
+                title="Kategori Produk"
+                addText="Tambah"
+                onAdd={() => {
+                    setEditingData(null);
+                    setModalVisible(true);
+                }}
+                addPermission="inventory.category.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama kategori, deskripsi..."
+                columns={columns}
+                dataSource={data}
                 loading={loading}
-                pagination={{ defaultPageSize: 10 }}
             />
 
             <CategoryModal

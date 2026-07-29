@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Typography, message, Space, Popconfirm, Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { message } from 'antd';
 import api from '../../api/axiosConfig';
 import PositionModal from '../../components/modals/hr/PositionModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
-const { Option } = Select;
+
+
 
 const PositionList = () => {
     const [positions, setPositions] = useState([]);
@@ -16,8 +14,6 @@ const PositionList = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredPositions = filterTableData(positions, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -62,65 +58,47 @@ const PositionList = () => {
     const columns = [
         {
             title: 'Name',
-            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'name',
             key: 'name',
         },
         {
             title: 'Department',
-            dataIndex: 'department_name', sorter: (a, b) => { const vA = a['department_name'] ?? ''; const vB = b['department_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'department_name',
             key: 'department_name',
         },
         {
             title: 'Description',
-            dataIndex: 'description', sorter: (a, b) => { const vA = a['description'] ?? ''; const vB = b['description'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'description',
             key: 'description',
         },
         {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Can access="hr.position.update">
-                        <Button 
-                            type="primary" 
-                            icon={<EditOutlined />} 
-                            onClick={() => openModal(record)} 
-                        />
-                    </Can>
-                    <Can access="hr.position.delete">
-                        <Popconfirm 
-                            title="Are you sure to delete this position?" 
-                            onConfirm={() => handleDelete(record.id)}
-                        >
-                            <Button type="primary" danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </Can>
-                </Space>
+                <TableActions 
+                    onEdit={() => openModal(record)}
+                    editPermission="hr.position.update"
+                    onDelete={() => handleDelete(record.id)}
+                    deletePermission="hr.position.delete"
+                />
             ),
         },
     ];
 
     return (
-        <Card>
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Position Master</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="hr.position.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                            Add Position
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari posisi, departemen..." />
-            </div>
-            <Table
+        <>
+            <DataTable
+                title="Position Master"
+                addText="Add Position"
+                onAdd={() => openModal()}
+                addPermission="hr.position.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari posisi, departemen..."
                 columns={columns}
-                dataSource={filteredPositions}
+                dataSource={positions}
                 rowKey="id"
                 loading={loading}
-                pagination={{ pageSize: 10 }}
             />
 
             <PositionModal 
@@ -130,7 +108,7 @@ const PositionList = () => {
                 editingData={editingData}
                 departments={departments}
             />
-        </Card>
+        </>
     );
 };
 

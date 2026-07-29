@@ -8,7 +8,7 @@ import {
     SafetyCertificateOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
-import Can from '../components/Can';
+import Can from '../components/common/Can';
 
 const { Header } = Layout;
 

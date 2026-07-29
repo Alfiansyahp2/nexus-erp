@@ -1,13 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Card, Typography, message, Space, Popconfirm, Select } from 'antd';
-import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { message } from 'antd';
 import api from '../../api/axiosConfig';
+import { DataTable, TableActions } from '../../components/common';
 import EmployeeModal from '../../components/modals/hr/EmployeeModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
-const { Option } = Select;
 
 const EmployeeList = () => {
     const [employees, setEmployees] = useState([]);
@@ -17,8 +12,6 @@ const EmployeeList = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [editingRecord, setEditingRecord] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredEmployees = filterTableData(employees, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -67,75 +60,56 @@ const EmployeeList = () => {
     const columns = [
         {
             title: 'NIP',
-            dataIndex: 'employee_id', sorter: (a, b) => { const vA = a['employee_id'] ?? ''; const vB = b['employee_id'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'employee_id',
             key: 'employee_id',
         },
         {
             title: 'Full Name',
-            dataIndex: 'full_name', sorter: (a, b) => { const vA = a['full_name'] ?? ''; const vB = b['full_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'full_name',
             key: 'full_name',
         },
         {
             title: 'Department',
-            dataIndex: 'department_name', sorter: (a, b) => { const vA = a['department_name'] ?? ''; const vB = b['department_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'department_name',
             key: 'department_name',
         },
         {
             title: 'Position',
-            dataIndex: 'position_name', sorter: (a, b) => { const vA = a['position_name'] ?? ''; const vB = b['position_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'position_name',
             key: 'position_name',
         },
         {
             title: 'Status',
-            dataIndex: 'employment_status', sorter: (a, b) => { const vA = a['employment_status'] ?? ''; const vB = b['employment_status'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'employment_status',
             key: 'employment_status',
         },
         {
             title: 'Action',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Can access="hr.employee.update">
-                        <Button 
-                            type="primary" 
-                            icon={<EditOutlined />} 
-                            onClick={() => openModal(record)} 
-                        />
-                    </Can>
-                    <Can access="hr.employee.delete">
-                        <Popconfirm 
-                            title="Are you sure to delete this employee?" 
-                            onConfirm={() => handleDelete(record)}
-                        >
-                            <Button type="primary" danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </Can>
-                </Space>
+                <TableActions 
+                    onEdit={() => openModal(record)}
+                    editPermission="hr.employee.update"
+                    onDelete={() => handleDelete(record)}
+                    deletePermission="hr.employee.delete"
+                />
             ),
         }
     ];
 
     return (
-        <Card>
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Employee Management</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="hr.employee.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={() => openModal()}>
-                            Add Employee
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama karyawan, email, NIK, jabatan..." />
-            </div>
-            <Table
+        <>
+            <DataTable
+                title="Employee Management"
+                addText="Add Employee"
+                onAdd={() => openModal()}
+                addPermission="hr.employee.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama karyawan, email, NIK, jabatan..."
                 columns={columns}
-                dataSource={filteredEmployees}
-                rowKey="id"
+                dataSource={employees}
                 loading={loading}
-                pagination={{ pageSize: 10 }}
                 scroll={{ x: 'max-content' }}
             />
 
@@ -147,7 +121,7 @@ const EmployeeList = () => {
                 departments={departments}
                 positions={positions}
             />
-        </Card>
+        </>
     );
 };
 

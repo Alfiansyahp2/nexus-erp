@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Card, Typography, Tag, Button, Space, message } from 'antd';
-import { SyncOutlined, PlusOutlined, FileTextOutlined } from '@ant-design/icons';
+import { Tag, message } from 'antd';
 import api from '../../api/axiosConfig';
 import InvoiceModal from '../../components/modals/finance/InvoiceModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
-
-const { Title } = Typography;
+import { DataTable, TableActions } from '../../components/common';
 
 const Invoices = () => {
     const [invoices, setInvoices] = useState([]);
     const [loading, setLoading] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [searchText, setSearchText] = useState("");
-
-    const filteredInvoices = filterTableData(invoices, searchText);
 
     const fetchInvoices = async () => {
         setLoading(true);
@@ -82,36 +76,20 @@ const Invoices = () => {
     ];
 
     return (
-        <div>
-            <div className="table-toolbar">
-                <Title level={3} style={{ margin: 0 }}>
-                    <FileTextOutlined style={{ marginRight: 8 }} />
-                    Invoices (Hutang & Piutang)
-                </Title>
-                <div className="table-toolbar-actions">
-                    <Button icon={<SyncOutlined />} onClick={fetchInvoices} loading={loading}>
-                        Refresh
-                    </Button>
-                    <Can access="finance.invoice.create">
-                        <Button type="primary" icon={<PlusOutlined />} onClick={() => setIsModalVisible(true)}>
-                            Tambah Tagihan Baru
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-
-            <Card className="card-custom">
-                <div className="table-search-row">
-                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari invoice, partner..." />
-                </div>
-                <Table 
-                    columns={columns} 
-                    dataSource={filteredInvoices} 
-                    rowKey="id" 
-                    loading={loading}
-                    pagination={{ pageSize: 10 }}
-                />
-            </Card>
+        <>
+            <DataTable
+                title="Invoices (Hutang & Piutang)"
+                addText="Tambah Tagihan Baru"
+                onAdd={() => setIsModalVisible(true)}
+                addPermission="finance.invoice.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari invoice, partner..."
+                columns={columns}
+                dataSource={invoices}
+                loading={loading}
+                scroll={{ x: 'max-content' }}
+            />
 
             <InvoiceModal 
                 visible={isModalVisible} 
@@ -121,7 +99,7 @@ const Invoices = () => {
                     fetchInvoices();
                 }}
             />
-        </div>
+        </>
     );
 };
 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { Table, Button, Card, Typography, Tag, Space, message, Row, Col, Statistic, Tooltip, Popconfirm } from 'antd';
+import { Button, Card, Typography, Tag, Space, message, Row, Col, Statistic, Tooltip, Popconfirm } from 'antd';
 import { 
     DollarOutlined, 
     FilePdfOutlined, 
@@ -10,8 +10,7 @@ import {
     ExceptionOutlined
 } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, Can } from '../../components/common';
 
 const { Title, Text } = Typography;
 
@@ -19,8 +18,6 @@ const Payroll = () => {
     const [payrolls, setPayrolls] = useState([]);
     const [loading, setLoading] = useState(false);
     const [searchText, setSearchText] = useState("");
-
-    const filteredPayrolls = filterTableData(payrolls, searchText);
 
     const fetchPayrolls = async () => {
         setLoading(true);
@@ -159,7 +156,7 @@ const Payroll = () => {
             <div style={{ padding: '16px 24px', backgroundColor: '#fafafa', borderRadius: '8px', border: '1px solid #f0f0f0' }}>
                 <Row gutter={24}>
                     <Col span={8}>
-                        <Card size="small" title="Detail Pendapatan" bordered={false} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                        <Card size="small" title="Detail Pendapatan" variant="borderless" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <Text type="secondary">Gaji Pokok:</Text>
                                 <Text>{formatCurrency(record.base_salary)}</Text>
@@ -176,7 +173,7 @@ const Payroll = () => {
                         </Card>
                     </Col>
                     <Col span={8}>
-                        <Card size="small" title={<span style={{color: '#cf1322'}}>Rincian Potongan (Deductions)</span>} bordered={false} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+                        <Card size="small" title={<span style={{color: '#cf1322'}}>Rincian Potongan (Deductions)</span>} variant="borderless" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
                             <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 8 }}>
                                 <Text type="secondary">PPh 21 (Pajak):</Text>
                                 <Text type="danger">-{formatCurrency(tax)}</Text>
@@ -201,7 +198,7 @@ const Payroll = () => {
                         </Card>
                     </Col>
                     <Col span={8}>
-                        <Card size="small" title="Ringkasan Bersih" bordered={false} style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)', backgroundColor: '#f6ffed' }}>
+                        <Card size="small" title="Ringkasan Bersih" variant="borderless" style={{ boxShadow: '0 2px 8px rgba(0,0,0,0.05)', backgroundColor: '#f6ffed' }}>
                             <div style={{ textAlign: 'center', padding: '20px 0' }}>
                                 <Text type="secondary" style={{ fontSize: '14px', display: 'block', marginBottom: '8px' }}>Take Home Pay</Text>
                                 <Text type="success" style={{ fontSize: '28px', fontWeight: 'bold' }}>{formatCurrency(record.net_salary)}</Text>
@@ -229,55 +226,54 @@ const Payroll = () => {
 
             <Row gutter={24}>
                 <Col span={8}>
-                    <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                    <Card variant="borderless" style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                         <Statistic
                             title={<span style={{ color: '#8c8c8c', fontSize: '14px' }}>Total Take Home Pay (Periode Ini)</span>}
                             value={stats.totalNet}
                             prefix={<BankOutlined style={{ color: '#52c41a' }} />}
                             formatter={formatCurrency}
-                            valueStyle={{ color: '#52c41a', fontWeight: 'bold', fontSize: '24px' }}
+                            styles={{ content: { color: '#52c41a', fontWeight: 'bold', fontSize: '24px' } }}
                         />
                     </Card>
                 </Col>
                 <Col span={8}>
-                    <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                    <Card variant="borderless" style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                         <Statistic
                             title={<span style={{ color: '#8c8c8c', fontSize: '14px' }}>Total Potongan Pekerja</span>}
                             value={stats.totalDeductions}
                             prefix={<ExceptionOutlined style={{ color: '#f5222d' }} />}
                             formatter={formatCurrency}
-                            valueStyle={{ color: '#f5222d', fontWeight: 'bold', fontSize: '24px' }}
+                            styles={{ content: { color: '#f5222d', fontWeight: 'bold', fontSize: '24px' } }}
                         />
                     </Card>
                 </Col>
                 <Col span={8}>
-                    <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
+                    <Card variant="borderless" style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
                         <Statistic
                             title={<span style={{ color: '#8c8c8c', fontSize: '14px' }}>Menunggu Persetujuan</span>}
                             value={stats.pendingCount}
                             suffix="Karyawan"
-                            valueStyle={{ color: '#faad14', fontWeight: 'bold', fontSize: '24px' }}
+                            styles={{ content: { color: '#faad14', fontWeight: 'bold', fontSize: '24px' } }}
                         />
                     </Card>
                 </Col>
             </Row>
 
-            <Card bordered={false} style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}>
-                <div className="table-search-row">
-                    <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama karyawan, periode payroll..." />
-                </div>
-                <Table
-                    columns={columns}
-                    dataSource={filteredPayrolls}
-                    rowKey="id"
-                    loading={loading}
-                    pagination={{ pageSize: 10 }}
-                    expandable={{
-                        expandedRowRender,
-                        expandRowByClick: true
-                    }}
-                />
-            </Card>
+            <DataTable
+                card={false}
+                style={{ borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.03)' }}
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama karyawan, periode payroll..."
+                columns={columns}
+                dataSource={payrolls}
+                rowKey="id"
+                loading={loading}
+                expandable={{
+                    expandedRowRender,
+                    expandRowByClick: true
+                }}
+            />
         </div>
     );
 };

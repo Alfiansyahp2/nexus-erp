@@ -3,10 +3,9 @@ import { Table, Button, Space, message, Typography, Popconfirm, Tag } from 'antd
 import { PlusOutlined, EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import ProductModal from '../../components/modals/inventory/ProductModal';
-import Can from '../../components/Can';
-import TableSearch, { filterTableData } from '../../components/TableSearch';
+import { DataTable, TableActions } from '../../components/common';
 
-const { Title } = Typography;
+
 
 const ProductList = () => {
     const [data, setData] = useState([]);
@@ -14,8 +13,6 @@ const ProductList = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [searchText, setSearchText] = useState("");
-
-    const filteredData = filterTableData(data, searchText);
 
     const fetchData = async () => {
         setLoading(true);
@@ -46,35 +43,35 @@ const ProductList = () => {
     const columns = [
         {
             title: 'Kode',
-            dataIndex: 'code', sorter: (a, b) => { const vA = a['code'] ?? ''; const vB = b['code'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'code',
             key: 'code',
             width: 100,
         },
         {
             title: 'Nama Produk',
-            dataIndex: 'name', sorter: (a, b) => { const vA = a['name'] ?? ''; const vB = b['name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'name',
             key: 'name',
         },
         {
             title: 'Kategori',
-            dataIndex: 'category_name', sorter: (a, b) => { const vA = a['category_name'] ?? ''; const vB = b['category_name'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'category_name',
             key: 'category_name',
         },
         {
             title: 'Satuan',
-            dataIndex: 'unit_of_measure', sorter: (a, b) => { const vA = a['unit_of_measure'] ?? ''; const vB = b['unit_of_measure'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'unit_of_measure',
             key: 'unit_of_measure',
             width: 100,
         },
         {
             title: 'Harga Jual',
-            dataIndex: 'unit_price', sorter: (a, b) => { const vA = a['unit_price'] ?? ''; const vB = b['unit_price'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'unit_price',
             key: 'unit_price',
             render: (val) => `Rp ${parseFloat(val).toLocaleString('id-ID')}`
         },
         {
             title: 'Status',
-            dataIndex: 'is_active', sorter: (a, b) => { const vA = a['is_active'] ?? ''; const vB = b['is_active'] ?? ''; if (typeof vA === 'number' && typeof vB === 'number') return vA - vB; return String(vA).localeCompare(String(vB)); },
+            dataIndex: 'is_active',
             key: 'is_active',
             render: (isActive) => (
                 <Tag color={isActive ? 'green' : 'red'}>
@@ -86,63 +83,35 @@ const ProductList = () => {
             title: 'Aksi',
             key: 'action',
             render: (_, record) => (
-                <Space size="middle">
-                    <Can access="inventory.product.update">
-                        <Button 
-                            type="text" 
-                            icon={<EditOutlined className="icon-primary" />} 
-                            onClick={() => {
-                                setEditingData(record);
-                                setModalVisible(true);
-                            }} 
-                        />
-                    </Can>
-                    <Can access="inventory.product.delete">
-                        <Popconfirm
-                            title="Hapus Produk?"
-                            description="Apakah Anda yakin ingin menghapus data ini?"
-                            onConfirm={() => handleDelete(record.id)}
-                            okText="Ya"
-                            cancelText="Tidak"
-                        >
-                            <Button type="text" danger icon={<DeleteOutlined />} />
-                        </Popconfirm>
-                    </Can>
-                </Space>
+                <TableActions 
+                    onEdit={() => {
+                        setEditingData(record);
+                        setModalVisible(true);
+                    }}
+                    editPermission="inventory.product.update"
+                    onDelete={() => handleDelete(record.id)}
+                    deletePermission="inventory.product.delete"
+                />
             ),
         },
     ];
 
     return (
         <div className="page-container">
-            <div className="table-toolbar">
-                <Title level={4} className="margin-0">Data Produk</Title>
-                <div className="table-toolbar-actions">
-                    <Can access="inventory.product.create">
-                        <Button 
-                            type="primary" 
-                            icon={<PlusOutlined />} 
-                            onClick={() => {
-                                setEditingData(null);
-                                setModalVisible(true);
-                            }}
-                        >
-                            Tambah
-                        </Button>
-                    </Can>
-                </div>
-            </div>
-            
-            <div className="table-search-row">
-                <TableSearch value={searchText} onChange={(e) => setSearchText(e.target.value)} placeholder="Cari nama produk, SKU, kategori, harga..." />
-            </div>
-
-            <Table 
-                columns={columns} 
-                dataSource={filteredData} 
-                rowKey="id" 
+            <DataTable
+                title="Data Produk"
+                addText="Tambah"
+                onAdd={() => {
+                    setEditingData(null);
+                    setModalVisible(true);
+                }}
+                addPermission="inventory.product.create"
+                searchText={searchText}
+                setSearchText={setSearchText}
+                searchPlaceholder="Cari nama produk, SKU, kategori, harga..."
+                columns={columns}
+                dataSource={data}
                 loading={loading}
-                pagination={{ defaultPageSize: 10 }}
             />
 
             <ProductModal

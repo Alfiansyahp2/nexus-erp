@@ -30,10 +30,10 @@ const AppFooter = () => {
                 <Text type="secondary" style={{ fontWeight: 500 }}>
                     © {currentYear} Modern ERP Enterprise.
                 </Text>
-                <Tag color="blue" bordered={false} style={{ margin: 0, borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
+                <Tag color="blue" variant="filled" style={{ margin: 0, borderRadius: '4px', fontSize: '11px', fontWeight: 600 }}>
                     v2.4.0 PRO
                 </Tag>
-                <Tag color="success" bordered={false} style={{ margin: 0, borderRadius: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Tag color="success" variant="filled" style={{ margin: 0, borderRadius: '4px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <CheckCircleFilled style={{ color: '#52c41a' }} /> RBAC Guard Active
                 </Tag>
             </div>
@@ -52,7 +52,7 @@ const AppFooter = () => {
                     <Text style={{ color: '#52c41a', fontWeight: 600, fontSize: '13px' }}>Optimal</Text>
                 </span>
                 
-                <Divider type="vertical" style={{ borderColor: 'rgba(0,0,0,0.1)' }} />
+                <Divider orientation="vertical" style={{ borderColor: 'rgba(0,0,0,0.1)' }} />
                 
                 <Space size="middle">
                     <Link href="#help" type="secondary" style={{ fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>

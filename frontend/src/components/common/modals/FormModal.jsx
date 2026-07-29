@@ -42,8 +42,8 @@ const FormModal = ({
             okText={okText}
             cancelText={cancelText}
             confirmLoading={loading}
-            destroyOnClose={true}
-            maskClosable={false}
+            destroyOnHidden={true}
+            mask={{ closable: false }}
             centered
             styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' } }}
             {...props}
