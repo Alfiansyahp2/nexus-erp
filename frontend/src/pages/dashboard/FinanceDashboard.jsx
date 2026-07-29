@@ -1,28 +1,36 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Row, Col, message } from 'antd';
+import { Typography, Row, Col, message, Badge } from 'antd';
 import { BankOutlined, FileDoneOutlined, ContainerOutlined, HddOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import DashboardMetricCard from '../../components/common/dashboard/DashboardMetricCard';
 import DashboardBarChart from '../../components/common/dashboard/DashboardBarChart';
 
-const { Title } = Typography;
+const { Title, Text } = Typography;
 
-const FinanceDashboard = () => {
+const FinanceDashboard = ({ isNested = false }) => {
     const [stats, setStats] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    const fetchStats = async (isBackground = false) => {
+        try {
+            if (!isBackground) setLoading(true);
+            const response = await api.get('finance/dashboard-stats/');
+            setStats(response.data);
+        } catch (error) {
+            if (!isBackground) message.error('Gagal memuat statistik Finance');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const response = await api.get('finance/dashboard-stats/');
-                setStats(response.data);
-            } catch (error) {
-                message.error('Gagal memuat statistik Finance');
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchStats();
+        
+        const intervalId = setInterval(() => {
+            fetchStats(true);
+        }, 30000);
+        
+        return () => clearInterval(intervalId);
     }, []);
 
     const chartData = [
@@ -34,7 +42,12 @@ const FinanceDashboard = () => {
 
     return (
         <div>
-            <Title level={3} style={{ marginBottom: 24 }}>Finance Dashboard</Title>
+            {!isNested && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
+                    <Title level={3} style={{ margin: 0 }}>Finance Dashboard</Title>
+                    <Text type="secondary"><Badge status="processing" text="Live 30s" /></Text>
+                </div>
+            )}
             
             <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
                 <Col xs={24} sm={12} md={6}>
