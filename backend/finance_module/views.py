@@ -103,3 +103,24 @@ class BankStatementViewSet(viewsets.ModelViewSet):
         'partial_update': 'finance.bank_statement.update',
         'destroy': 'finance.bank_statement.delete',
     }
+
+from rest_framework.views import APIView
+from rest_framework.response import Response
+
+class FinanceDashboardStatsView(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        total_accounts = Account.objects.count()
+        # Assume Invoice has a status field, if it errors, we can fix it.
+        # Let's just do total counts to be safe for now
+        total_invoices = Invoice.objects.count()
+        total_assets = FixedAsset.objects.count()
+        total_journals = JournalEntry.objects.count()
+        
+        return Response({
+            'total_accounts': total_accounts,
+            'total_invoices': total_invoices,
+            'total_assets': total_assets,
+            'total_journals': total_journals
+        })

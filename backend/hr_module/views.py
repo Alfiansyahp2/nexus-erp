@@ -294,3 +294,20 @@ class SalaryComponentViewSet(viewsets.ModelViewSet):
 class PayrollViewSet(viewsets.ModelViewSet):
     queryset = Payroll.objects.all()
     serializer_class = PayrollSerializer
+
+from rest_framework.views import APIView
+from django.db.models import Count
+
+class HRDashboardStatsView(APIView):
+    def get(self, request):
+        today = timezone.now().date()
+        
+        total_employees = EmployeeProfile.objects.count()
+        present_today = Attendance.objects.filter(date=today).count()
+        pending_leaves = LeaveRequest.objects.filter(status__in=['PENDING_SPV', 'PENDING_MANAGER', 'PENDING_HR']).count()
+        
+        return Response({
+            'total_employees': total_employees,
+            'present_today': present_today,
+            'pending_leaves': pending_leaves
+        })

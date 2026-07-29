@@ -3,7 +3,8 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     AccountViewSet, JournalEntryViewSet, AccountingPeriodViewSet,
     BusinessPartnerViewSet, InvoiceViewSet, PaymentViewSet,
-    FixedAssetViewSet, DepreciationBoardViewSet, BankStatementViewSet
+    FixedAssetViewSet, DepreciationBoardViewSet, BankStatementViewSet,
+    FinanceDashboardStatsView
 )
 
 router = DefaultRouter()
@@ -18,5 +19,6 @@ router.register(r'depreciations', DepreciationBoardViewSet)
 router.register(r'bank-statements', BankStatementViewSet)
 
 urlpatterns = [
+    path('dashboard-stats/', FinanceDashboardStatsView.as_view(), name='finance-dashboard-stats'),
     path('', include(router.urls)),
 ]

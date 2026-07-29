@@ -8,9 +8,11 @@ from rest_framework_simplejwt.views import (
     TokenVerifyView,
 )
 from rbac.views import CustomTokenObtainPairView
+from core.views import AdminDashboardStatsView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/dashboard-stats/', AdminDashboardStatsView.as_view(), name='admin-dashboard-stats'),
     path('api/hr/', include('hr_module.urls')),
     path('api/finance/', include('finance_module.urls')),
     path('api/inventory/', include('inventory_module.urls')),

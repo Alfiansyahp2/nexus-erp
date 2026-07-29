@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, DepartmentViewSet, PositionViewSet, 
     EmployeeProfileViewSet, AttendanceViewSet, LeaveRequestViewSet,
-    SalaryComponentViewSet, PayrollViewSet
+    SalaryComponentViewSet, PayrollViewSet, HRDashboardStatsView
 )
 
 router = DefaultRouter()
@@ -17,5 +17,6 @@ router.register(r'salary-components', SalaryComponentViewSet)
 router.register(r'payrolls', PayrollViewSet)
 
 urlpatterns = [
+    path('dashboard-stats/', HRDashboardStatsView.as_view(), name='hr-dashboard-stats'),
     path('', include(router.urls)),
 ]
