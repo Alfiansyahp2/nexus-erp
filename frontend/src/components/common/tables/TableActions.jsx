@@ -6,7 +6,7 @@ import {
     EyeOutlined,
     CheckCircleOutlined
 } from '@ant-design/icons';
-import Can from '../Can';
+import Can from '../../Can';
 
 /**
  * Reusable TableActions component to standardize table action buttons (Edit, Delete, View, Confirm)

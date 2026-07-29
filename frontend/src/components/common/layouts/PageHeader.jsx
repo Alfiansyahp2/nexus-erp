@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, Button } from 'antd';
 import { PlusOutlined } from '@ant-design/icons';
-import Can from '../Can';
+import Can from '../../Can';
 
 const { Title, Text } = Typography;
 
