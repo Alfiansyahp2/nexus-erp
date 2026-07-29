@@ -295,6 +295,45 @@ class PayrollViewSet(viewsets.ModelViewSet):
     queryset = Payroll.objects.all()
     serializer_class = PayrollSerializer
 
+    @action(detail=False, methods=['post'])
+    def generate_bulk(self, request):
+        period_month = request.data.get('period_month')
+        period_year = request.data.get('period_year')
+
+        if not period_month or not period_year:
+            return Response({'error': 'period_month and period_year are required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Import celery task
+        from .tasks import generate_bulk_payroll
+        
+        # Call celery task asynchronously
+        task = generate_bulk_payroll.delay(period_month, period_year)
+        
+        return Response({
+            'message': 'Payroll generation started',
+            'task_id': task.id
+        }, status=status.HTTP_202_ACCEPTED)
+
+    @action(detail=False, methods=['get'], url_path='task_status/(?P<task_id>[^/.]+)')
+    def task_status(self, request, task_id=None):
+        from celery.result import AsyncResult
+        
+        task_result = AsyncResult(task_id)
+        
+        response_data = {
+            'task_id': task_id,
+            'state': task_result.state,
+        }
+
+        if task_result.state == 'PROGRESS':
+            response_data.update(task_result.info) # contains current, total, percent, success, failed
+        elif task_result.state == 'SUCCESS':
+            response_data.update(task_result.result)
+        elif task_result.state == 'FAILURE':
+            response_data['error'] = str(task_result.info)
+            
+        return Response(response_data)
+
 from rest_framework.views import APIView
 from django.db.models import Count
 
