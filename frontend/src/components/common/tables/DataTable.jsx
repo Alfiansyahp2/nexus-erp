@@ -136,6 +136,7 @@ const DataTable = ({
                 rowKey={rowKey}
                 loading={loading}
                 pagination={defaultPagination}
+                scroll={{ x: 'max-content', ...(tableProps.scroll || {}) }}
                 {...tableProps}
             />
         </div>

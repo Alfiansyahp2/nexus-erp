@@ -76,7 +76,7 @@ const Sidebar = ({ collapsed, isMobile, drawerOpen, setDrawerOpen }) => {
             children: [
                 { key: '/finance/accounts', icon: <AccountBookOutlined />, label: 'Chart of Accounts', permission: 'finance.account.view' },
                 { key: '/finance/journals', icon: <FormOutlined />, label: 'Journal Entries', permission: 'finance.journal.view' },
-                { key: '/finance/invoices', icon: <FileTextOutlined />, label: 'Invoices (AP/AR)', permission: 'finance.invoice.view' },
+                { key: '/finance/invoices', icon: <FileTextOutlined />, label: 'Invoices', permission: 'finance.invoice.view' },
                 { key: '/finance/payments', icon: <WalletOutlined />, label: 'Payments', permission: 'finance.payment.view' },
                 { key: '/finance/fixed-assets', icon: <ToolOutlined />, label: 'Fixed Assets', permission: 'finance.asset.view' },
                 { key: '/finance/bank-reconciliation', icon: <AuditOutlined />, label: 'Bank Reconciliation', permission: 'finance.bank.view' }
@@ -97,22 +97,22 @@ const Sidebar = ({ collapsed, isMobile, drawerOpen, setDrawerOpen }) => {
         {
             key: 'purchasing',
             icon: <ShoppingCartOutlined />,
-            label: 'Purchasing (Pengadaan)',
+            label: 'Purchasing',
             children: [
                 { key: '/purchasing/vendors', icon: <ContactsOutlined />, label: 'Vendors / Suppliers', permission: 'purchasing.vendor.view' },
-                { key: '/purchasing/requests', icon: <FileDoneOutlined />, label: 'Purchase Requests (PR)', permission: 'purchasing.pr.view' },
-                { key: '/purchasing/orders', icon: <SendOutlined />, label: 'Purchase Orders (PO)', permission: 'purchasing.po.view' },
-                { key: '/purchasing/receipts', icon: <InboxOutlined />, label: 'Goods Receipts (GRN)', permission: 'purchasing.gr.view' }
+                { key: '/purchasing/requests', icon: <FileDoneOutlined />, label: 'Purchase Requests', permission: 'purchasing.pr.view' },
+                { key: '/purchasing/orders', icon: <SendOutlined />, label: 'Purchase Orders', permission: 'purchasing.po.view' },
+                { key: '/purchasing/receipts', icon: <InboxOutlined />, label: 'Goods Receipts', permission: 'purchasing.gr.view' }
             ]
         },
         {
             key: 'sales',
             icon: <ShoppingOutlined />,
-            label: 'Sales (Penjualan)',
+            label: 'Sales',
             children: [
                 { key: '/sales/customers', icon: <ContactsOutlined />, label: 'Customers', permission: 'sales.customer.view' },
-                { key: '/sales/orders', icon: <ShoppingCartOutlined />, label: 'Sales Orders (SO)', permission: 'sales.order.view' },
-                { key: '/sales/deliveries', icon: <CarOutlined />, label: 'Delivery Orders (DO)', permission: 'sales.delivery.view' }
+                { key: '/sales/orders', icon: <ShoppingCartOutlined />, label: 'Sales Orders', permission: 'sales.order.view' },
+                { key: '/sales/deliveries', icon: <CarOutlined />, label: 'Delivery Orders', permission: 'sales.delivery.view' }
             ]
         }
     ];
@@ -153,7 +153,8 @@ const Sidebar = ({ collapsed, isMobile, drawerOpen, setDrawerOpen }) => {
                 placement="left"
                 onClose={() => setDrawerOpen(false)}
                 open={drawerOpen}
-                styles={{ body: { padding: 0 } }}
+                className="sidebar-drawer"
+                styles={{ wrapper: { width: '240px' }, body: { padding: 0 } }}
                 closable={false}
             >
                 {sidebarContent}

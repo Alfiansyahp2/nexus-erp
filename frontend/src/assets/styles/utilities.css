@@ -168,5 +168,11 @@
     }
 }
 
+/* Force Drawer width without triggering Antd deprecation warnings */
+.sidebar-drawer.ant-drawer .ant-drawer-content-wrapper,
+.sidebar-drawer .ant-drawer-content-wrapper {
+    width: 240px !important;
+}
+
 
 
