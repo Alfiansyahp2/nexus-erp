@@ -125,3 +125,57 @@ class DeliveryOrderViewSet(viewsets.ModelViewSet):
         do.status = 'DONE'
         do.save()
         return Response({'status': 'Pengiriman dikonfirmasi, Stok Gudang dan Tagihan Piutang telah otomatis diperbarui.'})
+
+from rest_framework.views import APIView
+from django.db.models import Count
+
+class SalesDashboardStatsView(APIView):
+    def get(self, request):
+        today = timezone.now().date()
+        from datetime import timedelta
+        
+        # Metrics
+        total_customers = Customer.objects.count()
+        total_sales_orders = SalesOrder.objects.count()
+        pending_so = SalesOrder.objects.filter(status__in=['DRAFT', 'SENT', 'CONFIRMED']).count()
+        completed_deliveries = DeliveryOrder.objects.filter(status='DONE').count()
+        
+        # Charts: Sales Orders Trend (Last 7 Days)
+        sales_trends = []
+        for i in range(7, -1, -1):
+            day = today - timedelta(days=i)
+            so_count = SalesOrder.objects.filter(order_date=day).count()
+            sales_trends.append({
+                'date': day.strftime('%d %b'),
+                'orders': so_count
+            })
+
+        # Charts: SO Status Distribution
+        status_dist = SalesOrder.objects.values('status').annotate(value=Count('id'))
+        status_distribution = [{'name': d['status'], 'value': d['value']} for d in status_dist]
+
+        # Recent Activity: Recent Sales Orders
+        recent_so_qs = SalesOrder.objects.select_related('customer').order_by('-created_at')[:5]
+        recent_activity = []
+        for so in recent_so_qs:
+            recent_activity.append({
+                'id': so.id,
+                'document_number': so.document_number,
+                'customer': so.customer.name,
+                'status': so.get_status_display(),
+                'amount': float(so.total_amount)
+            })
+
+        return Response({
+            'metrics': {
+                'total_customers': total_customers,
+                'total_sales_orders': total_sales_orders,
+                'pending_so': pending_so,
+                'completed_deliveries': completed_deliveries
+            },
+            'charts': {
+                'sales_trends': sales_trends,
+                'status_distribution': status_distribution
+            },
+            'recent_activity': recent_activity
+        })

@@ -423,3 +423,57 @@ class GoodsReceiptViewSet(viewsets.ModelViewSet):
         gr.save()
 
         return Response(self.get_serializer(gr).data, status=status.HTTP_200_OK)
+
+from rest_framework.views import APIView
+from django.db.models import Count
+
+class PurchasingDashboardStatsView(APIView):
+    def get(self, request):
+        today = timezone.now().date()
+        from datetime import timedelta
+        
+        # Metrics
+        total_vendors = Vendor.objects.count()
+        total_purchase_orders = PurchaseOrder.objects.count()
+        pending_po = PurchaseOrder.objects.filter(status__in=['DRAFT', 'SENT', 'CONFIRMED']).count()
+        active_pr = PurchaseRequest.objects.exclude(status__in=['REJECTED', 'PO_CREATED']).count()
+        
+        # Charts: Purchase Orders Trend (Last 7 Days)
+        purchase_trends = []
+        for i in range(7, -1, -1):
+            day = today - timedelta(days=i)
+            po_count = PurchaseOrder.objects.filter(order_date=day).count()
+            purchase_trends.append({
+                'date': day.strftime('%d %b'),
+                'orders': po_count
+            })
+
+        # Charts: PO Status Distribution
+        status_dist = PurchaseOrder.objects.values('status').annotate(value=Count('id'))
+        status_distribution = [{'name': d['status'], 'value': d['value']} for d in status_dist]
+
+        # Recent Activity: Recent Purchase Orders
+        recent_po_qs = PurchaseOrder.objects.select_related('vendor').order_by('-created_at')[:5]
+        recent_activity = []
+        for po in recent_po_qs:
+            recent_activity.append({
+                'id': po.id,
+                'document_number': po.document_number,
+                'vendor': po.vendor.name,
+                'status': po.get_status_display(),
+                'amount': float(po.total_amount)
+            })
+
+        return Response({
+            'metrics': {
+                'total_vendors': total_vendors,
+                'total_purchase_orders': total_purchase_orders,
+                'pending_po': pending_po,
+                'active_pr': active_pr
+            },
+            'charts': {
+                'purchase_trends': purchase_trends,
+                'status_distribution': status_distribution
+            },
+            'recent_activity': recent_activity
+        })

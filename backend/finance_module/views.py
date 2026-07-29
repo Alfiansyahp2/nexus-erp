@@ -111,16 +111,60 @@ class FinanceDashboardStatsView(APIView):
     permission_classes = [IsAuthenticated]
     
     def get(self, request):
+        from django.utils import timezone
+        from datetime import timedelta
+        from django.db.models import Count
+        
+        today = timezone.now().date()
+
         total_accounts = Account.objects.count()
-        # Assume Invoice has a status field, if it errors, we can fix it.
-        # Let's just do total counts to be safe for now
         total_invoices = Invoice.objects.count()
         total_assets = FixedAsset.objects.count()
         total_journals = JournalEntry.objects.count()
         
+        # Trends
+        unpaid_invoices = Invoice.objects.filter(status__in=['DRAFT', 'OPEN']).count()
+        
+        # Chart Data: Invoices Trend (Last 7 Days)
+        invoice_trends = []
+        for i in range(7, -1, -1):
+            day = today - timedelta(days=i)
+            vendor_bills = Invoice.objects.filter(date=day, invoice_type='VENDOR_BILL').count()
+            customer_inv = Invoice.objects.filter(date=day, invoice_type='CUSTOMER_INV').count()
+            invoice_trends.append({
+                'date': day.strftime('%d %b'),
+                'vendor_bills': vendor_bills,
+                'customer_invoices': customer_inv
+            })
+
+        # Chart Data: Account Type Distribution
+        account_dist = Account.objects.values('account_type').annotate(value=Count('id'))
+        account_distribution = [{'name': d['account_type'], 'value': d['value']} for d in account_dist]
+
+        # Recent Activity: Pending Invoices
+        recent_invoices_qs = Invoice.objects.select_related('partner').exclude(status='PAID').order_by('-date')[:5]
+        recent_activity = []
+        for inv in recent_invoices_qs:
+            recent_activity.append({
+                'id': inv.id,
+                'document_number': inv.document_number,
+                'partner': inv.partner.name if inv.partner else 'Unknown',
+                'type': inv.get_invoice_type_display(),
+                'status': inv.get_status_display(),
+                'amount': f"Rp {inv.total_amount:,.2f}"
+            })
+
         return Response({
-            'total_accounts': total_accounts,
-            'total_invoices': total_invoices,
-            'total_assets': total_assets,
-            'total_journals': total_journals
+            'metrics': {
+                'total_accounts': total_accounts,
+                'total_invoices': total_invoices,
+                'unpaid_invoices': unpaid_invoices,
+                'total_assets': total_assets,
+                'total_journals': total_journals
+            },
+            'charts': {
+                'invoice_trends': invoice_trends,
+                'account_distribution': account_distribution
+            },
+            'recent_activity': recent_activity
         })

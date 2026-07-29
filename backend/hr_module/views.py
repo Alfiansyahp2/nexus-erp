@@ -340,13 +340,52 @@ from django.db.models import Count
 class HRDashboardStatsView(APIView):
     def get(self, request):
         today = timezone.now().date()
+        from datetime import timedelta
         
+        # Metrics
         total_employees = EmployeeProfile.objects.count()
         present_today = Attendance.objects.filter(date=today).count()
         pending_leaves = LeaveRequest.objects.filter(status__in=['PENDING_SPV', 'PENDING_MANAGER', 'PENDING_HR']).count()
+        late_today = Attendance.objects.filter(date=today, is_late=True).count()
+        
+        # Chart Data: Attendance vs Late (Last 7 Days)
+        attendance_trends = []
+        for i in range(7, -1, -1):
+            day = today - timedelta(days=i)
+            present = Attendance.objects.filter(date=day).count()
+            late = Attendance.objects.filter(date=day, is_late=True).count()
+            attendance_trends.append({
+                'date': day.strftime('%d %b'),
+                'present': present,
+                'late': late
+            })
+
+        # Chart Data: Employment Status
+        status_dist = EmployeeProfile.objects.values('employment_status').annotate(value=Count('id'))
+        employment_status_distribution = [{'name': d['employment_status'], 'value': d['value']} for d in status_dist]
+
+        # Recent Activity: Today's Leaves
+        recent_leaves_qs = LeaveRequest.objects.select_related('employee').order_by('-start_date')[:5]
+        recent_activity = []
+        for leave in recent_leaves_qs:
+            recent_activity.append({
+                'id': leave.id,
+                'employee_name': leave.employee.full_name,
+                'leave_type': leave.get_leave_type_display(),
+                'status': leave.get_status_display(),
+                'duration': f"{leave.start_date.strftime('%d %b')} - {leave.end_date.strftime('%d %b')}"
+            })
         
         return Response({
-            'total_employees': total_employees,
-            'present_today': present_today,
-            'pending_leaves': pending_leaves
+            'metrics': {
+                'total_employees': total_employees,
+                'present_today': present_today,
+                'pending_leaves': pending_leaves,
+                'late_today': late_today
+            },
+            'charts': {
+                'attendance_trends': attendance_trends,
+                'employment_status_distribution': employment_status_distribution
+            },
+            'recent_activity': recent_activity
         })
