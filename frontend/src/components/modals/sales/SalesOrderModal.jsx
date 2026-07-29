@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, DatePicker, Select, Button, Space, message, InputNumber, Divider } from 'antd';
+import { Form, Input, DatePicker, Select, Button, Space, message, InputNumber, Divider } from 'antd';
+import { FormModal } from '../../common';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import api from '../../../api/axiosConfig';
@@ -65,9 +66,8 @@ const SalesOrderModal = ({ visible, onClose, onSuccess, editingData }) => {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const values = await form.validateFields();
             const formattedValues = {
                 ...values,
                 order_date: values.order_date ? values.order_date.format('YYYY-MM-DD') : null,
@@ -91,17 +91,16 @@ const SalesOrderModal = ({ visible, onClose, onSuccess, editingData }) => {
     };
 
     return (
-        <Modal
+        <FormModal
             title={editingData ? 'Edit Sales Order' : 'Buat Sales Order Baru'}
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             width={850}
             okText="Simpan SO"
-            cancelText="Batal"
-            confirmLoading={loading}
+            loading={loading}
         >
-            <Form form={form} layout="vertical">
                 <div style={{ display: 'flex', gap: '16px' }}>
                     <Form.Item name="document_number" label="No. Dokumen SO" rules={[{ required: true }]} style={{ flex: 1 }}>
                         <Input placeholder="SO/2026/08/001" disabled={!!editingData} />
@@ -196,8 +195,7 @@ const SalesOrderModal = ({ visible, onClose, onSuccess, editingData }) => {
                 <Form.Item name="notes" label="Catatan Tambahan">
                     <Input.TextArea rows={2} />
                 </Form.Item>
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 

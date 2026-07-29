@@ -44,6 +44,8 @@ const FormModal = ({
             confirmLoading={loading}
             destroyOnClose={true}
             maskClosable={false}
+            centered
+            styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' } }}
             {...props}
         >
             <Form 

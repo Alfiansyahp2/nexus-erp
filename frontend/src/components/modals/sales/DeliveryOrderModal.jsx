@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Form, Input, DatePicker, Select, Button, Space, message, InputNumber, Divider } from 'antd';
+import { Form, Input, DatePicker, Select, Button, Space, message, InputNumber, Divider } from 'antd';
+import { FormModal } from '../../common';
 import dayjs from 'dayjs';
 import api from '../../../api/axiosConfig';
 
@@ -50,9 +51,8 @@ const DeliveryOrderModal = ({ visible, onClose, onSuccess, fromSoData }) => {
         }
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const values = await form.validateFields();
             const formattedValues = {
                 ...values,
                 sales_order: fromSoData.id,
@@ -71,17 +71,16 @@ const DeliveryOrderModal = ({ visible, onClose, onSuccess, fromSoData }) => {
     };
 
     return (
-        <Modal
+        <FormModal
             title="Buat Delivery Order (Surat Jalan)"
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             width={850}
             okText="Buat Surat Jalan"
-            cancelText="Batal"
-            confirmLoading={loading}
+            loading={loading}
         >
-            <Form form={form} layout="vertical">
                 <div style={{ display: 'flex', gap: '16px' }}>
                     <Form.Item name="document_number" label="No. Surat Jalan (DO)" rules={[{ required: true }]} style={{ flex: 1 }}>
                         <Input placeholder="DO/2026/08/001" />
@@ -164,8 +163,7 @@ const DeliveryOrderModal = ({ visible, onClose, onSuccess, fromSoData }) => {
                 <Form.Item name="notes" label="Catatan Tambahan" style={{ marginTop: 16 }}>
                     <Input.TextArea rows={2} />
                 </Form.Item>
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 

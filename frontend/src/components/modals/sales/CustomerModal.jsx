@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, InputNumber, Row, Col, Switch, message } from 'antd';
+import { Form, Input, InputNumber, Row, Col, Switch, message } from 'antd';
+import { FormModal } from '../../common';
 import api from '../../../api/axiosConfig';
 
 const CustomerModal = ({ visible, onClose, onSuccess, editingData }) => {
@@ -18,9 +19,8 @@ const CustomerModal = ({ visible, onClose, onSuccess, editingData }) => {
         }
     }, [visible, editingData, form]);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const values = await form.validateFields();
             if (editingData) {
                 await api.put(`/sales/customers/${editingData.id}/`, values);
                 message.success('Pelanggan berhasil diperbarui');
@@ -38,16 +38,14 @@ const CustomerModal = ({ visible, onClose, onSuccess, editingData }) => {
     };
 
     return (
-        <Modal
+        <FormModal
             title={editingData ? 'Edit Data Pelanggan' : 'Tambah Pelanggan Baru'}
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             width={700}
-            okText="Simpan"
-            cancelText="Batal"
         >
-            <Form form={form} layout="vertical">
                 <Row gutter={16}>
                     <Col span={12}>
                         <Form.Item name="code" label="Kode Pelanggan" rules={[{ required: true }]}>
@@ -103,8 +101,7 @@ const CustomerModal = ({ visible, onClose, onSuccess, editingData }) => {
                 <Form.Item name="is_active" label="Status Aktif" valuePropName="checked" initialValue={true}>
                     <Switch checkedChildren="Aktif" unCheckedChildren="Non-aktif" />
                 </Form.Item>
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 
