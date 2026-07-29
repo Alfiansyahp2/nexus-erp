@@ -12,6 +12,8 @@ This means every business domain (HR, Finance, Inventory) is isolated into its o
 - **`/hr_module`**: Human Resources module. Handles Employee Authentication, Departments, Positions, Attendance, and Payroll.
 - **`/finance_module`**: Finance module. Handles Chart of Accounts and Journal Entries.
 - **`/inventory_module`**: Inventory and Warehouse Management module. Handles product master data, warehouse locations, and stock movements.
+- **`/purchasing_module`**: Procurement module. Handles Vendors, Purchase Requests, Purchase Orders, and Goods Receipts.
+- **`/sales_module`**: Sales & CRM module. Handles Customers, Sales Orders, Delivery Orders, and Sales Invoices.
 - **`/rbac`**: Role-Based Access Control module. Handles direct user-level permissions (`UserPermission`), role templates, granular permission slugs, and custom JWT payload injection for fine-grained security.
 
 ### Inside Each Module

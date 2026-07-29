@@ -13,11 +13,14 @@ This project prioritizes cleanliness (Clean Code & Separation of Concerns) by gr
 - **`/src/pages/`**: UI pages divided by modules (matching the Backend separation):
   - `/hr`: HR-related pages (Employees, Leave Requests, Payroll).
   - `/finance`: Finance-related pages (Accounts, Journals).
-  - `/settings`: System settings including `UserManagement.jsx` (List of users and their exact permissions).
+  - `/inventory`: Inventory pages (Categories, Products, Warehouses).
+  - `/purchasing`: Purchasing pages (Vendors, PR, PO, GRN).
+  - `/sales`: Sales pages (Customers, SO, DO).
+  - `/settings`: System settings including `UserManagement.jsx`.
   - *Note: Components in this folder are solely responsible for rendering tables (Data Grids) and trigger buttons. Input forms are placed in separate components.*
 - **`/src/components/modals/`**: A centralized collection of Pop-ups / Modal Forms.
-  - All Create/Update forms (e.g., Add Employee, Add Account) are **not written directly inside the page tables**, but are centralized here (`/hr` and `/finance`) to make them highly readable for AI and highly reusable.
-- **`/src/components/BlankSpace.jsx`**: A dynamic component that renders an interactive illustration when data is empty, a feature is not ready (info state), or a page is not found (404).
+  - All Create/Update forms (e.g., Add Employee, Add PO, Create Invoice) are **not written directly inside the page tables**, but are centralized here (grouped by module) to make them highly readable for AI and highly reusable.
+- **`/src/components/common/`**: Reusable generic components including our standardized `FormModal`, generic `DataTable` layout, and action button groups.
 - **`/src/components/Can.jsx`**: A wrapper component to conditionally render UI elements based on user permissions.
 
 ## 🔐 Session Security & RBAC

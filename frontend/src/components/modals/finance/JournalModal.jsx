@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
-import { Modal, Form, Input, DatePicker, Select, message, Space, Card, InputNumber, Button, Typography, Divider } from 'antd';
+import { Form, Input, DatePicker, Select, message, Space, Card, InputNumber, Button, Typography, Divider } from 'antd';
+import { FormModal } from '../../common';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import axios from 'axios';
 
@@ -28,9 +29,12 @@ const JournalModal = ({ open, onCancel, onSuccess, accounts }) => {
 
         try {
             // Format date to YYYY-MM-DD
-            values.date = values.date.format('YYYY-MM-DD');
+            const formattedValues = {
+                ...values,
+                date: values.date.format('YYYY-MM-DD')
+            };
             
-            await axios.post('http://localhost:8000/api/finance/journals/', values, {
+            await axios.post('http://localhost:8000/api/finance/journals/', formattedValues, {
                 headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` }
             });
             message.success('Jurnal berhasil ditambahkan');
@@ -46,19 +50,16 @@ const JournalModal = ({ open, onCancel, onSuccess, accounts }) => {
     };
 
     return (
-        <Modal
+        <FormModal
             title="Buat Jurnal Transaksi"
-            open={open}
+            visible={open}
+            onSubmit={handleAddJournal}
             onCancel={onCancel}
-            onOk={form.submit}
+            form={form}
             okText="Simpan Jurnal"
-            cancelText="Batal"
             okButtonProps={{ disabled: !isBalanced || totalDebit === 0 }}
             width={1000}
-            centered
-            styles={{ body: { maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', overflowX: 'hidden' } }}
         >
-            <Form form={form} layout="vertical" onFinish={handleAddJournal}>
                 <div style={{ display: 'flex', gap: '16px' }}>
                     <Form.Item name="date" label="Tanggal Transaksi" rules={[{ required: true }]} style={{ flex: 1 }}>
                         <DatePicker style={{ width: '100%' }} />
@@ -168,8 +169,7 @@ const JournalModal = ({ open, onCancel, onSuccess, accounts }) => {
                     )}
                 </Card>
 
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 
