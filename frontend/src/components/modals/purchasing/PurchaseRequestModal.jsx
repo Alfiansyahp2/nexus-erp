@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, DatePicker, Select, Button, Table, InputNumber, Row, Col, message } from 'antd';
+import { Form, Input, DatePicker, Select, Button, Table, InputNumber, Row, Col, message } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { FormModal } from '../../common';
 import dayjs from 'dayjs';
 import api from '../../../api/axiosConfig';
 
@@ -82,19 +83,18 @@ const PurchaseRequestModal = ({ visible, onClose, onSuccess, editingData }) => {
         }));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const val = await form.validateFields();
             if (lines.some(l => !l.product || l.quantity <= 0)) {
                 message.error('Pilih produk dan pastikan jumlah item lebih dari 0.');
                 return;
             }
 
             const payload = {
-                document_number: val.document_number,
-                request_date: val.request_date.format('YYYY-MM-DD'),
-                expected_delivery_date: val.expected_delivery_date ? val.expected_delivery_date.format('YYYY-MM-DD') : null,
-                notes: val.notes || '',
+                document_number: values.document_number,
+                request_date: values.request_date.format('YYYY-MM-DD'),
+                expected_delivery_date: values.expected_delivery_date ? values.expected_delivery_date.format('YYYY-MM-DD') : null,
+                notes: values.notes || '',
                 lines: lines.map(l => ({
                     product: l.product,
                     quantity: l.quantity,
@@ -201,16 +201,15 @@ const PurchaseRequestModal = ({ visible, onClose, onSuccess, editingData }) => {
     ];
 
     return (
-        <Modal
+        <FormModal
             title={editingData ? 'Ubah Purchase Request (PR)' : 'Buat Purchase Request (PR)'}
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             okText="Simpan PR"
-            cancelText="Batal"
             width={850}
         >
-            <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
                 <Row gutter={16}>
                     <Col span={8}>
                         <Form.Item name="document_number" label="No. Dokumen PR" rules={[{ required: true }]}>
@@ -248,8 +247,7 @@ const PurchaseRequestModal = ({ visible, onClose, onSuccess, editingData }) => {
                     bordered
                     rowKey="key"
                 />
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 

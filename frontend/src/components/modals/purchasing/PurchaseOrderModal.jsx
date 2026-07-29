@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, DatePicker, Select, Button, Table, InputNumber, Row, Col, message, Typography } from 'antd';
+import { Form, Input, DatePicker, Select, Button, Table, InputNumber, Row, Col, message, Typography } from 'antd';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
+import { FormModal } from '../../common';
 import dayjs from 'dayjs';
 import api from '../../../api/axiosConfig';
 
@@ -106,9 +107,8 @@ const PurchaseOrderModal = ({ visible, onClose, onSuccess, editingData, fromPrDa
         return lines.reduce((acc, curr) => acc + ((curr.quantity || 0) * (curr.unit_price || 0)), 0);
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const val = await form.validateFields();
             if (lines.some(l => !l.product || l.quantity <= 0)) {
                 message.error('Pilih produk dan pastikan jumlah item lebih dari 0.');
                 return;
@@ -117,20 +117,20 @@ const PurchaseOrderModal = ({ visible, onClose, onSuccess, editingData, fromPrDa
             if (fromPrData) {
                 const payload = {
                     purchase_request_id: fromPrData.id,
-                    vendor_id: val.vendor,
-                    document_number: val.document_number,
-                    order_date: val.order_date.format('YYYY-MM-DD'),
-                    expected_delivery_date: val.expected_delivery_date ? val.expected_delivery_date.format('YYYY-MM-DD') : null
+                    vendor_id: values.vendor,
+                    document_number: values.document_number,
+                    order_date: values.order_date.format('YYYY-MM-DD'),
+                    expected_delivery_date: values.expected_delivery_date ? values.expected_delivery_date.format('YYYY-MM-DD') : null
                 };
                 await api.post('/purchasing/orders/create_from_pr/', payload);
                 message.success('Purchase Order berhasil dibuat dari PR');
             } else {
                 const payload = {
-                    document_number: val.document_number,
-                    vendor: val.vendor,
-                    order_date: val.order_date.format('YYYY-MM-DD'),
-                    expected_delivery_date: val.expected_delivery_date ? val.expected_delivery_date.format('YYYY-MM-DD') : null,
-                    notes: val.notes || '',
+                    document_number: values.document_number,
+                    vendor: values.vendor,
+                    order_date: values.order_date.format('YYYY-MM-DD'),
+                    expected_delivery_date: values.expected_delivery_date ? values.expected_delivery_date.format('YYYY-MM-DD') : null,
+                    notes: values.notes || '',
                     lines: lines.map(l => ({
                         product: l.product,
                         quantity: l.quantity,
@@ -242,16 +242,15 @@ const PurchaseOrderModal = ({ visible, onClose, onSuccess, editingData, fromPrDa
     ];
 
     return (
-        <Modal
+        <FormModal
             title={fromPrData ? `Buat PO dari ${fromPrData.document_number}` : (editingData ? 'Ubah Purchase Order (PO)' : 'Buat Purchase Order (PO)')}
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             okText="Simpan PO"
-            cancelText="Batal"
             width={850}
         >
-            <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
                 <Row gutter={16}>
                     <Col span={8}>
                         <Form.Item name="document_number" label="No. Dokumen PO" rules={[{ required: true }]}>
@@ -306,8 +305,7 @@ const PurchaseOrderModal = ({ visible, onClose, onSuccess, editingData, fromPrDa
                         Total Nilai PO: Rp {calculateTotal().toLocaleString('id-ID')}
                     </Text>
                 </div>
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 

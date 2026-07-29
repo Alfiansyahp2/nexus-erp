@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, DatePicker, Select, Table, InputNumber, Row, Col, message, Typography, Tag } from 'antd';
+import { Form, Input, DatePicker, Select, Table, InputNumber, Row, Col, message, Typography, Tag } from 'antd';
+import { FormModal } from '../../common';
 import dayjs from 'dayjs';
 import api from '../../../api/axiosConfig';
 
@@ -81,9 +82,8 @@ const GoodsReceiptModal = ({ visible, onClose, onSuccess, editingData, fromPoDat
         setLines(lines.map(l => l.key === key ? { ...l, [field]: value } : l));
     };
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const val = await form.validateFields();
             if (lines.every(l => l.quantity <= 0)) {
                 message.error('Minimal ada 1 item dengan jumlah penerimaan lebih dari 0.');
                 return;
@@ -91,11 +91,11 @@ const GoodsReceiptModal = ({ visible, onClose, onSuccess, editingData, fromPoDat
 
             const payload = {
                 purchase_order: fromPoData ? fromPoData.id : editingData.purchase_order,
-                document_number: val.document_number,
-                warehouse: val.warehouse,
-                receipt_date: val.receipt_date.format('YYYY-MM-DD'),
-                delivery_note_number: val.delivery_note_number || '',
-                notes: val.notes || '',
+                document_number: values.document_number,
+                warehouse: values.warehouse,
+                receipt_date: values.receipt_date.format('YYYY-MM-DD'),
+                delivery_note_number: values.delivery_note_number || '',
+                notes: values.notes || '',
                 lines: lines.filter(l => l.quantity > 0).map(l => ({
                     po_line: l.po_line,
                     product: l.product,
@@ -190,16 +190,15 @@ const GoodsReceiptModal = ({ visible, onClose, onSuccess, editingData, fromPoDat
     ];
 
     return (
-        <Modal
+        <FormModal
             title={fromPoData ? `Terima Barang untuk PO: ${fromPoData.document_number}` : (editingData ? 'Ubah Bukti Penerimaan Barang (GRN)' : 'Buat Bukti Penerimaan Barang (GRN)')}
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             okText="Simpan Bukti Terima"
-            cancelText="Batal"
             width={950}
         >
-            <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
                 <Row gutter={16}>
                     <Col span={6}>
                         <Form.Item name="document_number" label="No. Dokumen GRN" rules={[{ required: true }]}>
@@ -243,8 +242,7 @@ const GoodsReceiptModal = ({ visible, onClose, onSuccess, editingData, fromPoDat
                     bordered
                     rowKey="key"
                 />
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 

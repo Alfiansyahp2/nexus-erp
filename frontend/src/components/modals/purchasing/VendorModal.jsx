@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, Input, InputNumber, Switch, Row, Col, Divider, message } from 'antd';
+import { Form, Input, InputNumber, Switch, Row, Col, Divider, message } from 'antd';
+import { FormModal } from '../../common';
 import api from '../../../api/axiosConfig';
 
 const VendorModal = ({ visible, onClose, onSuccess, editingData }) => {
@@ -25,14 +26,13 @@ const VendorModal = ({ visible, onClose, onSuccess, editingData }) => {
         }
     }, [visible, editingData, form]);
 
-    const handleSubmit = async () => {
+    const handleSubmit = async (values) => {
         try {
-            const val = await form.validateFields();
             if (editingData) {
-                await api.put(`/purchasing/vendors/${editingData.id}/`, val);
+                await api.put(`/purchasing/vendors/${editingData.id}/`, values);
                 message.success('Data vendor berhasil diperbarui');
             } else {
-                await api.post('/purchasing/vendors/', val);
+                await api.post('/purchasing/vendors/', values);
                 message.success('Vendor baru berhasil ditambahkan');
             }
             onSuccess();
@@ -45,17 +45,16 @@ const VendorModal = ({ visible, onClose, onSuccess, editingData }) => {
     };
 
     return (
-        <Modal
+        <FormModal
             title={editingData ? 'Ubah Vendor / Supplier' : 'Tambah Vendor Baru'}
-            open={visible}
-            onOk={handleSubmit}
+            visible={visible}
+            onSubmit={handleSubmit}
             onCancel={onClose}
+            form={form}
             okText="Simpan"
             okButtonProps={{ disabled: !submittable }}
-            cancelText="Batal"
             width={700}
         >
-            <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
                 <Row gutter={16}>
                     <Col span={8}>
                         <Form.Item
@@ -134,8 +133,7 @@ const VendorModal = ({ visible, onClose, onSuccess, editingData }) => {
                 <Form.Item name="is_active" label="Status Aktif" valuePropName="checked">
                     <Switch checkedChildren="Aktif" unCheckedChildren="Non-aktif" />
                 </Form.Item>
-            </Form>
-        </Modal>
+        </FormModal>
     );
 };
 
