@@ -22,3 +22,17 @@
 .ant-modal-body::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+/* Mobile Adjustments for Modals */
+@media (max-width: 768px) {
+  .ant-modal {
+    max-width: calc(100vw - 16px) !important;
+    margin: 8px auto !important;
+  }
+  .ant-modal-content {
+    padding: 16px !important;
+  }
+  .ant-modal-body {
+    max-height: calc(100vh - 120px);
+  }
+}

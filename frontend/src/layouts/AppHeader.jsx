@@ -12,7 +12,7 @@ import Can from '../components/common/Can';
 
 const { Header } = Layout;
 
-const AppHeader = ({ collapsed, setCollapsed }) => {
+const AppHeader = ({ collapsed, setCollapsed, isMobile, drawerOpen, setDrawerOpen }) => {
     const navigate = useNavigate();
 
     const handleMenuClick = ({ key }) => {
@@ -42,19 +42,29 @@ const AppHeader = ({ collapsed, setCollapsed }) => {
         onClick: handleMenuClick
     };
 
+    const toggleSidebar = () => {
+        if (isMobile) {
+            setDrawerOpen(true);
+        } else {
+            setCollapsed(!collapsed);
+        }
+    };
+
+    const MenuIcon = (isMobile ? !drawerOpen : collapsed) ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />;
+
     return (
         <Header className="layout-header">
             <Button
                 type="text"
-                icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-                onClick={() => setCollapsed(!collapsed)}
+                icon={MenuIcon}
+                onClick={toggleSidebar}
                 style={{
                     fontSize: '16px',
                     width: 64,
                     height: 64,
                 }}
             />
-            <div style={{ marginRight: 24, display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <div style={{ marginRight: isMobile ? 12 : 24, display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }}>
                 <Can access="settings.manage_users">
                     <Tooltip title="Manajemen Pengguna & RBAC">
                         <Button
@@ -70,7 +80,7 @@ const AppHeader = ({ collapsed, setCollapsed }) => {
                 <Dropdown menu={userMenu} placement="bottomRight">
                     <span style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 8 }}>
                         <Avatar icon={<UserOutlined />} />
-                        <span>Admin</span>
+                        {!isMobile && <span>Admin</span>}
                     </span>
                 </Dropdown>
             </div>

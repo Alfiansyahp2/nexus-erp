@@ -125,8 +125,26 @@
     margin-bottom: 16px;
 }
 
+/* Main Content Wrapper */
+.main-content-wrapper {
+    overflow-y: auto;
+    padding: 24px 16px 0 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
 /* Mobile & Tablet Responsive Rules */
 @media (max-width: 768px) {
+    .main-content-wrapper {
+        padding: 16px 8px 0 8px;
+    }
+    
+    .page-container {
+        padding: 16px;
+    }
+
     .table-toolbar {
         flex-direction: column;
         align-items: stretch;

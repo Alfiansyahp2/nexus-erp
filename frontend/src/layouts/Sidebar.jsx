@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, Drawer } from 'antd';
 import { hasPermission } from '../utils/rbac';
 import {
     DashboardOutlined,
@@ -31,15 +31,19 @@ import { useNavigate, useLocation } from 'react-router-dom';
 
 const { Sider } = Layout;
 
-const Sidebar = ({ collapsed }) => {
+const Sidebar = ({ collapsed, isMobile, drawerOpen, setDrawerOpen }) => {
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleMenuClick = ({ key }) => {
         navigate(key);
+        if (isMobile && setDrawerOpen) {
+            setDrawerOpen(false); // Close drawer after navigation on mobile
+        }
     };
 
     const rawMenuItems = [
+        // ... (keep all rawMenuItems as they are) ...
         {
             key: '/dashboard',
             icon: <DashboardOutlined />,
@@ -56,35 +60,13 @@ const Sidebar = ({ collapsed }) => {
                     icon: <UserOutlined />,
                     label: 'Employee Master',
                     children: [
-                        {
-                            key: '/hr/employees',
-                            label: 'Employees',
-                            permission: 'hr.employee.view'
-                        },
-                        {
-                            key: '/hr/departments',
-                            label: 'Departments',
-                            permission: 'hr.department.view'
-                        },
-                        {
-                            key: '/hr/positions',
-                            label: 'Positions',
-                            permission: 'hr.position.view'
-                        }
+                        { key: '/hr/employees', label: 'Employees', permission: 'hr.employee.view' },
+                        { key: '/hr/departments', label: 'Departments', permission: 'hr.department.view' },
+                        { key: '/hr/positions', label: 'Positions', permission: 'hr.position.view' }
                     ]
                 },
-                {
-                    key: '/leave-requests',
-                    icon: <FormOutlined />,
-                    label: 'Leave Requests',
-                    permission: 'hr.leave.view'
-                },
-                {
-                    key: '/payroll',
-                    icon: <DollarOutlined />,
-                    label: 'Payroll',
-                    permission: 'hr.payroll.view'
-                }
+                { key: '/leave-requests', icon: <FormOutlined />, label: 'Leave Requests', permission: 'hr.leave.view' },
+                { key: '/payroll', icon: <DollarOutlined />, label: 'Payroll', permission: 'hr.payroll.view' }
             ]
         },
         {
@@ -92,42 +74,12 @@ const Sidebar = ({ collapsed }) => {
             icon: <BankOutlined />,
             label: 'Finance',
             children: [
-                {
-                    key: '/finance/accounts',
-                    icon: <AccountBookOutlined />,
-                    label: 'Chart of Accounts',
-                    permission: 'finance.account.view'
-                },
-                {
-                    key: '/finance/journals',
-                    icon: <FormOutlined />,
-                    label: 'Journal Entries',
-                    permission: 'finance.journal.view'
-                },
-                {
-                    key: '/finance/invoices',
-                    icon: <FileTextOutlined />,
-                    label: 'Invoices (AP/AR)',
-                    permission: 'finance.invoice.view'
-                },
-                {
-                    key: '/finance/payments',
-                    icon: <WalletOutlined />,
-                    label: 'Payments',
-                    permission: 'finance.payment.view'
-                },
-                {
-                    key: '/finance/fixed-assets',
-                    icon: <ToolOutlined />,
-                    label: 'Fixed Assets',
-                    permission: 'finance.asset.view'
-                },
-                {
-                    key: '/finance/bank-reconciliation',
-                    icon: <AuditOutlined />,
-                    label: 'Bank Reconciliation',
-                    permission: 'finance.bank.view'
-                }
+                { key: '/finance/accounts', icon: <AccountBookOutlined />, label: 'Chart of Accounts', permission: 'finance.account.view' },
+                { key: '/finance/journals', icon: <FormOutlined />, label: 'Journal Entries', permission: 'finance.journal.view' },
+                { key: '/finance/invoices', icon: <FileTextOutlined />, label: 'Invoices (AP/AR)', permission: 'finance.invoice.view' },
+                { key: '/finance/payments', icon: <WalletOutlined />, label: 'Payments', permission: 'finance.payment.view' },
+                { key: '/finance/fixed-assets', icon: <ToolOutlined />, label: 'Fixed Assets', permission: 'finance.asset.view' },
+                { key: '/finance/bank-reconciliation', icon: <AuditOutlined />, label: 'Bank Reconciliation', permission: 'finance.bank.view' }
             ]
         },
         {
@@ -135,36 +87,11 @@ const Sidebar = ({ collapsed }) => {
             icon: <AppstoreOutlined />,
             label: 'Inventory',
             children: [
-                {
-                    key: '/inventory/categories',
-                    icon: <AppstoreOutlined />,
-                    label: 'Product Categories',
-                    permission: 'inventory.category.view'
-                },
-                {
-                    key: '/inventory/products',
-                    icon: <InboxOutlined />,
-                    label: 'Products',
-                    permission: 'inventory.product.view'
-                },
-                {
-                    key: '/inventory/warehouses',
-                    icon: <ShopOutlined />,
-                    label: 'Warehouses',
-                    permission: 'inventory.warehouse.view'
-                },
-                {
-                    key: '/inventory/stock-balances',
-                    icon: <AppstoreOutlined />,
-                    label: 'Stock Balances',
-                    permission: 'inventory.stock.view'
-                },
-                {
-                    key: '/inventory/stock-movements',
-                    icon: <SwapOutlined />,
-                    label: 'Stock Movements',
-                    permission: 'inventory.movement.view'
-                }
+                { key: '/inventory/categories', icon: <AppstoreOutlined />, label: 'Product Categories', permission: 'inventory.category.view' },
+                { key: '/inventory/products', icon: <InboxOutlined />, label: 'Products', permission: 'inventory.product.view' },
+                { key: '/inventory/warehouses', icon: <ShopOutlined />, label: 'Warehouses', permission: 'inventory.warehouse.view' },
+                { key: '/inventory/stock-balances', icon: <AppstoreOutlined />, label: 'Stock Balances', permission: 'inventory.stock.view' },
+                { key: '/inventory/stock-movements', icon: <SwapOutlined />, label: 'Stock Movements', permission: 'inventory.movement.view' }
             ]
         },
         {
@@ -172,30 +99,10 @@ const Sidebar = ({ collapsed }) => {
             icon: <ShoppingCartOutlined />,
             label: 'Purchasing (Pengadaan)',
             children: [
-                {
-                    key: '/purchasing/vendors',
-                    icon: <ContactsOutlined />,
-                    label: 'Vendors / Suppliers',
-                    permission: 'purchasing.vendor.view'
-                },
-                {
-                    key: '/purchasing/requests',
-                    icon: <FileDoneOutlined />,
-                    label: 'Purchase Requests (PR)',
-                    permission: 'purchasing.pr.view'
-                },
-                {
-                    key: '/purchasing/orders',
-                    icon: <SendOutlined />,
-                    label: 'Purchase Orders (PO)',
-                    permission: 'purchasing.po.view'
-                },
-                {
-                    key: '/purchasing/receipts',
-                    icon: <InboxOutlined />,
-                    label: 'Goods Receipts (GRN)',
-                    permission: 'purchasing.gr.view'
-                }
+                { key: '/purchasing/vendors', icon: <ContactsOutlined />, label: 'Vendors / Suppliers', permission: 'purchasing.vendor.view' },
+                { key: '/purchasing/requests', icon: <FileDoneOutlined />, label: 'Purchase Requests (PR)', permission: 'purchasing.pr.view' },
+                { key: '/purchasing/orders', icon: <SendOutlined />, label: 'Purchase Orders (PO)', permission: 'purchasing.po.view' },
+                { key: '/purchasing/receipts', icon: <InboxOutlined />, label: 'Goods Receipts (GRN)', permission: 'purchasing.gr.view' }
             ]
         },
         {
@@ -203,24 +110,9 @@ const Sidebar = ({ collapsed }) => {
             icon: <ShoppingOutlined />,
             label: 'Sales (Penjualan)',
             children: [
-                {
-                    key: '/sales/customers',
-                    icon: <ContactsOutlined />,
-                    label: 'Customers',
-                    permission: 'sales.customer.view'
-                },
-                {
-                    key: '/sales/orders',
-                    icon: <ShoppingCartOutlined />,
-                    label: 'Sales Orders (SO)',
-                    permission: 'sales.order.view'
-                },
-                {
-                    key: '/sales/deliveries',
-                    icon: <CarOutlined />,
-                    label: 'Delivery Orders (DO)',
-                    permission: 'sales.delivery.view'
-                }
+                { key: '/sales/customers', icon: <ContactsOutlined />, label: 'Customers', permission: 'sales.customer.view' },
+                { key: '/sales/orders', icon: <ShoppingCartOutlined />, label: 'Sales Orders (SO)', permission: 'sales.order.view' },
+                { key: '/sales/deliveries', icon: <CarOutlined />, label: 'Delivery Orders (DO)', permission: 'sales.delivery.view' }
             ]
         }
     ];
@@ -240,10 +132,10 @@ const Sidebar = ({ collapsed }) => {
 
     const menuItems = filterMenuByPermission(rawMenuItems);
 
-    return (
-        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ overflow: 'auto', boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)' }}>
+    const sidebarContent = (
+        <>
             <div className="sidebar-logo-container">
-                {collapsed ? 'ERP' : 'Modern ERP'}
+                {collapsed && !isMobile ? 'ERP' : 'Modern ERP'}
             </div>
             <Menu
                 theme="light"
@@ -252,6 +144,26 @@ const Sidebar = ({ collapsed }) => {
                 items={menuItems}
                 onClick={handleMenuClick}
             />
+        </>
+    );
+
+    if (isMobile) {
+        return (
+            <Drawer
+                placement="left"
+                onClose={() => setDrawerOpen(false)}
+                open={drawerOpen}
+                styles={{ body: { padding: 0 } }}
+                closable={false}
+            >
+                {sidebarContent}
+            </Drawer>
+        );
+    }
+
+    return (
+        <Sider trigger={null} collapsible collapsed={collapsed} theme="light" style={{ overflow: 'auto', boxShadow: '2px 0 8px 0 rgba(29,35,41,.05)' }}>
+            {sidebarContent}
         </Sider>
     );
 };
