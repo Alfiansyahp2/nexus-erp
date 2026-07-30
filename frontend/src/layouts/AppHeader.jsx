@@ -6,7 +6,8 @@ import {
     UserOutlined,
     LogoutOutlined,
     SafetyCertificateOutlined,
-    ClockCircleOutlined
+    ClockCircleOutlined,
+    DashboardOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Can from '../components/common/Can';
@@ -28,6 +29,11 @@ const AppHeader = ({ collapsed, setCollapsed, isMobile, drawerOpen, setDrawerOpe
 
     const userMenu = {
         items: [
+            {
+                key: '/my-dashboard',
+                label: 'Absensi',
+                icon: <DashboardOutlined />
+            },
             {
                 key: 'profile',
                 label: 'Profile',

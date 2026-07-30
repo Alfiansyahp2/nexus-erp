@@ -7,6 +7,7 @@ import DepartmentList from './pages/hr/DepartmentList';
 import PositionList from './pages/hr/PositionList';
 import AttendanceList from './pages/hr/AttendanceList';
 import Dashboard from './pages/Dashboard';
+import EmployeeDashboard from './pages/dashboard/EmployeeDashboard';
 import LeaveRequests from './pages/hr/LeaveRequests';
 import Payroll from './pages/hr/Payroll';
 import ChartOfAccounts from './pages/finance/ChartOfAccounts';
@@ -81,6 +82,7 @@ function App() {
           <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
             <Route index element={<Navigate to="/dashboard" replace />} />
             <Route path="dashboard" element={<Dashboard />} />
+            <Route path="my-dashboard" element={<EmployeeDashboard />} />
             <Route path="hr/employees" element={<EmployeeList />} />
             <Route path="hr/departments" element={<DepartmentList />} />
             <Route path="hr/positions" element={<PositionList />} />
