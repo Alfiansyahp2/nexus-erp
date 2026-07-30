@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Row, Col, message, Tabs, Badge, Tag } from 'antd';
+import { Typography, Row, Col, message, Tabs, Badge, Tag, Empty } from 'antd';
 import { UserOutlined, ShoppingOutlined, ShoppingCartOutlined, AppstoreOutlined, GlobalOutlined, TeamOutlined, BankOutlined, InboxOutlined, TagOutlined, TruckOutlined } from '@ant-design/icons';
 import api from '../../api/axiosConfig';
 import DashboardMetricCard from '../../components/common/dashboard/DashboardMetricCard';
 import DashboardLineChart from '../../components/common/dashboard/DashboardLineChart';
 import DashboardPieChart from '../../components/common/dashboard/DashboardPieChart';
 import RecentActivityTable from '../../components/common/dashboard/RecentActivityTable';
+import { hasPermission } from '../../utils/rbac';
 
 import HRDashboard from './HRDashboard';
 import FinanceDashboard from './FinanceDashboard';
@@ -135,14 +136,16 @@ const AdminDashboard = () => {
     };
 
     useEffect(() => {
-        fetchStats();
-        
-        // Polling every 30 seconds
-        const intervalId = setInterval(() => {
-            fetchStats(true); // background fetch, no loading spinner
-        }, 30000);
-        
-        return () => clearInterval(intervalId);
+        // Only fetch global stats if the user has permission for the global dashboard
+        if (hasPermission('view_global_dashboard')) {
+            fetchStats();
+            const intervalId = setInterval(() => {
+                fetchStats(true);
+            }, 30000);
+            return () => clearInterval(intervalId);
+        } else {
+            setLoading(false);
+        }
     }, []);
 
     const chartData = [
@@ -153,43 +156,64 @@ const AdminDashboard = () => {
         { name: 'Purchase Orders', value: stats?.total_purchase_orders || 0 },
     ];
 
-    const tabItems = [
-        {
+    const tabItems = [];
+
+    if (hasPermission('view_global_dashboard')) {
+        tabItems.push({
             key: '1',
             label: <span><GlobalOutlined /> Global</span>,
             children: <GlobalStats stats={stats} loading={loading} chartData={chartData} />,
-        },
-        {
+        });
+    }
+
+    if (hasPermission('view_hr_dashboard')) {
+        tabItems.push({
             key: '2',
             label: <span><TeamOutlined /> HR</span>,
             children: <HRDashboard isNested={true} />,
-        },
-        {
+        });
+    }
+
+    if (hasPermission('view_finance_dashboard')) {
+        tabItems.push({
             key: '3',
             label: <span><BankOutlined /> Finance</span>,
             children: <FinanceDashboard isNested={true} />,
-        },
-        {
+        });
+    }
+
+    if (hasPermission('view_inventory_dashboard')) {
+        tabItems.push({
             key: '4',
             label: <span><InboxOutlined /> Inventory</span>,
             children: <InventoryDashboard isNested={true} />,
-        },
-        {
+        });
+    }
+
+    if (hasPermission('view_sales_dashboard')) {
+        tabItems.push({
             key: '5',
             label: <span><TagOutlined /> Sales</span>,
             children: <SalesDashboard isNested={true} />,
-        },
-        {
+        });
+    }
+
+    if (hasPermission('view_purchasing_dashboard')) {
+        tabItems.push({
             key: '6',
             label: <span><TruckOutlined /> Purchasing</span>,
             children: <PurchasingDashboard isNested={true} />,
-        },
-    ];
+        });
+    }
 
     return (
         <div>
             <Title level={3} style={{ marginBottom: 16 }}>Pusat Komando (Command Center)</Title>
-            <Tabs defaultActiveKey="1" items={tabItems} size="large" />
+            {tabItems.length > 0 ? (
+                <Tabs defaultActiveKey={tabItems[0].key} items={tabItems} size="large" />
+            ) : (
+                <Empty description="Anda tidak memiliki izin untuk melihat dasbor apa pun." />
+            )}
         </div>
     );
 };
