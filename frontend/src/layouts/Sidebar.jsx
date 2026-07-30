@@ -25,7 +25,8 @@ import {
     FileDoneOutlined,
     SendOutlined,
     ShoppingOutlined,
-    CarOutlined
+    CarOutlined,
+    ClockCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -65,6 +66,7 @@ const Sidebar = ({ collapsed, isMobile, drawerOpen, setDrawerOpen }) => {
                         { key: '/hr/positions', label: 'Positions', permission: 'hr.position.view' }
                     ]
                 },
+                { key: '/hr/attendance', icon: <ClockCircleOutlined />, label: 'Attendance', permission: 'hr.attendance.view' },
                 { key: '/leave-requests', icon: <FormOutlined />, label: 'Leave Requests', permission: 'hr.leave.view' },
                 { key: '/payroll', icon: <DollarOutlined />, label: 'Payroll', permission: 'hr.payroll.view' }
             ]

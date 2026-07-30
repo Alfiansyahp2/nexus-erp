@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import EmployeeList from './pages/hr/EmployeeList';
 import DepartmentList from './pages/hr/DepartmentList';
 import PositionList from './pages/hr/PositionList';
+import AttendanceList from './pages/hr/AttendanceList';
 import Dashboard from './pages/Dashboard';
 import LeaveRequests from './pages/hr/LeaveRequests';
 import Payroll from './pages/hr/Payroll';
@@ -83,6 +84,7 @@ function App() {
             <Route path="hr/employees" element={<EmployeeList />} />
             <Route path="hr/departments" element={<DepartmentList />} />
             <Route path="hr/positions" element={<PositionList />} />
+            <Route path="hr/attendance" element={<AttendanceList />} />
             <Route path="leave-requests" element={<LeaveRequests />} />
             <Route path="payroll" element={<Payroll />} />
             <Route path="finance/accounts" element={<ChartOfAccounts />} />

@@ -5,7 +5,8 @@ import {
     MenuUnfoldOutlined,
     UserOutlined,
     LogoutOutlined,
-    SafetyCertificateOutlined
+    SafetyCertificateOutlined,
+    ClockCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import Can from '../components/common/Can';
@@ -65,6 +66,16 @@ const AppHeader = ({ collapsed, setCollapsed, isMobile, drawerOpen, setDrawerOpe
                 }}
             />
             <div style={{ marginRight: isMobile ? 12 : 24, display: 'flex', alignItems: 'center', gap: isMobile ? '8px' : '16px' }}>
+                <Tooltip title="Absensi Karyawan">
+                    <Button
+                        type="text"
+                        shape="circle"
+                        icon={<ClockCircleOutlined style={{ fontSize: '18px', color: '#52c41a' }} />}
+                        onClick={() => navigate('/hr/attendance')}
+                        className="hover-scale"
+                        style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    />
+                </Tooltip>
                 <Can access="settings.manage_users">
                     <Tooltip title="Manajemen Pengguna & RBAC">
                         <Button
