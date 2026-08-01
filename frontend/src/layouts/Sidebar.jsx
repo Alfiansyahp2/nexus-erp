@@ -132,7 +132,18 @@ const Sidebar = ({ collapsed, isMobile, drawerOpen, setDrawerOpen }) => {
         });
     };
 
-    const menuItems = filterMenuByPermission(rawMenuItems);
+    let menuItems = filterMenuByPermission(rawMenuItems);
+
+    // Smart Flattening Logic: If there is exactly 1 main module (folder), unpack it.
+    const folderItems = menuItems.filter(item => item.children && item.children.length > 0);
+    if (folderItems.length === 1) {
+        menuItems = menuItems.map(item => {
+            if (item.children && item.children.length > 0) {
+                return { ...item, type: 'group' };
+            }
+            return item;
+        });
+    }
 
     const sidebarContent = (
         <>
